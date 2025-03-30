@@ -5,7 +5,20 @@
   "nx": {
     "name": "blog",
     "projectType": "application",
-    "sourceRoot": "apps/blog"
+    "sourceRoot": "apps/blog",
+    "targets": {
+      "bootstrap": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "make bootstrap"
+        }
+      },
+      "build": {
+        "dependsOn": [
+          "bootstrap"
+        ]
+      }
+    }
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
