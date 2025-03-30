@@ -23,7 +23,7 @@ git clone https://github.com/moatorres/website.git
 2. Navigate to the project directory:
 
 ```sh
-cd moatorres
+cd website
 ```
 
 3. Install dependencies:
