@@ -46,7 +46,7 @@ const timelineData = [
     description: 'Joined Odebrecht as Operations Manager at Maracanã, Rio de Janeiro.',
     meta: [
       {
-        label: 'Major Events',
+        label: 'Key Responsibilities',
         value:
           "Managed operations for Coldplay's 'A Head Full of Dreams' concert (66,000 attendees). Oversaw Health & Safety for athletes and dignitaries at the British House during the Rio 2016 Olympics.",
       },
