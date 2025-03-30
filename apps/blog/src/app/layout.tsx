@@ -3,6 +3,7 @@
  * @license MIT
  */
 
+import { Analytics } from '@vercel/analytics/react'
 import type { Metadata } from 'next'
 import LocalFont from 'next/font/local'
 
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header />
             {children}
             <Footer />
+            <Analytics />
           </Page>
         </ThemeProvider>
       </body>
