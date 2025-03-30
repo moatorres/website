@@ -1,4 +1,9 @@
 /**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
+/**
  * @since 1.0.0
  * @category collections
  */

@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { randomUUID } from 'crypto'
 import { readFileSync } from 'fs'
 import { readdir, writeFile } from 'fs/promises'

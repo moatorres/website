@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import React from 'react'
 
 import { FloatingActions } from './floating-actions'

@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import type { Metadata } from 'next'
 import LocalFont from 'next/font/local'
 

@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import nx from '@nx/eslint-plugin'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 

@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import Link from 'next/link'
 
 import { getLatestArticles } from '@/utils/articles'

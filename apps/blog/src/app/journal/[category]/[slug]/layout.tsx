@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { unstable_ViewTransition as ViewTransition } from 'react'
 
 import { JournalLayout } from '@/components/journal-layout'
