@@ -1,0 +1,32 @@
+export const metadata = {
+  author: 'Moa Torres',
+  category: 'TypeScript',
+  date: '2025-03-29',
+  summary:
+    'Learn how to use TypeScript project references with Nx to improve build performance, type safety, and dependency management in monorepos.',
+  title: 'TypeScript Project References in Nx',
+}
+
+TypeScript project references are a powerful feature that enables incremental builds and better type-checking across multiple projects in a monorepo. When combined with Nx, a smart build system for monorepos, they can significantly improve developer productivity and build performance.
+
+## What Are TypeScript Project References?
+
+TypeScript project references allow you to structure your codebase into smaller, manageable projects that can reference each other. Each project has its own `tsconfig.json` file, and TypeScript can build these projects incrementally, only rebuilding what has changed.
+
+## Benefits in Nx Monorepos
+
+Nx enhances the use of TypeScript project references by providing tools to manage dependencies, caching, and build orchestration. Some key benefits include:
+
+- **Faster Builds:** Nx leverages TypeScript's incremental builds and its own caching mechanism to speed up builds.
+- **Improved Type Safety:** TypeScript ensures type-checking across project boundaries, reducing runtime errors.
+- **Clear Dependency Management:** Nx's dependency graph helps visualize and manage relationships between projects.
+
+## Setting Up TypeScript Project References in Nx
+
+1. **Enable Project References:** Add the `references` property in the `tsconfig.json` of each project to reference its dependencies.
+2. **Update Nx Configuration:** Ensure that Nx's `project.json` or `workspace.json` reflects the correct dependencies.
+3. **Run Builds:** Use Nx commands like `nx build` to build projects incrementally.
+
+## Conclusion
+
+TypeScript project references, when used with Nx, provide a robust solution for managing large monorepos. They improve build times, enforce type safety, and simplify dependency management, making them an essential tool for modern TypeScript development.
