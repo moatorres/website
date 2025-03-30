@@ -8,22 +8,23 @@ import { join, resolve } from 'path'
 
 // static
 const APP_SOURCE_ROOT = 'apps/blog'
-const AUTHOR_NAME = 'Moa Torres'
 const AUTHOR_EMAIL = 'hello@moatorres.com'
 const AUTHOR_GITHUB_HANDLE = 'moatorres'
 const AUTHOR_LINKEDIN_HANDLE = 'moatorres'
+const AUTHOR_NAME = 'Moa Torres'
 const AUTHOR_ORCID = '0009-0006-2281-1690'
 const CONTENT_DIR_RELATIVE_PATH = 'src/content'
 const GITHUB_BASE_URL = 'https://github.com/'
 const LINKEDIN_BASE_URL = 'https://www.linkedin.com/in/'
 const METADATA_DIR_RELATIVE_PATH = 'src/data'
 const ORCID_BASE_URL = 'https://orcid.org/'
-const WEBSITE_DESCRIPTION = 'Learn how to build, test, and deploy software with confidence.'
+const WEBSITE_DESCRIPTION =
+  'Leading Through Complexity—At the Intersection of Culture, Science & Technology'
 const WEBSITE_HEADER_TITLE = 'MT'
 const WEBSITE_PREVIEW_URL = 'https://moatorres-blog.vercel.app'
 const WEBSITE_PRODUCTION_URL = 'https://moatorres.com'
 const WEBSITE_SECTIONS = [{ name: 'Journal' }, { name: 'About' }]
-const WEBSITE_TITLE = 'Moa Torres | Deliver great software, faster'
+const WEBSITE_TITLE = 'Moa Torres'
 
 // derived
 const CONTENT_DIR_ABSOLUTE_PATH = resolve(process.cwd(), APP_SOURCE_ROOT, CONTENT_DIR_RELATIVE_PATH)

@@ -56,17 +56,19 @@ export function Header() {
       {isMenuOpen && (
         <div className="md:hidden mt-6 border-t border-border pt-6">
           <nav className="flex flex-col space-y-6">
-            {config.sections.map((section) => {
-              return (
-                <Link
-                  key={section.name}
-                  href={'/' + section.name.toLowerCase()}
-                  className="text-sm uppercase tracking-wide"
-                >
-                  {section.name}
-                </Link>
-              )
-            })}
+            {config.sections
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((section) => {
+                return (
+                  <Link
+                    key={section.name}
+                    href={'/' + section.name.toLowerCase()}
+                    className="text-sm uppercase tracking-wide"
+                  >
+                    {section.name}
+                  </Link>
+                )
+              })}
           </nav>
         </div>
       )}

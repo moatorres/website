@@ -70,7 +70,7 @@ const timelineData = [
     meta: [
       {
         label: 'Expertise',
-        value: 'Development Strategy, Digital Transformation, Technical Leadership',
+        value: 'Strategy, Design Thinking, Digital Transformation',
       },
       { label: 'Clients', value: 'Tech Startups, Cultural Institutions, Global Brands, NGOs' },
     ],
