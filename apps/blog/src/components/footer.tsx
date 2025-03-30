@@ -3,8 +3,6 @@
  * @license MIT
  */
 
-import Link from 'next/link'
-
 import config from '@/data/config.json'
 
 const links = [
@@ -22,7 +20,7 @@ export function Footer() {
         </div>
         <nav className="flex gap-6">
           {links.map((link) => (
-            <Link
+            <a
               key={link.name}
               href={link.url}
               target="_blank"
@@ -30,7 +28,7 @@ export function Footer() {
               className="text-xs uppercase tracking-widest hover:text-muted-foreground"
             >
               {link.name}
-            </Link>
+            </a>
           ))}
         </nav>
       </div>

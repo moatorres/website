@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(config.url),
   title: {
     default: config.title,
-    template: `%s | ${config.title}`,
+    template: `%s | ${config.author}`,
   },
 }
 
