@@ -17,6 +17,7 @@ const files = execSync('git ls-files').toString().split('\n')
 const extensions = ['.js', '.jsx', '.mjs', '.ts', '.tsx']
 
 files.forEach((file) => {
+  if (file === 'next-env.d.ts') return // Ignore next-env.d.ts files
   if (!extensions.includes(path.extname(file))) return
 
   const content = fs.readFileSync(file, 'utf-8')
