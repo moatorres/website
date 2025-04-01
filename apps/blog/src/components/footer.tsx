@@ -6,7 +6,6 @@
 import config from '@/data/config.json'
 
 const links = [
-  { name: 'Email', url: `mailto:${config.email}` },
   { name: 'LinkedIn', url: config.linkedinUrl },
   { name: 'GitHub', url: config.githubUrl },
 ]

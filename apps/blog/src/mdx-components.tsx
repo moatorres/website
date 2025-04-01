@@ -17,7 +17,7 @@ const components = {
   ),
   h2: (props: ComponentPropsWithoutRef<'h2'>) => (
     <h2
-      className="not-prose text-2xl font-bold mt-12 mb-6 not-prose text-[var(--tw-prose-headings)]"
+      className="not-prose text-2xl font-bold mt-12 mb-4 not-prose text-[var(--tw-prose-headings)]"
       {...props}
     />
   ),
@@ -29,12 +29,12 @@ const components = {
   ),
   h5: (props: ComponentPropsWithoutRef<'h5'>) => (
     <div
-      className="not-prose text-xs uppercase tracking-widest text-muted-foreground mt-1 mb-4"
+      className="not-prose text-xs uppercase tracking-widest text-muted-foreground my-1"
       {...props}
     />
   ),
   h6: (props: ComponentPropsWithoutRef<'h6'>) => (
-    <p className="not-prose text-sm text-muted-foreground mb-12" {...props} />
+    <p className="not-prose text-sm text-muted-foreground my-1" {...props} />
   ),
   p: (props: ComponentPropsWithoutRef<'p'>) => <p className="leading-relaxed mb-8" {...props} />,
   ol: (props: ComponentPropsWithoutRef<'ol'>) => (
@@ -105,7 +105,7 @@ const components = {
   ),
   blockquote: (props: ComponentPropsWithoutRef<'blockquote'>) => (
     <blockquote
-      className="ml-[0.075em] border-l-3 border-gray-300 pl-4 text-gray-600 dark:border-zinc-600 dark:text-zinc-300 font-serif"
+      className="ml-[0.075em] border-l-3 border-gray-300 pl-4 text-gray-600 dark:border-zinc-600 dark:text-zinc-300 tracking-wide"
       {...props}
     />
   ),

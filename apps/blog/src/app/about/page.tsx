@@ -7,7 +7,7 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 const timelineData = [
   {
@@ -96,10 +96,7 @@ const timelineData = [
   },
 ]
 
-const cities = ['Recife', 'Rio de Janeiro', 'São Paulo', 'London']
-
 export default function AboutPage() {
-  const [visibleCity, setVisibleCity] = useState('')
   const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -122,30 +119,19 @@ export default function AboutPage() {
           const currentIndex = Number.parseInt(index)
           if (currentIndex !== lastActiveIndex) {
             lastActiveIndex = currentIndex
-
-            // Set visible city based on the current index
-            const cityIndex = currentIndex % cities.length
-            setVisibleCity(cities[cityIndex])
           }
         }
       })
     }
 
     window.addEventListener('scroll', handleScroll)
-    handleScroll() // Initial check
-
-    // Set initial visible city
-    setVisibleCity(cities[0])
+    handleScroll()
 
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
     <section className="px-4 pb-32">
-      <div className="fixed top-1/2 right-8 md:right-12 text-xs text-muted-foreground opacity-50 transform -rotate-90 origin-right pointer-events-none">
-        {visibleCity && <div>{visibleCity}</div>}
-      </div>
-
       <div className="grid grid-cols-12 gap-4 py-24 md:py-32">
         <div className="col-span-12 mb-16">
           <h1 className="text-[8vw] md:text-[6vw] font-bold leading-none tracking-tight mb-12">
