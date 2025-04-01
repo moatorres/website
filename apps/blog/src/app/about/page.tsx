@@ -59,12 +59,12 @@ const timelineData = [
       "Relocated to the UK to work as a Project Manager at one of London's leading and most inclusive live experience agencies.",
     meta: [
       { label: 'Key Customers', value: 'Facebook' },
-      { label: 'Cities', value: 'Amsterdam, Buenos Aires, London, Oslo' },
+      { label: 'Cities', value: 'San Francisco, Amsterdam, London, Oslo' },
     ],
   },
   {
     year: 2020,
-    title: 'Technical Lead',
+    title: 'Independent Consultant',
     description:
       'Founded an independent IT consultancy office, providing technical guidance and digital solutions for national and international clients.',
     meta: [
@@ -78,7 +78,8 @@ const timelineData = [
   {
     year: 2022,
     title: 'Computer Science',
-    description: 'Enrolled in the University of London to pursue a BSc in Computer Science.',
+    description:
+      'Enrolled in the University of London to pursue a BSc in Computer Science; Became a Google Certified Associate Cloud Engineer.',
     meta: [
       { label: 'Specialization', value: 'AI & Machine Learning' },
       { label: 'Interests', value: 'Data Science, Ethical Tech, Infrastructure' },
@@ -86,9 +87,9 @@ const timelineData = [
   },
   {
     year: 2024,
-    title: 'Content Creation',
+    title: 'Career Growth',
     description:
-      'Writing on culture, politics, and science, engaging with audiences across multiple platforms.',
+      "Joined Liferay's Cloud division, and started writing on culture, science, and technology, engaging with audiences across multiple platforms.",
     meta: [
       { label: 'Medium', value: 'Academic Papers, Online Journals' },
       { label: 'Themes', value: 'Societal Innovation, Critical Thinking' },

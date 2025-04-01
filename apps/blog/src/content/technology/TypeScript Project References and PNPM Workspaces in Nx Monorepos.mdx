@@ -13,7 +13,7 @@ This article is a response to an [invitation](https://github.com/nrwl/nx/issues/
 
 This is **not** an introduction to [TypeScript Project References](https://www.typescriptlang.org/docs/handbook/project-references.html), nor does it aim to explain [everything you need to know about them](https://nx.dev/blog/typescript-project-references). For more information, the [Nx Blog](https://nx.dev/blog) and the official [TypeScript documentation](https://www.typescriptlang.org/) are great resources.
 
-If you'd like to see other in-depth guides from me, feel free to reach out at [hello@moatorres.com](hello@moatorres.com)—I’d love to know what topics interest you.
+If you'd like to see other in-depth guides, feel free to reach out at [hello@moatorres.com](hello@moatorres.com)—I’d love to know what topics interest you.
 
 ## Nx, TypeScript, and the Need for Change
 
@@ -25,11 +25,11 @@ There are [long-standing issues](https://github.com/nrwl/nx/issues/3106) in Type
 
 TypeScript project references are a powerful feature that enables incremental builds and better type-checking across multiple projects in a monorepo. When combined with Nx they can significantly improve developer productivity and build performance.
 
-TypeScript Project References have been available since TypeScript 3.0. According to the official TypeScript [documentation](https://www.typescriptlang.org/docs/handbook/project-references.html):
+Project references have been available since TypeScript 3.0. According to the official TypeScript [documentation](https://www.typescriptlang.org/docs/handbook/project-references.html):
 
 > Project references allows you to structure your TypeScript programs into smaller pieces, available in TypeScript 3.0 and newer. By doing this, you can greatly improve build times, enforce logical separation between components, and organize your code in new and better ways.
 
-In short, project references let you break a large codebase into smaller, manageable projects that can reference each other while maintaining strict boundaries.
+In short, it lets you break a large codebase into smaller, manageable projects that can reference each other while maintaining strict boundaries.
 
 ## Benefits in Nx Monorepos
 
@@ -43,7 +43,7 @@ Nx enhances the use of TypeScript Project References by providing tools for mana
 
 ## How Did We Managed Projects Before?
 
-Previously, Nx relied heavily TypeScript's `compilerOptions` path mappings. We defined all projects in a central `tsconfig.base.json` or `tsconfig.json` file, which Nx then read—often using functions like [readTsConfigPaths](https://github.com/nrwl/nx/blob/bf8848da951d1570280a51db42ae56a98f918770/packages/nx/src/project-graph/plugins/resolve-plugin.ts#L183) function.
+Previously, Nx relied heavily TypeScript's path mappings. We defined all projects in a central `tsconfig.base.json` or `tsconfig.json` file, which Nx then read—often using functions like [readTsConfigPaths](https://github.com/nrwl/nx/blob/bf8848da951d1570280a51db42ae56a98f918770/packages/nx/src/project-graph/plugins/resolve-plugin.ts#L183).
 
 As [Jake Ginnivan](https://github.com/jakeginnivan) says [here](https://jakeginnivan.medium.com/using-typescript-project-references-in-nx-b3462b2fe6d4):
 
@@ -93,7 +93,7 @@ This approach had two main drawbacks:
 
 ## Enter Project References
 
-There's when Project References come in handy. Project References solve this by allowing each project to explicitly define its dependencies. Instead of centralizing everything in the root `tsconfig.json`, each project can declare its own dependencies (a.k.a. references):
+There's when Project References come in handy. Project References solve this by allowing each project to explicitly define its dependencies. Instead of centralizing everything in the root `tsconfig.json`, each project declares its own references:
 
 ```json
 {
@@ -119,7 +119,7 @@ This improves **modularity**, **build performance**, and **type-checking efficie
 
 ## The Role of PNPM Workspaces
 
-Nx traditionally allowed us to manage dependencies without having to focus much on `package.json` files. As long as we defined `project.json` files, Nx, in combination with bundlers, would automatically handle the management of `dependencies` and `devDependencies`, allowing us to nearly eliminate the need for `package.json` files altogether.
+Nx traditionally allowed us to manage dependencies without having to focus much on `package.json` files. As long as head our `project.json` definitions, Nx, in combination with bundlers, would automatically handle the management of `dependencies` and `devDependencies`, allowing us to nearly eliminate the need for `package.json` files altogether.
 
 However, moving away from path-based project definitions introduced the need for a new (or rather, a more traditional) way to manage dependencies between applications and libraries—this is where **PNPM workspaces** come in.
 
@@ -184,26 +184,18 @@ packages:
 
 While this may sound complicated and challenging to maintain, this is precisely where Nx shines. By offering commands like `nx sync` and `nx watch-deps`, Nx helps alleviate the complexity of managing large-scale monorepos.
 
-## Key Takeaways
-
-- **TypeScript Project References** improve type-checking efficiency by letting TypeScript track only relevant types.
-- **PNPM Workspaces** manage dependencies more effectively, making `package.json` files essential once again.
-- **Nx** can automate common tasks and offer extensibility through plugins, executors, and generators.
-
----
-
 ## In-Depth Exploration
 
 In this section, we'll explore two workspace presets: `apps` and `ts`. The `apps` preset creates a **path-based** workspace, but we'll focus on the `ts` preset for this deep dive. At the time of writing, `create-nx-workspace@latest` is equivalent to `create-nx-workspace@20.7.0`.
 
-If you plan to publish packages, ensure your workspace is assigned a valid NPM organization name. For this exercise, I'll use `nx-prefs` as our organization scope.
+If you plan to publish your packages, ensure your workspace is assigned a valid NPM organization name. For this exercise, I'll use `nx-prefs` as our organization scope.
 
-To create your Nx workspace, run the following command:
+Create your Nx workspace by running:
 
 ```sh
 npx create-nx-workspace@latest nx-prefs --pm pnpm \
   --no-interactive \
-  --preset apps \
+  --preset ts \
   --ci skip
 ```
 
@@ -554,7 +546,11 @@ We could have skipped this step by running `nx sync` before building our applica
 
 With this setup, Nx takes care of project reference management automatically, keeping your PNPM workspace clean and hassle-free. No extra steps, no manual syncing—just a smoother developer experience.
 
-If you want to learn more about PNPM workspaces, check out this article by [Juri Strumpflohner](https://github.com/juristr) on [setting up a monorepo with PNPM workspaces](https://nx.dev/blog/setup-a-monorepo-with-pnpm-workspaces-and-speed-it-up-with-nx#consuming-our-sharedui-package-from-the-remix-app).
+## Key Takeaways
+
+- **TypeScript Project References** improve type-checking efficiency by letting TypeScript track only relevant types.
+- **PNPM Workspaces** manage dependencies more effectively, making `package.json` files essential once again.
+- **Nx** can automate common tasks and offer extensibility through plugins, executors, and generators.
 
 ## Next Steps
 
@@ -562,7 +558,9 @@ If you want to learn more about PNPM workspaces, check out this article by [Juri
 - Use [syncpack](https://jamiemason.github.io/syncpack/) to keep multiple `package.json` files in sync.
 - Split larger libraries into smaller, more manageable packages.
 
-If you're already familiar with Nx, we can take this a step further. In the next part of this series, we'll break down the [shadcn/ui](https://ui.shadcn.com/) into multiple packages using [React](https://react.dev/), [Tailwind](https://tailwindcss.com/), and [Radix UI](https://www.radix-ui.com/), keeping things practical and hands-on.
+In the next part of this series, we'll break down the [shadcn/ui](https://ui.shadcn.com/) into multiple packages using [React](https://react.dev/), [Tailwind](https://tailwindcss.com/), and [Radix UI](https://www.radix-ui.com/), keeping things practical and hands-on.
+
+If you want to learn more about PNPM workspaces, check out this article by [Juri Strumpflohner](https://github.com/juristr) on [setting up a monorepo with PNPM workspaces](https://nx.dev/blog/setup-a-monorepo-with-pnpm-workspaces-and-speed-it-up-with-nx#consuming-our-sharedui-package-from-the-remix-app).
 
 ---
 
