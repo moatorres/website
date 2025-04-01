@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   description: config.description,
-  metadataBase: new URL(config.url),
+  metadataBase: new URL(config.previewUrl),
   title: {
     default: config.title,
     template: `%s | ${config.author}`,

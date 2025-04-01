@@ -10,12 +10,12 @@ import { getArticles } from '@/utils/articles'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articles = getArticles().map((metadata) => ({
-    url: config.url + metadata.href,
+    url: config.previewUrl + metadata.href,
     lastModified: metadata.updatedAt,
   }))
 
   const staticPages = ['', '/about', '/journal'].map((page) => ({
-    url: `${config.url}/${page}`,
+    url: `${config.previewUrl}/${page}`,
     lastModified: new Date().toISOString(),
   }))
 

@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { category, slug } = await params
   const { content } = await getContent(category, slug)
   const { title, summary: description, href } = content.metadata
-  const ogImage = `${config.url}/og?title=${encodeURIComponent(title)}`
+  const ogImage = `${config.previewUrl}/og?title=${encodeURIComponent(title)}`
 
   return {
     description,
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       publishedTime: new Date(content.metadata.date).toISOString(),
       title,
       type: 'article',
-      url: config.url + href,
+      url: config.previewUrl + href,
     },
     title,
     twitter: {
@@ -96,9 +96,9 @@ export default async function JournalArticle({ params }: PageProps) {
             dateModified: content.metadata.date,
             description: content.metadata.summary,
             image: content.metadata.image
-              ? `${config.url}${content.metadata.image}`
+              ? `${config.previewUrl}${content.metadata.image}`
               : `/og?title=${encodeURIComponent(content.metadata.title)}`,
-            url: `${config.url}/blog/${content.slug}`,
+            url: `${config.previewUrl}/blog/${content.slug}`,
             author: {
               '@type': 'Person',
               name: 'Moa Torres',
