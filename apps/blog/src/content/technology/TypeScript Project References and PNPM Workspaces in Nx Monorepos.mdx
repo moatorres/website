@@ -1,0 +1,572 @@
+export const metadata = {
+  author: 'Moa Torres',
+  category: 'TypeScript',
+  date: '2025-03-29',
+  summary:
+    'Learn how TypeScript project references, PNPM workspaces, and Nx help improve build performance, type safety, and dependency management in monorepos.',
+  title: 'TypeScript Project References and PNPM Workspaces in Nx Monorepos',
+}
+
+This article is a response to an [invitation](https://github.com/nrwl/nx/issues/4508#issuecomment-2761891914) to share my experience using [Nx with TypeScript Project References](https://nx.dev/blog/typescript-project-references), as well as a testament to the kindness and support within the developer community.
+
+## What Is This Article About?
+
+This is **not** an introduction to [TypeScript Project References](https://www.typescriptlang.org/docs/handbook/project-references.html), nor does it aim to explain [everything you need to know about them](https://nx.dev/blog/typescript-project-references). For more information, the [Nx Blog](https://nx.dev/blog) and the official [TypeScript documentation](https://www.typescriptlang.org/) are great resources.
+
+If you'd like to see other in-depth guides from me, feel free to reach out at [hello@moatorres.com](hello@moatorres.com)—I’d love to know what topics interest you.
+
+## Nx, TypeScript, and the Need for Change
+
+I've been using Nx for a long time, and have witnessed many changes—from [incremental compilation](https://www.youtube.com/watch?v=O2xBQJMTs9E) and [migrating from Lerna to Nx](https://www.youtube.com/watch?v=BO1rwynFBLM), to the [rescope](https://nx.dev/deprecated/rescope) from `@nrwl/*` to `@nx/*`, the announcement of [Project Crystal](https://nx.dev/concepts/inferred-tasks), the introduction [SQLite](https://github.com/nrwl/nx/issues/28150), and [breaking updates](https://github.com/nrwl/nx/issues/28150) to the Remote Cache API.
+
+There are [long-standing issues](https://github.com/nrwl/nx/issues/3106) in TypeScript codebases that make heavy use of Nx, and adopting this approach meant dealing with change to stay up to date.
+
+## What Are TypeScript Project References?
+
+TypeScript project references are a powerful feature that enables incremental builds and better type-checking across multiple projects in a monorepo. When combined with Nx they can significantly improve developer productivity and build performance.
+
+TypeScript Project References have been available since TypeScript 3.0. According to the official TypeScript [documentation](https://www.typescriptlang.org/docs/handbook/project-references.html):
+
+> Project references allows you to structure your TypeScript programs into smaller pieces, available in TypeScript 3.0 and newer. By doing this, you can greatly improve build times, enforce logical separation between components, and organize your code in new and better ways.
+
+In short, project references let you break a large codebase into smaller, manageable projects that can reference each other while maintaining strict boundaries.
+
+## Benefits in Nx Monorepos
+
+Nx enhances the use of TypeScript Project References by providing tools for managing dependencies, caching, and build orchestration. Some key benefits include:
+
+- **Faster Builds & Efficient Recompilation**: TypeScript Project References improve build performance by enabling incremental builds and preventing unnecessary recompilation. Nx further enhances this with smart caching and task orchestration.
+
+- **Improved Type Checking & Editor Performance**: Unlike path mappings, Project References allow TypeScript to track dependencies more efficiently, leading to faster type checking and better responsiveness in editors and IDEs through the Language Server Protocol (LSP).
+
+- **Scalable & Maintainable Dependency Management**: By enforcing explicit project boundaries, Project References reduce unintended cross-imports, helping to maintain long-term scalability in Nx monorepos.
+
+## How Did We Managed Projects Before?
+
+Previously, Nx relied heavily TypeScript's `compilerOptions` path mappings. We defined all projects in a central `tsconfig.base.json` or `tsconfig.json` file, which Nx then read—often using functions like [readTsConfigPaths](https://github.com/nrwl/nx/blob/bf8848da951d1570280a51db42ae56a98f918770/packages/nx/src/project-graph/plugins/resolve-plugin.ts#L183) function.
+
+As [Jake Ginnivan](https://github.com/jakeginnivan) says [here](https://jakeginnivan.medium.com/using-typescript-project-references-in-nx-b3462b2fe6d4):
+
+> Path mappings is the path of least resistance, it basically means that when you import another library in your project the bundler/tool can follow that reference and import the source as if it was one giant project.
+
+Here's an example:
+
+```json
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2017", "dom", "dom.iterable"],
+    "paths": {
+      "@shared/design-system": ["libs/shared/design-system/src/index.ts"],
+      "@shared/react-hooks": ["libs/shared/react-hooks/src/index.ts"],
+      "@shared/data-model": ["libs/shared/data-model/src/index.ts"],
+      "@utils/colors": ["libs/shared/utils/colors/src/index.ts"],
+      "@utils/cx": ["libs/shared/utils/cx/src/index.ts"],
+      "@utils/ddd": ["libs/shared/utils/ddd/src/index.ts"],
+      "@utils/encryption": ["libs/shared/utils/encryption/src/index.ts"],
+      "@utils/express": ["libs/shared/utils/express/src/index.ts"],
+      "@utils/http": ["libs/shared/utils/http/src/index.ts"],
+      "@utils/kubernetes": ["libs/shared/utils/kubernetes/src/index.ts"],
+      "@utils/node": ["libs/shared/utils/node/src/index.ts"],
+      "@utils/stylit": ["libs/shared/utils/stylit/src/index.ts"],
+      "@utils/tss": ["libs/shared/utils/tss/src/index.ts"]
+    }
+  }
+}
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Path-based `tsconfig.json`.</sub>
+</span>
+
+This approach had two main drawbacks:
+
+1. **Scalability** – TypeScript’s language server had to load and type-check the entire codebase at once, leading to significant performance slowdowns.
+
+2. **Centralized Configuration** – Every project relied on a single, ever-growing `tsconfig` file.
+
+## Enter Project References
+
+There's when Project References come in handy. Project References solve this by allowing each project to explicitly define its dependencies. Instead of centralizing everything in the root `tsconfig.json`, each project can declare its own dependencies (a.k.a. references):
+
+```json
+{
+  "extends": "../../../tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "../../styles"
+    },
+    {
+      "path": "../../ui"
+    }
+  ]
+}
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>`tsconfig.json`</sub>
+</span>
+
+This improves **modularity**, **build performance**, and **type-checking efficiency**, as TypeScript now understands project boundaries and only processes necessary types.
+
+## The Role of PNPM Workspaces
+
+Nx traditionally allowed us to manage dependencies without having to focus much on `package.json` files. As long as we defined `project.json` files, Nx, in combination with bundlers, would automatically handle the management of `dependencies` and `devDependencies`, allowing us to nearly eliminate the need for `package.json` files altogether.
+
+However, moving away from path-based project definitions introduced the need for a new (or rather, a more traditional) way to manage dependencies between applications and libraries—this is where **PNPM workspaces** come in.
+
+Along with the adoption of TypeScript Project References, there were also changes to the `package.json` files themselves.
+
+```json
+{
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  }
+}
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>`package.json`</sub>
+</span>
+
+We now explicitly define exports and point the `main` and `module` properties to the `./dist/index.js` output. Inter-dependencies are now declared as `"workspace:*"`:
+
+```json
+{
+  "name": "@myorg/accordion",
+  "dependencies": {
+    "@radix-ui/react-accordion": "^1.2.2",
+    "lucide-react": "^0.475.0"
+  },
+  "devDependencies": {
+    "@myorg/button": "workspace:*",
+    "@myorg/styles": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>`package.json`</sub>
+</span>
+
+If you used workpaces before, this probably isn't new to you. A typical PNPM workspace configuration looks like this:
+
+```yaml
+packages:
+  - 'apps/*'
+  - 'libs/*'
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>`pnpm-workspace.yaml`</sub>
+</span>
+
+While this may sound complicated and challenging to maintain, this is precisely where Nx shines. By offering commands like `nx sync` and `nx watch-deps`, Nx helps alleviate the complexity of managing large-scale monorepos.
+
+## Key Takeaways
+
+- **TypeScript Project References** improve type-checking efficiency by letting TypeScript track only relevant types.
+- **PNPM Workspaces** manage dependencies more effectively, making `package.json` files essential once again.
+- **Nx** can automate common tasks and offer extensibility through plugins, executors, and generators.
+
+---
+
+## In-Depth Exploration
+
+In this section, we'll explore two workspace presets: `apps` and `ts`. The `apps` preset creates a **path-based** workspace, but we'll focus on the `ts` preset for this deep dive. At the time of writing, `create-nx-workspace@latest` is equivalent to `create-nx-workspace@20.7.0`.
+
+If you plan to publish packages, ensure your workspace is assigned a valid NPM organization name. For this exercise, I'll use `nx-prefs` as our organization scope.
+
+To create your Nx workspace, run the following command:
+
+```sh
+npx create-nx-workspace@latest nx-prefs --pm pnpm \
+  --no-interactive \
+  --preset apps \
+  --ci skip
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Nx workspace creation.</sub>
+</span>
+
+Your command-line output should resemble:
+
+```sh
+
+ NX   Let's create a new workspace [https://nx.dev/getting-started/intro]
+
+ NX   Creating your v20.7.0 workspace.
+
+✔ Installing dependencies with pnpm
+✔ Successfully created the workspace: nx-prefs.
+
+ NX   Welcome to the Nx community! 👋
+
+🌟 Star Nx on GitHub: https://github.com/nrwl/nx
+📢 Stay up to date on X: https://x.com/nxdevtools
+💬 Discuss Nx on Discord: https://go.nx.dev/community
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Nx workspace creation output.</sub>
+</span>
+
+That's it! We're now ready to use TypeScript Project References. 🚀
+
+If you haven't already, [launch VSCode from the command line](<(https://code.visualstudio.com/docs/setup/mac#_launch-vs-code-from-the-command-line)>):
+
+```sh
+code nx-prefs
+```
+
+Your workspace should look like this:
+
+![VSCode Nx TS Workspace](/assets/journal/nx-prefs-001.png)
+
+I highly recommend exploring the files Nx generated, particularly `pnpm-workspace.yaml`, `tsconfig.base.json`, and `tsconfig.json`. We'll compare these with the path-based workspace on another article.
+
+## Our First Packages
+
+We'll use the official [@nx/react](https://nx.dev/nx-api/react) plugin to create our first package. You can check out Nx's [plugin registry](https://nx.dev/plugin-registry) for a list of all available plugins.
+
+Install the plugin in the root of our workspace:
+
+```sh
+pnpm add -D @nx/react -w
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Installing `@nx/react`.</sub>
+</span>
+
+Nx also has an [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) that provides an interactive interface for Nx commands—it's definitely worth checking out!
+
+I'll use [Vite](https://vite.dev/) for bundling and testing, and [ESLint](https://eslint.org/) for linting. Feel free to use your preferred stack or opt-out of both. I'm also going to use `project.json` files to fine-tune configurations separately.
+
+## Creating a Utility Package
+
+Our first package will be a utility library under `packages/utils`, imported as `@nx-prefs/utils`.
+
+```sh
+npx nx g @nx/react:library --directory=packages/utils \
+  --name=utils \
+  --bundler=vite \
+  --linter=eslint \
+  --unitTestRunner=vitest \
+  --importPath=@nx-prefs/utils \
+  --useProjectJson=true \
+  --no-interactive
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Creating `@nx-prefs/utils`.</sub>
+</span>
+
+Expected output:
+
+```sh
+Fetching @nx/vite...
+
+UPDATE package.json
+UPDATE nx.json
+CREATE packages/utils/project.json
+CREATE packages/utils/package.json
+CREATE packages/utils/README.md
+UPDATE tsconfig.json
+...
++ typescript-eslint 8.29.0
++ vite 6.2.4
++ vite-plugin-dts 4.5.3
++ vitest 3.1.1
+
+Done in 17.6s
+Scope: all 2 workspace projects
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>`@nx-prefs/utils` creation output.</sub>
+</span>
+
+Nx automatically installs required dependencies and updates our root `tsconfig.json` with a reference to our new package:
+
+```json
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/utils"
+    }
+  ]
+}
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>`tsconfig.json` update.</sub>
+</span>
+
+## Creating an Application
+
+Next, we'll add a [Next.js](https://nextjs.org/) application using the [`@nx/next`](https://nx.dev/nx-api/next) plugin. Install it with:
+
+```sh
+pnpm add -D @nx/next -w
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Installing `@nx/next` plugin.</sub>
+</span>
+
+We’ll create our app in `apps/sandbox`. While you can choose [`cypress`](https://www.cypress.io/) or [`playwright`](https://playwright.dev/) for end-to-end testing, I’ll skip setting up either for brevity. Start by running the command in dry-run mode:
+
+```sh
+npx nx g @nx/next:application --directory=apps/sandbox \
+  --linter=eslint \
+  --name=sandbox \
+  --e2eTestRunner=none \
+  --no-interactive \
+  --dry-run
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Creating `sandbox` application.</sub>
+</span>
+
+The output should look like this:
+
+```sh
+ NX  Generating @nx/next:application
+
+UPDATE nx.json
+UPDATE .gitignore
+UPDATE package.json
+CREATE apps/sandbox/next.config.js
+CREATE apps/sandbox/tsconfig.json
+...
+UPDATE tsconfig.json
+
+NOTE: The "dryRun" flag means no changes were made.
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>`sandbox` creation output.</sub>
+</span>
+
+Remove the `--dry-run` flag and re-run the command to generate the application. Nx will automatically update `pnpm-workspace.yaml` to include `apps/*`:
+
+```yaml
+packages:
+  - 'packages/*'
+  - 'apps/*'
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Updated `pnpm-workspace.yaml`.</sub>
+</span>
+
+Run the application and check if it's running on http://localhost:3000:
+
+```sh
+npx nx dev sandbox
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Running `sandbox`.</sub>
+</span>
+
+You can also use `pnpm dlx nx <command>` instead of `npx nx <command>` or `pnpm exec -- nx <command>`. Alternatively, you can install `nx` globally to use the shorter `nx dev sandbox` command:
+
+```sh
+pnpm install -g nx
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Installing `nx` globally.</sub>
+</span>
+
+## Consuming Our Utility Library
+
+Now that everything is running as expected, it’s time to consume our utility package. We'll start by building it:
+
+```sh
+nx build utils
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Building `@nx-prefs/utils` package.</sub>
+</span>
+
+Next, we need to add it as a dependency. We can either manually add the dependency to our `package.json` or let PNPM handle it:
+
+```sh
+pnpm add @nx-prefs/utils --filter sandbox --workspace
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Adding local dependency.</sub>
+</span>
+
+After adding the package, our `apps/sandbox/package.json` file should look like this:
+
+```json
+{
+  "name": "@nx-prefs/sandbox",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "sandbox"
+  },
+  "dependencies": {
+    "@nx-prefs/utils": "workspace:^",
+    "next": "~15.1.4",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  }
+}
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Updated `apps/sandbox/package.json`.</sub>
+</span>
+
+Open the `apps/sandbox/src/app/page.tsx` file and update its content:
+
+```tsx
+import { Utils } from '@nx-prefs/utils'
+
+export default function Home() {
+  return <Utils />
+}
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Updated `apps/sandbox/src/app/page.tsx`.</sub>
+</span>
+
+Run the application:
+
+```sh
+nx dev sandbox
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Running `sandbox`.</sub>
+</span>
+
+Open your browser on http://localhost:3000 to check if the component renders correctly. Once everything is working, it's time to build our application:
+
+```sh
+nx build sandbox
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Building `sandbox`.</sub>
+</span>
+
+Nx automatically warns us that our workspace is out-of-sync:
+
+```sh
+ NX   The workspace is out of sync
+
+[@nx/js:typescript-sync]: Some TypeScript configuration files are missing project references to the projects they depend on or contain outdated project references.
+
+This will result in an error in CI.
+
+? Would you like to sync the identified changes to get your workspace up to date? …
+Yes, sync the changes and run the tasks
+No, run the tasks without syncing the changes
+
+You can skip this prompt by setting the `sync.applyChanges` option to `true` in your `nx.json`.
+For more information, refer to the docs: https://nx.dev/concepts/sync-generators.
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Workspace sync prompt.</sub>
+</span>
+
+Hit `Enter` to sync the workspace and start building our application.
+
+Expected output:
+
+```sh
+   ▲ Next.js 15.1.7
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   ...
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+ NX   Successfully ran target build for project sandbox and 1 task it depends on (15s)
+
+Nx read the output from the cache instead of running the command for 1 out of 2 tasks.
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Build command output.</sub>
+</span>
+
+We could have skipped this step by running `nx sync` before building our application, or setting the `sync.applyChanges` option to `true` in our `nx.json`:
+
+```json
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": [
+      "default",
+      ...
+    ],
+    "sharedGlobals": []
+  },
+  "sync": {
+    "applyChanges": true
+  }
+}
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Updated `nx.json`.</sub>
+</span>
+
+With this setup, Nx takes care of project reference management automatically, keeping your PNPM workspace clean and hassle-free. No extra steps, no manual syncing—just a smoother developer experience.
+
+If you want to learn more about PNPM workspaces, check out this article by [Juri Strumpflohner](https://github.com/juristr) on [setting up a monorepo with PNPM workspaces](https://nx.dev/blog/setup-a-monorepo-with-pnpm-workspaces-and-speed-it-up-with-nx#consuming-our-sharedui-package-from-the-remix-app).
+
+## Next Steps
+
+- Build a custom workspace plugin to simplify package boilerplate.
+- Use [syncpack](https://jamiemason.github.io/syncpack/) to keep multiple `package.json` files in sync.
+- Split larger libraries into smaller, more manageable packages.
+
+If you're already familiar with Nx, we can take this a step further. In the next part of this series, we'll break down the [shadcn/ui](https://ui.shadcn.com/) into multiple packages using [React](https://react.dev/), [Tailwind](https://tailwindcss.com/), and [Radix UI](https://www.radix-ui.com/), keeping things practical and hands-on.
+
+---
+
+<sub>
+  The author is not affiliated to Nx. This article has not been sponsored. The knowledge shared here
+  is based on the author's own experience, and should not be treated as source of truth.
+</sub>
