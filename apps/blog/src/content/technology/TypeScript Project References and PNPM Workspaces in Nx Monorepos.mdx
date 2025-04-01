@@ -119,7 +119,7 @@ This improves **modularity**, **build performance**, and **type-checking efficie
 
 ## The Role of PNPM Workspaces
 
-Nx traditionally allowed us to manage dependencies without having to focus much on `package.json` files. As long as head our `project.json` definitions, Nx, in combination with bundlers, would automatically handle the management of `dependencies` and `devDependencies`, allowing us to nearly eliminate the need for `package.json` files altogether.
+Nx traditionally allowed us to manage dependencies without having to focus much on `package.json` files. As long as we had our `project.json` definitions, Nx, in combination with bundlers, would automatically handle the management of `dependencies` and `devDependencies`, allowing us to nearly eliminate the need for `package.json` files altogether.
 
 However, moving away from path-based project definitions introduced the need for a new (or rather, a more traditional) way to manage dependencies between applications and libraries—this is where **PNPM workspaces** come in.
 
@@ -146,7 +146,7 @@ Along with the adoption of TypeScript Project References, there were also change
   <sub>`package.json`</sub>
 </span>
 
-We now explicitly define exports and point the `main` and `module` properties to the `./dist/index.js` output. Inter-dependencies are now declared as `"workspace:*"`:
+Nx now explicitly defines exports and point the `main` and `module` properties to the `./dist/index.js` output. Inter-dependencies are now declared as `"workspace:*"`:
 
 ```json
 {
@@ -182,7 +182,7 @@ packages:
   <sub>`pnpm-workspace.yaml`</sub>
 </span>
 
-While this may sound complicated and challenging to maintain, this is precisely where Nx shines. By offering commands like `nx sync` and `nx watch-deps`, Nx helps alleviate the complexity of managing large-scale monorepos.
+While all that may sound complicated and challenging to maintain, this is precisely where Nx shines. By offering commands like `nx sync` and `nx watch-deps`, Nx helps alleviate the complexity of managing large-scale monorepos.
 
 ## In-Depth Exploration
 
@@ -225,8 +225,6 @@ Your command-line output should resemble:
   <sub>Nx workspace creation output.</sub>
 </span>
 
-That's it! We're now ready to use TypeScript Project References. 🚀
-
 If you haven't already, [launch VSCode from the command line](<(https://code.visualstudio.com/docs/setup/mac#_launch-vs-code-from-the-command-line)>):
 
 ```sh
@@ -237,11 +235,11 @@ Your workspace should look like this:
 
 ![VSCode Nx TS Workspace](/assets/journal/nx-prefs-001.png)
 
-I highly recommend exploring the files Nx generated, particularly `pnpm-workspace.yaml`, `tsconfig.base.json`, and `tsconfig.json`. We'll compare these with the path-based workspace on another article.
+Take a close look at the files Nx generated—especially `pnpm-workspace.yaml`, `tsconfig.base.json`, and `tsconfig.json`. In another article, we'll compare them with the path-based workspace.
 
-## Our First Packages
+## Our First Package
 
-We'll use the official [@nx/react](https://nx.dev/nx-api/react) plugin to create our first package. You can check out Nx's [plugin registry](https://nx.dev/plugin-registry) for a list of all available plugins.
+We'll use the official [@nx/react](https://nx.dev/nx-api/react) plugin to create our first package. You can check out Nx's [plugin registry](https://nx.dev/plugin-registry) for a list of available plugins. Nx also has an [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) that provides an interactive interface for Nx commands—it's definitely worth checking out.
 
 Install the plugin in the root of our workspace:
 
@@ -252,8 +250,6 @@ pnpm add -D @nx/react -w
 <span className="flex justify-center w-full pb-4">
   <sub>Installing `@nx/react`.</sub>
 </span>
-
-Nx also has an [official VSCode extension](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) that provides an interactive interface for Nx commands—it's definitely worth checking out!
 
 I'll use [Vite](https://vite.dev/) for bundling and testing, and [ESLint](https://eslint.org/) for linting. Feel free to use your preferred stack or opt-out of both. I'm also going to use `project.json` files to fine-tune configurations separately.
 
@@ -411,7 +407,7 @@ nx build utils
   <sub>Building `@nx-prefs/utils` package.</sub>
 </span>
 
-Next, we need to add it as a dependency. We can either manually add the dependency to our `package.json` or let PNPM handle it:
+Next, we need to add it as a dependency to the consuming app. We can either manually add the dependency to its `package.json` or let PNPM handle it:
 
 ```sh
 pnpm add @nx-prefs/utils --filter sandbox --workspace
@@ -421,7 +417,7 @@ pnpm add @nx-prefs/utils --filter sandbox --workspace
   <sub>Adding local dependency.</sub>
 </span>
 
-After adding the package, our `apps/sandbox/package.json` file should look like this:
+After adding the package, the `package.json` in `apps/sandbox` should look like this:
 
 ```json
 {
@@ -468,7 +464,7 @@ nx dev sandbox
   <sub>Running `sandbox`.</sub>
 </span>
 
-Open your browser on http://localhost:3000 to check if the component renders correctly. Once everything is working, it's time to build our application:
+Open http://localhost:3000 in your browser to check if the component renders correctly. If everything looks good, let's build our application:
 
 ```sh
 nx build sandbox
@@ -499,7 +495,7 @@ For more information, refer to the docs: https://nx.dev/concepts/sync-generators
   <sub>Workspace sync prompt.</sub>
 </span>
 
-Hit `Enter` to sync the workspace and start building our application.
+Hit `Enter` to sync the workspace and start building the application.
 
 Expected output:
 
@@ -544,6 +540,8 @@ We could have skipped this step by running `nx sync` before building our applica
   <sub>Updated `nx.json`.</sub>
 </span>
 
+That's it. We're now ready to use TypeScript Project References with PNPM Workspace in our Nx monorepo. 🚀
+
 With this setup, Nx takes care of project reference management automatically, keeping your PNPM workspace clean and hassle-free. No extra steps, no manual syncing—just a smoother developer experience.
 
 ## Key Takeaways
@@ -557,6 +555,7 @@ With this setup, Nx takes care of project reference management automatically, ke
 - Build a custom workspace plugin to simplify package boilerplate.
 - Use [syncpack](https://jamiemason.github.io/syncpack/) to keep multiple `package.json` files in sync.
 - Split larger libraries into smaller, more manageable packages.
+- Compare build and type-check performance in path-based vs. project-referenced monorepos.
 
 In the next part of this series, we'll break down the [shadcn/ui](https://ui.shadcn.com/) into multiple packages using [React](https://react.dev/), [Tailwind](https://tailwindcss.com/), and [Radix UI](https://www.radix-ui.com/), keeping things practical and hands-on.
 
