@@ -9,6 +9,7 @@ import { join } from 'path'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next/types'
 
+import { TableOfContents } from '@/components/table-of-contents'
 import config from '@/data/config.json'
 import { formatDate } from '@/utils/format'
 import { ContentMetadata } from '@/utils/types'
@@ -115,6 +116,8 @@ export default async function JournalArticle({ params }: PageProps) {
       </h1>
 
       <h6 className="text-sm text-muted-foreground mb-12">{formatDate(content.metadata.date)}</h6>
+
+      <TableOfContents />
 
       <content.default />
     </section>
