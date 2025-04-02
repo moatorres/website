@@ -63,10 +63,10 @@
     --sh-keyword: #b0b0b0;
     --sh-string: #9d9d9d;
     --sh-class: #bcbcbc;
-    --sh-property: #777777;
+    --sh-property: #7f7e7e;
     --sh-entity: #797878;
     --sh-jsxliterals: #606060;
-    --sh-sign: #6a6a6a;
+    --sh-sign: #989898;
     --sh-comment: #474747;
   }
 
@@ -156,7 +156,7 @@ pre code .sh__line::before {
   content: counter(sh-line-number);
   margin-right: 24px;
   text-align: right;
-  color: #a4a4a4;
+  color: #8f8f8f;
 }
 
 :not(pre) > code * {
