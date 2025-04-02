@@ -27,7 +27,6 @@ export default async function Image({ params }: { params: { category: string; sl
       (metadata: ContentMetadata) => metadata.slug === params.slug
     )
     content = await import(`@/content/${params.category}/${entry.filename}`)
-    content = await import(`@/content/${params.category}/${params.slug}.mdx`)
   } catch {
     return new Response('Not found', { status: 404 })
   }
@@ -41,13 +40,13 @@ export default async function Image({ params }: { params: { category: string; sl
           display: 'flex',
           width: '1200px',
           height: '630px',
-          backgroundColor: '#1a1a1a',
-          color: 'white',
+          backgroundColor: '#17181C',
+          color: '#D9D9D9',
           padding: '50px',
           alignItems: 'center',
           justifyContent: 'center',
           flexDirection: 'column',
-          fontFamily: 'Arial, sans-serif',
+          fontFamily: 'Inter, sans-serif',
         }}
       >
         <h1 style={{ fontSize: '60px', fontWeight: 'bold', marginBottom: '20px' }}>{title}</h1>

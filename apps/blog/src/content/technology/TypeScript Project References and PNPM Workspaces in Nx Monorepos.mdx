@@ -7,7 +7,7 @@ export const metadata = {
   title: 'TypeScript Project References and PNPM Workspaces in Nx Monorepos',
 }
 
-This article is a response to an [invitation](https://github.com/nrwl/nx/issues/4508#issuecomment-2761891914) to share my experience using [Nx with TypeScript Project References](https://nx.dev/blog/typescript-project-references), as well as a testament to the kindness and support within the developer community.
+This article is a response to an [invitation](https://github.com/nrwl/nx/issues/4508#issuecomment-2761891914) to share my experience using Nx with TypeScript Project References, as well as a testament to the kindness and support within the developer community.
 
 ## What Is This Article About?
 
@@ -25,7 +25,7 @@ There are [long-standing issues](https://github.com/nrwl/nx/issues/3106) in Type
 
 TypeScript project references are a powerful feature that enables incremental builds and better type-checking across multiple projects in a monorepo. When combined with Nx they can significantly improve developer productivity and build performance.
 
-Project references have been available since TypeScript 3.0. According to the official TypeScript [documentation](https://www.typescriptlang.org/docs/handbook/project-references.html):
+According to the official TypeScript [documentation](https://www.typescriptlang.org/docs/handbook/project-references.html), project references have been available since TypeScript 3.0:
 
 > Project references allows you to structure your TypeScript programs into smaller pieces, available in TypeScript 3.0 and newer. By doing this, you can greatly improve build times, enforce logical separation between components, and organize your code in new and better ways.
 
@@ -112,7 +112,7 @@ There's when Project References come in handy. Project References solve this by 
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>`tsconfig.json`</sub>
+  <sub>Reference-based `tsconfig.json`.</sub>
 </span>
 
 This improves **modularity**, **build performance**, and **type-checking efficiency**, as TypeScript now understands project boundaries and only processes necessary types.
@@ -143,7 +143,7 @@ Along with the adoption of TypeScript Project References, there were also change
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>`package.json`</sub>
+  <sub>Reference-based `package.json`.</sub>
 </span>
 
 Nx now explicitly defines exports and point the `main` and `module` properties to the `./dist/index.js` output. Inter-dependencies are now declared as `"workspace:*"`:
@@ -167,7 +167,7 @@ Nx now explicitly defines exports and point the `main` and `module` properties t
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>`package.json`</sub>
+  <sub>Reference-based `package.json`.</sub>
 </span>
 
 If you used workpaces before, this probably isn't new to you. A typical PNPM workspace configuration looks like this:
@@ -179,7 +179,7 @@ packages:
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>`pnpm-workspace.yaml`</sub>
+  <sub>`pnpm-workspace.yaml`.</sub>
 </span>
 
 While all that may sound complicated and challenging to maintain, this is precisely where Nx shines. By offering commands like `nx sync` and `nx watch-deps`, Nx helps alleviate the complexity of managing large-scale monorepos.
@@ -200,7 +200,7 @@ npx create-nx-workspace@latest nx-prefs --pm pnpm \
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Nx workspace creation.</sub>
+  <sub>Creating Nx workspace.</sub>
 </span>
 
 Your command-line output should resemble:
@@ -231,6 +231,10 @@ If you haven't already, [launch VSCode from the command line](<(https://code.vis
 code nx-prefs
 ```
 
+<span className="flex justify-center w-full pb-4">
+  <sub>Opening workspace directory.</sub>
+</span>
+
 Your workspace should look like this:
 
 ![VSCode Nx TS Workspace](/assets/journal/nx-prefs-001.png)
@@ -248,7 +252,7 @@ pnpm add -D @nx/react -w
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Installing `@nx/react`.</sub>
+  <sub>Installing `@nx/react` plugin.</sub>
 </span>
 
 I'll use [Vite](https://vite.dev/) for bundling and testing, and [ESLint](https://eslint.org/) for linting. Feel free to use your preferred stack or opt-out of both. I'm also going to use `project.json` files to fine-tune configurations separately.
@@ -269,7 +273,7 @@ npx nx g @nx/react:library --directory=packages/utils \
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Creating `@nx-prefs/utils`.</sub>
+  <sub>Creating `@nx-prefs/utils` package.</sub>
 </span>
 
 Expected output:
@@ -313,7 +317,7 @@ Nx automatically installs required dependencies and updates our root `tsconfig.j
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>`tsconfig.json` update.</sub>
+  <sub>Updated `tsconfig.json`.</sub>
 </span>
 
 ## Creating an Application
@@ -382,7 +386,7 @@ npx nx dev sandbox
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Running `sandbox`.</sub>
+  <sub>Running `sandbox` application.</sub>
 </span>
 
 You can also use `pnpm dlx nx <command>` instead of `npx nx <command>` or `pnpm exec -- nx <command>`. Alternatively, you can install `nx` globally to use the shorter `nx dev sandbox` command:
@@ -461,17 +465,17 @@ nx dev sandbox
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Running `sandbox`.</sub>
+  <sub>Running `sandbox` application.</sub>
 </span>
 
-Open http://localhost:3000 in your browser to check if the component renders correctly. If everything looks good, let's build our application:
+Open http://localhost:3000 in your browser to check if the component renders correctly, then build the application:
 
 ```sh
 nx build sandbox
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Building `sandbox`.</sub>
+  <sub>Building `sandbox` application.</sub>
 </span>
 
 Nx automatically warns us that our workspace is out-of-sync:
