@@ -43,7 +43,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden p-0"
+            className="hidden p-0"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -54,7 +54,7 @@ export function Header() {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden mt-6 border-t border-border pt-6">
+        <div className="hidden mt-6 border-t border-border pt-6">
           <nav className="flex flex-col space-y-6">
             {config.sections
               .sort((a, b) => a.name.localeCompare(b.name))
