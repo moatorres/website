@@ -50,7 +50,7 @@ const components = {
   ),
   a: ({ href, children, ...props }: ComponentPropsWithoutRef<'a'>) => {
     const className =
-      'text-gray-600 hover:text-gray-800 dark:text-gray-400 hover:dark:text-gray-300 dark:underline dark:underline-offset-2 dark:decoration-gray-800 no-underline transition-all duration-50'
+      'text-gray-600 hover:text-gray-800 dark:text-gray-400 hover:dark:text-gray-300 underline underline-offset-2 dark:underline dark:underline-offset-2 dark:decoration-gray-800 transition-all duration-50'
 
     if (href?.startsWith('/')) {
       return (
