@@ -13,16 +13,18 @@ const timelineData = [
   {
     year: 2010,
     title: 'Communication Studies',
-    description: 'Began studying Social Communication in Pernambuco, Brazil.',
+    description:
+      'Began studying Social Communication in Pernambuco, Brazil. Started his journey as a professional photographer.',
     meta: [
       { label: 'Focus', value: 'Creative Direction' },
-      { label: 'Hobby', value: 'Photography' },
+      { label: 'Hobby', value: 'Music' },
     ],
   },
   {
     year: 2012,
     title: 'First Assistant Director',
-    description: '1st Assistant Director at Luni Produções, Recife.',
+    description:
+      'Worked as 1st Assistant Director at Luni Produções in Recife. Joined his first national tour production with Lula Queiroga.',
     meta: [
       {
         label: 'Key Projects',
@@ -34,7 +36,8 @@ const timelineData = [
   {
     year: 2014,
     title: 'Independent Producer',
-    description: 'Directed the 2014 FIFA Fan Fest Recife amid a crisis in the Town Hall.',
+    description:
+      'Welcomed committees from USA, Germany and Japan during the 2014 FIFA World Cup at Arena Pernambuco. Directed the 2014 FIFA Fan Fest Recife amid a municipal crisis.',
     meta: [
       { label: 'Collaboration', value: 'International Team' },
       { label: 'Focus', value: 'Live Experience' },
@@ -43,12 +46,13 @@ const timelineData = [
   {
     year: 2016,
     title: 'Operations Manager',
-    description: 'Joined Odebrecht as Operations Manager at Maracanã, Rio de Janeiro.',
+    description:
+      'Joined Odebrecht as Operations Manager at Maracanã Stadium in Rio de Janeiro. Managed 150+ sportive and corporate events annually.',
     meta: [
       {
         label: 'Key Responsibilities',
         value:
-          "Managed operations for Coldplay's 'A Head Full of Dreams' concert (66,000 attendees). Oversaw Health & Safety for athletes and dignitaries at the British House during the Rio 2016 Olympics.",
+          "Led operations for Coldplay's 'A Head Full of Dreams' concert (66,000 attendees). Oversaw Health & Safety for athletes and dignitaries at the British House during the Rio 2016 Olympics.",
       },
     ],
   },
@@ -56,43 +60,52 @@ const timelineData = [
     year: 2018,
     title: 'International Move',
     description:
-      "Relocated to the UK to work as a Project Manager at one of London's leading and most inclusive live experience agencies.",
+      "Relocated to the UK to join one of London's leading and most inclusive live experience agencies as a Project Manager.",
     meta: [
       { label: 'Key Customers', value: 'Facebook' },
-      { label: 'Cities', value: 'San Francisco, Amsterdam, London, Oslo' },
+      { label: 'Cities', value: 'Amsterdam, Birmingham, London, Oslo' },
     ],
   },
   {
     year: 2020,
     title: 'Independent Consultant',
     description:
-      'Founded an independent IT consultancy office, providing technical guidance and digital solutions for national and international clients.',
+      'Founded an independent IT consultancy, delivering technical guidance and digital solutions to national and international clients.',
     meta: [
       {
         label: 'Expertise',
         value: 'Strategy, Design Thinking, Digital Transformation',
       },
-      { label: 'Clients', value: 'Tech Startups, Cultural Institutions, Global Brands, NGOs' },
+      {
+        label: 'Clients',
+        value: 'Startups, Cultural Institutions, Global Brands, NGOs',
+      },
     ],
   },
   {
     year: 2022,
     title: 'Computer Science',
     description:
-      'Enrolled in the University of London to pursue a BSc in Computer Science; Became a Google Certified Associate Cloud Engineer.',
+      'Enrolled in the University of London to pursue a BSc in Computer Science.',
     meta: [
       { label: 'Specialization', value: 'AI & Machine Learning' },
-      { label: 'Interests', value: 'Data Science, Ethical Tech, Infrastructure' },
+      {
+        label: 'Interests',
+        value: 'Data Science, Critical Thinking, Ethical Tech',
+      },
     ],
   },
   {
     year: 2024,
     title: 'Career Growth',
     description:
-      "Joined Liferay's Cloud division, and started writing on culture, science, and technology, engaging with audiences across multiple platforms.",
+      "Joined Liferay's Cloud division, advocating for developer experience and cross-functional integration. Became a Google Certified Associate Cloud Engineer.",
     meta: [
-      { label: 'Medium', value: 'Academic Papers, Online Journals' },
-      { label: 'Themes', value: 'Societal Innovation, Critical Thinking' },
+      { label: 'Stack', value: 'Docker, Kubernetes, Node.js, React' },
+      {
+        label: 'Skills',
+        value: 'Leadership, Optimization, Scalable Systems',
+      },
     ],
   },
 ]
@@ -141,9 +154,10 @@ export default function AboutPage() {
           <div className="grid grid-cols-12 gap-8">
             <div className="col-span-12 md:col-span-6 md:col-start-7 space-y-4">
               <p className="text-sm leading-relaxed text-muted-foreground">
-                The truth that often goes unnoticed is how closely related the skills of connecting
-                people in live, interactive settings and navigating technical challenges in software
-                development are—both demand precision, coordination with multiple stakeholders, and
+                The truth that often goes unnoticed is how closely related the
+                skills of connecting people in live, interactive settings and
+                navigating technical challenges in software development are—both
+                demand precision, coordination with multiple stakeholders, and
                 the ability to operate under pressure.
               </p>
             </div>
@@ -180,7 +194,9 @@ export default function AboutPage() {
             <div className="grid grid-cols-12 gap-4">
               <div
                 className={`col-span-12 ${
-                  index % 2 === 0 ? 'md:col-span-6' : 'md:col-span-6 md:col-start-7'
+                  index % 2 === 0
+                    ? 'md:col-span-6'
+                    : 'md:col-span-6 md:col-start-7'
                 }`}
               >
                 <h2 className="text-[8vw] md:text-[4vw] font-bold leading-none tracking-tighter">
@@ -190,7 +206,9 @@ export default function AboutPage() {
 
               <div
                 className={`col-span-12 ${
-                  index % 2 === 0 ? 'md:col-span-6 md:col-start-7' : 'md:col-span-6 md:-mt-18'
+                  index % 2 === 0
+                    ? 'md:col-span-6 md:col-start-7'
+                    : 'md:col-span-6 md:-mt-18'
                 }`}
               >
                 <div className="space-y-6">
