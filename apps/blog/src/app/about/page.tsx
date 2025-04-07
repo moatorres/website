@@ -99,7 +99,7 @@ const timelineData = [
     year: 2024,
     title: 'Career Growth',
     description:
-      "Joined Liferay's Cloud division, advocating for developer experience and cross-functional integration. Became a Google Certified Associate Cloud Engineer.",
+      "Joined Liferay's Cloud division, advocating for developer experience and cross-functional integration. Earned Google Associate Cloud Engineer certification.",
     meta: [
       { label: 'Stack', value: 'Docker, Kubernetes, Node.js, React' },
       {
