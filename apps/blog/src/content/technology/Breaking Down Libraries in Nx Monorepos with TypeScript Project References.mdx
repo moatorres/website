@@ -40,7 +40,7 @@ pnpm add -D clsx tailwind-merge -F @nx-prefs/utils
   <sub>Installing `clsx` and `tailwind-merge`.</sub>
 </span>
 
-2. Replace the existing contents of `packages/utils/src/lib/utils.tsx`:
+2. Replace the contents of `utils.tsx`:
 
 ```tsx
 import { type ClassValue, clsx } from 'clsx'
@@ -52,10 +52,10 @@ export function cn(...inputs: ClassValue[]) {
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Updated `utils.tsx`.</sub>
+  <sub>`packages/utils/src/lib/utils.tsx`.</sub>
 </span>
 
-3. Update the test suite on `packages/utils/src/lib/utils.spec.tsx`:
+3. Update the test suite on `utils.spec.tsx`:
 
 ```ts
 import { cn } from './utils'
@@ -75,7 +75,7 @@ describe('Utils', () => {
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Updated `utils.spec.tsx`.</sub>
+  <sub>`packages/utils/src/lib/utils.spec.tsx`.</sub>
 </span>
 
 ### List, Test, and Build
@@ -120,14 +120,14 @@ export default {
   <sub>`apps/sandbox/postcss.config.mjs`.</sub>
 </span>
 
-Lastly, remove the content of `apps/sandbox/src/app/global.css` and import `tailwindcss`:
+Lastly, remove the content of `global.css` and import `tailwindcss`:
 
 ```css
 @import 'tailwindcss';
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Updaged `global.css`.</sub>
+  <sub>`apps/sandbox/src/app/global.css`.</sub>
 </span>
 
 ## Updating the App to Use `cn`
@@ -192,7 +192,7 @@ nx g @nx/react:library --directory=packages/button \
   <sub>Generating `button` project.</sub>
 </span>
 
-2. Install any required dependencies, like `class-variance-authority`:
+2. Install external dependencies:
 
 ```sh
 pnpm add @radix-ui/react-slot class-variance-authority -F button
@@ -202,7 +202,17 @@ pnpm add @radix-ui/react-slot class-variance-authority -F button
   <sub>Installing `button` dependencies.</sub>
 </span>
 
-3. Replace the contents of `packages/button/src/lib/button.tsx`:
+3. Install internal dependencies, such as `@nx-prefs/utils`:
+
+```sh
+pnpm add @nx-prefs/utils --filter button --workspace
+```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Intalling `@nx-prefs/utils`.</sub>
+</span>
+
+4. Replace the contents of `button.tsx`:
 
 ```tsx
 import * as React from 'react'
@@ -267,20 +277,10 @@ export { Button, buttonVariants }
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Updated `button.tsx`.</sub>
+  <sub>`packages/button/src/lib/button.tsx`.</sub>
 </span>
 
-4. Install `@nx-prefs/utils`:
-
-```sh
-pnpm add @nx-prefs/utils --filter button --workspace
-```
-
-<span className="flex justify-center w-full pb-4">
-  <sub>Intalling `@nx-prefs/utils`.</sub>
-</span>
-
-5. Remove unused files, such as `button.module.css`, and update the test suite on `packages/button/src/lib/button.spec.tsx`:
+5. Remove unused files, such as `button.module.css`, and update the test suite on `button.spec.tsx`:
 
 ```tsx
 import { render } from '@testing-library/react'
@@ -301,7 +301,7 @@ describe('Button', () => {
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Updated `button.spec.tsx`.</sub>
+  <sub>`packages/button/src/lib/button.spec.tsx`.</sub>
 </span>
 
 6. Lint, test, and build the `button` project:
@@ -314,13 +314,15 @@ nx run-many -t lint,test,build -p button
   <sub>Running checks on `button`.</sub>
 </span>
 
-If you followed the previous article, Nx will has automatically synced your workspace. If not, when prompted, hit `Enter`. To manually sync your workspace, run `nx sync` from the root of your workspace.
+If you followed the previous article, Nx has automatically synced your workspace. If not, when prompted, hit `Enter`.
+
+To manually sync your workspace, run `nx sync` from the root of your workspace.
 
 ### Adding `shadcn/ui` Styles
 
 To see our `<Button />` variants in action, we need to update `global.css` to include the `shadcn/ui`’s theme variables and default styles.
 
-We’ll also need to configure Tailwind to recognize and load styles from our package, which can be done using the [`@source`](https://tailwindcss.com/docs/functions-and-directives) directive:
+We’ll also need to configure Tailwind v4.x to recognize and load styles from our package, which can be done using the [`@source`](https://tailwindcss.com/docs/functions-and-directives) directive:
 
 ```css
 @import 'tailwindcss';
@@ -421,7 +423,7 @@ What if instead of memorizing multi-line `nx generate` commands, and rewriting b
 
 That’s where Nx workspace plugins come in. ✨
 
-Custom plugins can enforce consistent naming, configuration, README files or component templates. We can wrap all those repetitive steps and best practices into a single, streamlined generator.
+Custom plugins can enforce consistent naming and configuration, and generate README files or component templates. We can wrap all those repetitive steps and best practices into a single, streamlined generator.
 
 ## What Are Nx Plugins?
 
@@ -439,7 +441,7 @@ Plugins can be official (e.g. `@nx/react`, `@nx/next`, etc.), community-driven, 
 
 ### Executors
 
-Executors are what actually **perform tasks** like building, testing, serving, or linting a project. They’re defined in each package's `project.json` or `package.json` files, and can also [infer tasks automatically](https://nx.dev/concepts/inferred-tasks#inferred-tasks-project-crystal) based on the configurations files of specific tools.
+Executors are what actually **perform tasks** like building, testing, serving, or linting a project. They’re defined in each project's `project.json` or `package.json` files, and can also [infer tasks automatically](https://nx.dev/concepts/inferred-tasks#inferred-tasks-project-crystal) based on the configurations files of specific tools.
 
 In this example, `@nx/web:build` is the executor that tells Nx how to build a web application:
 
@@ -461,13 +463,13 @@ In this example, `@nx/web:build` is the executor that tells Nx how to build a we
   <sub>Example executor configuration.</sub>
 </span>
 
-**Note**: We can also write our own custom executors to define how tasks should run for specific tooling or workflows.
+We can also write our own custom executors to define how tasks should run for specific tooling or workflows.
 
 ### Generators
 
 Generators are **automated code scaffolding tools**. They can create files, configure dependencies, and update existing code to help us set up new projects, features, or libraries with ease.
 
-Generators can help us save time by enforcing consistent patterns and reducing manual setup and configuration. For example:
+Generators help us save time by enforcing consistent patterns and reducing manual setup and configuration. For example:
 
 ```sh
 nx g @nx/react:component my-component -p my-lib-or-app
@@ -477,15 +479,15 @@ nx g @nx/react:component my-component -p my-lib-or-app
   <sub>Example generator command.</sub>
 </span>
 
-This would generate a new React component named `MyComponent` inside the `my-lib-or-app` project. Generators can also be customized or created from scratch to fit your team's conventions.
+This would generate a new React component named `MyComponent` inside the `my-lib-or-app` project. Generators can be customized or created from scratch to fit your team's conventions.
 
 ## Building a Custom Nx Plugin
 
-Let’s walk through the process of building a custom Nx plugin to scaffold libraries consistently and efficiently. We'll use the [`@nx/plugin`](https://nx.dev/nx-api/plugin) package to help us create and customize the plugin.
+Let’s walk through the process of building a custom Nx plugin to scaffold libraries. We'll use the [`@nx/plugin`](https://nx.dev/nx-api/plugin) package to help us create and customize the plugin.
 
 ### 1. Setting Up the Plugin
 
-Start by installing the required dependency:
+Start by installing the required package:
 
 ```sh
 pnpm add -D @nx/plugin -w
@@ -495,10 +497,10 @@ pnpm add -D @nx/plugin -w
   <sub>Installing plugin dependencies.</sub>
 </span>
 
-Next, generate the plugin:
+Then generate the plugin:
 
 ```sh
-nx generate @nx/plugin:plugin \
+nx g @nx/plugin:plugin \
   --name=plugin \
   --linter=eslint \
   --unitTestRunner=jest \
@@ -512,9 +514,9 @@ nx generate @nx/plugin:plugin \
   <sub>Creating workspace plugin.</sub>
 </span>
 
-This will create a new package named `plugin` at `packages/plugin`, and importable as `@nx-prefs/plugin`.
+This will create a new package named `plugin` at `packages/plugin`, which can be imported as `@nx-prefs/plugin`.
 
-If you run into a `Project Graph Error`, you can reset the Nx cache and stop the daemon by running:
+If you run into a `Project Graph Error`, reset the Nx cache and stop the daemon by running:
 
 ```sh
 nx reset
@@ -538,7 +540,7 @@ nx g @nx/plugin:generator \
   <sub>Creating a generator.</sub>
 </span>
 
-This generates the following file structure:
+This creates the following file structure:
 
 ```sh
 ...
@@ -562,9 +564,9 @@ generators
 
 - **generator.ts** - Contains the generator’s logic: file generation, configuration, and automation.
 
-- **schema.d.ts**: By convention, input options for our generator’s options are defined here.
+- **schema.d.ts**: Conventionally used to define the input option types for the generator.
 
-- **schema.json**: Defines the input options for your generator, including validation and descriptions, and powers both CLI usage and visual interaction through [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console).
+- **schema.json**: Specifies and validates input options, providing support for both CLI usage and [Nx Console](https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console) integration.
 
 ### 3. Improving Developer Experience
 
@@ -573,10 +575,10 @@ By default, the generator requires you to manually set options like `name`, `dir
 We can simplify the developer experience by:
 
 - Making `directory` optional with a sensible default.
-- Automating config for bundler, linter, test runner, and import path.
-- Adding a README template to every new package.
+- Setting bundler, linter, test runner, and import path automatically.
+- Adding a README template to every generated package.
 
-#### Simplified Usage
+#### Example Usage
 
 After improving our generator, we’ll be able to run:
 
@@ -641,14 +643,9 @@ Then update `schema.json` to reflect the same structure:
 
 Now that the schema is defined, let’s implement the generator logic. We’ll also define a `normalizeOptions` helper to centralize option handling and compute values for the templates.
 
-Update `schema.d.ts` to include variables required by our templates:
+Add a new type `schema.d.ts` to define the variables used by our templates:
 
 ```ts
-export interface LibraryGeneratorSchema {
-  name: string
-  directory?: string
-}
-
 export interface LibraryGeneratorVariables {
   name: string
   importPath: string
@@ -661,7 +658,7 @@ export interface LibraryGeneratorVariables {
   <sub>Updated `schema.d.ts`.</sub>
 </span>
 
-Then replace the contents of `generator.ts` with the following:
+Then replace the contents of `generator.ts`:
 
 ```ts
 import {
@@ -679,7 +676,7 @@ function normalizeOptions(
 ): LibraryGeneratorVariables {
   const name = String(options.name).toLowerCase()
   const importPath = `@nx-prefs/${name}`
-  const projectRoot = options.directory ?? `packages/${options.name}`
+  const projectRoot = options.directory ?? `packages/${name}`
 
   return {
     name,
@@ -717,9 +714,15 @@ export default libraryGenerator
   <sub>Updated `generator.ts`.</sub>
 </span>
 
+We can now use variables like `<%= name %>`, `<%= importPath %>`, and `<%= offsetFromRoot %>` to dynamically inject values.
+
 ### 6. Creating File Templates
 
-Now let’s set up our file templates. Copy the structure from an existing library like `button` into our generator’s `files/` directory. Add the `.template` suffix to each file:
+Our plugin's logic is complete, but we still have to update the template files. Files with one or more ellipses (`...`) have been redacted for brevity.
+
+Copy the structure from an existing library like `button` into our generator’s `files/` directory, excluding the `project.json`.
+
+Add the `.template` suffix to each file:
 
 ```sh
 files/
@@ -737,13 +740,11 @@ files/
   <sub>`files` directory tree.</sub>
 </span>
 
-Each file can now use variables like `<%= name %>`, `<%= importPath %>`, and `<%= offsetFromRoot %>` to dynamically inject values.
-
-Our plugin's logic is complete, but we still have to update the template files. Files with one or more ellipses (`...`) have been redacted for brevity.
-
 #### `files/src/index.ts.template`
 
-<sup>Update both `variable`'s name and value, or copy and paste as shown.</sup>
+<sup>
+  Update both `variable`'s name and value, or copy and paste the following.
+</sup>
 
 ```ts
 export const <%= name %> = "Hello from <%= name %>!";
@@ -751,7 +752,7 @@ export const <%= name %> = "Hello from <%= name %>!";
 
 #### `files/eslint.config.mjs.template`
 
-<sup>Update `baseConfig`'s import.</sup>
+<sup>Update the `baseConfig` import.</sup>
 
 ```mjs
 import nx from '@nx/eslint-plugin'
@@ -879,8 +880,8 @@ nx test <%= name %>
 #### `files/vite.config.ts.template`
 
 <sup>
-  Update `cacheDir` inside `defineConfig` and `name`—under
-  `build.lib`—properties as shown.
+  Update properties `cacheDir` and `name` (the latter under `build.lib`) inside
+  `defineConfig`.
 </sup>
 
 ```ts
@@ -909,7 +910,7 @@ export default defineConfig(() => ({
 
 ## Final Plugin Setup
 
-Replace the contents of `packages/plugins/src/index.ts` with:
+Add to `packages/plugins/src/index.ts`:
 
 ```ts
 import { NxPlugin } from '@nx/devkit'
@@ -985,12 +986,12 @@ nx run-many -t lint,test,build -p plugin
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Running `plugin` targets.</sub>
+  <sub>Running `plugin` checks.</sub>
 </span>
 
-## Using Our Generator
+We are now ready to generate packages using our custom plugin! 🎉
 
-We can now generate packages using our custom plugin! 🎉
+## Consuming Your Plugin
 
 To scaffold a new `alert` package:
 
@@ -1004,7 +1005,7 @@ Add it to the `sandbox` app:
 pnpm add @nx-prefs/alert --filter sandbox --workspace
 ```
 
-Then import and use it inside `apps/sandbox/src/app/page.tsx`:
+Then import and use it inside `page.tsx`:
 
 ```tsx
 import { alert } from '@nx-prefs/alert'
@@ -1019,6 +1020,10 @@ export default function Home() {
 }
 ```
 
+<span className="flex justify-center w-full pb-4">
+  <sub>`apps/sandbox/src/app/page.tsx`</sub>
+</span>
+
 If everything is wired up correctly, you should see:
 
 ![Sandbox App Preview](/images/journal/nx-prefs-003.png)
@@ -1026,6 +1031,8 @@ If everything is wired up correctly, you should see:
 <span className="flex justify-center w-full pb-4 -mt-8">
   <sub>`sandbox` app preview.</sub>
 </span>
+
+🥳 Congratulations! You've just created your own Nx plugin and successfully used it to scaffold and integrate a new package into a monorepo app.
 
 ## Key Takeaways
 
