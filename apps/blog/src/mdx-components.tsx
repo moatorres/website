@@ -22,10 +22,16 @@ const components = {
     />
   ),
   h3: (props: ComponentPropsWithoutRef<'h3'>) => (
-    <h3 className="not-prose font-semibold mt-8 mb-3 text-[var(--tw-prose-headings)]" {...props} />
+    <h3
+      className="not-prose font-semibold mt-8 mb-3 text-[var(--tw-prose-headings)]"
+      {...props}
+    />
   ),
   h4: (props: ComponentPropsWithoutRef<'h4'>) => (
-    <h4 className="not-prose font-semibold text-[var(--tw-prose-headings)]" {...props} />
+    <h4
+      className="not-prose font-semibold mt-6 mb-3 text-[var(--tw-prose-headings)]"
+      {...props}
+    />
   ),
   h5: (props: ComponentPropsWithoutRef<'h5'>) => (
     <div
@@ -36,15 +42,21 @@ const components = {
   h6: (props: ComponentPropsWithoutRef<'h6'>) => (
     <p className="not-prose text-sm text-muted-foreground my-1" {...props} />
   ),
-  p: (props: ComponentPropsWithoutRef<'p'>) => <p className="leading-relaxed mb-8" {...props} />,
+  p: (props: ComponentPropsWithoutRef<'p'>) => (
+    <p className="leading-relaxed mb-8" {...props} />
+  ),
   ol: (props: ComponentPropsWithoutRef<'ol'>) => (
     <ol className="list-decimal pl-5 space-y-2" {...props} />
   ),
   ul: (props: ComponentPropsWithoutRef<'ul'>) => (
     <ul className="list-disc pl-5 space-y-1" {...props} />
   ),
-  li: (props: ComponentPropsWithoutRef<'li'>) => <li className="pl-1" {...props} />,
-  em: (props: ComponentPropsWithoutRef<'em'>) => <em className="font-medium" {...props} />,
+  li: (props: ComponentPropsWithoutRef<'li'>) => (
+    <li className="pl-1" {...props} />
+  ),
+  em: (props: ComponentPropsWithoutRef<'em'>) => (
+    <em className="font-medium" {...props} />
+  ),
   strong: (props: ComponentPropsWithoutRef<'strong'>) => (
     <strong className="font-medium" {...props} />
   ),
@@ -67,7 +79,13 @@ const components = {
       )
     }
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={className} {...props}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        {...props}
+      >
         {children}
       </a>
     )
