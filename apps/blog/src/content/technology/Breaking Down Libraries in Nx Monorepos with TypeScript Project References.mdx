@@ -167,8 +167,8 @@ The application should look like this:
 
 ![Sandbox App Preview](/images/journal/nx-prefs-002.png)
 
-<span className="flex justify-center w-full pb-4">
-  <sub>`nx run-many` output.</sub>
+<span className="flex justify-center w-full pb-4 -mt-8">
+  <sub>`sandbox` app preview.</sub>
 </span>
 
 ## Creating the Button Package
@@ -599,7 +599,7 @@ nx g @nx/react:library --directory=packages/alert \
 
 ### 4. Defining the Generator Schema
 
-Start by updating `schema.d.ts`:
+Start by defining our `library` generator's schema:
 
 ```ts
 export interface LibraryGeneratorSchema {
@@ -607,6 +607,10 @@ export interface LibraryGeneratorSchema {
   directory?: string
 }
 ```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Updated `schema.d.ts`.</sub>
+</span>
 
 Then update `schema.json` to reflect the same structure:
 
@@ -630,14 +634,14 @@ Then update `schema.json` to reflect the same structure:
 ```
 
 <span className="flex justify-center w-full pb-4">
-  <sub>Updated `schema.d.ts`.</sub>
+  <sub>Updated `schema.json`.</sub>
 </span>
 
 ### 5. Implementing Generator Logic
 
 Now that the schema is defined, let’s implement the generator logic. We’ll also define a `normalizeOptions` helper to centralize option handling and compute values for the templates.
 
-First, update `schema.d.ts` to include variables required by our templates:
+Update `schema.d.ts` to include variables required by our templates:
 
 ```ts
 export interface LibraryGeneratorSchema {
@@ -652,6 +656,10 @@ export interface LibraryGeneratorVariables {
   offsetFromRoot: string
 }
 ```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Updated `schema.d.ts`.</sub>
+</span>
 
 Then replace the contents of `generator.ts` with the following:
 
@@ -705,6 +713,10 @@ export async function libraryGenerator(
 export default libraryGenerator
 ```
 
+<span className="flex justify-center w-full pb-4">
+  <sub>Updated `generator.ts`.</sub>
+</span>
+
 ### 6. Creating File Templates
 
 Now let’s set up our file templates. Copy the structure from an existing library like `button` into our generator’s `files/` directory. Add the `.template` suffix to each file:
@@ -720,6 +732,10 @@ files/
 ├── tsconfig.spec.json.template
 └── vite.config.ts.template
 ```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>`files` directory tree.</sub>
+</span>
 
 Each file can now use variables like `<%= name %>`, `<%= importPath %>`, and `<%= offsetFromRoot %>` to dynamically inject values.
 
@@ -905,7 +921,13 @@ const plugin: NxPlugin = {
 export = plugin
 ```
 
-**Note**: There may be a regression in `@nx/plugin:generator` that incorrectly sets the generator name in `generators.json`. This may already be fixed in versions later than `v20.7.0`, but if not, update it manually.
+<span className="flex justify-center w-full pb-4">
+  <sub>Updated `index.ts`.</sub>
+</span>
+
+**Note**: There may be a regression in `@nx/plugin:generator` that incorrectly
+sets the generator name in `generators.json`. This may already be fixed in
+versions later than `v20.7.0`, but if not, update it manually.
 
 Replace `packages/plugins/generators.json` with:
 
@@ -920,6 +942,10 @@ Replace `packages/plugins/generators.json` with:
   }
 }
 ```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Fixed `generators.json`.</sub>
+</span>
 
 ## Generator Test Suite
 
@@ -948,11 +974,19 @@ describe('library generator', () => {
 })
 ```
 
+<span className="flex justify-center w-full pb-4">
+  <sub>Updated `generator.spec.ts`.</sub>
+</span>
+
 Then verify that all targets run successfully:
 
 ```sh
 nx run-many -t lint,test,build -p plugin
 ```
+
+<span className="flex justify-center w-full pb-4">
+  <sub>Running `plugin` targets.</sub>
+</span>
 
 ## Using Our Generator
 
@@ -987,7 +1021,11 @@ export default function Home() {
 
 If everything is wired up correctly, you should see:
 
-![Sandbox App](/images/journal/nx-prefs-003.png)
+![Sandbox App Preview](/images/journal/nx-prefs-003.png)
+
+<span className="flex justify-center w-full pb-4 -mt-8">
+  <sub>`sandbox` app preview.</sub>
+</span>
 
 ## Key Takeaways
 
