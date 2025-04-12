@@ -17,12 +17,13 @@ const files = execSync('git ls-files').toString().split('\n')
 const extensions = ['.js', '.jsx', '.mjs', '.ts', '.tsx']
 
 files.forEach((file) => {
-  if (file === 'next-env.d.ts') return // Ignore next-env.d.ts files
-  if (!extensions.includes(path.extname(file))) return
+  if (!extensions.includes(path.extname(file)) || path.extname('.d.ts')) return
 
   const content = fs.readFileSync(file, 'utf-8')
   const lines = content.split('\n')
-  const copyrightLineIndex = lines.findIndex((line) => line.includes('Copyright (c)'))
+  const copyrightLineIndex = lines.findIndex((line) =>
+    line.includes('Copyright (c)')
+  )
 
   if (copyrightLineIndex !== -1) {
     const currentCopyright = lines[copyrightLineIndex]
