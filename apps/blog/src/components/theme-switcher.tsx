@@ -19,7 +19,11 @@ export function ThemeSwitcher() {
   }, [resolvedTheme, setTheme])
 
   return (
-    <Button variant="soft" className="group/toggle h-8 w-8 px-0" onClick={toggleTheme}>
+    <Button
+      variant="soft"
+      className="group/toggle h-8 w-8 px-0"
+      onClick={toggleTheme}
+    >
       <SunIcon className="hidden [html.dark_&]:block" />
       <MoonIcon className="hidden [html.light_&]:block" />
       <span className="sr-only">Toggle theme</span>

@@ -18,7 +18,9 @@ export const size = {
 export const contentType = 'image/png'
 
 export default async function Image() {
-  const interSansBold = await readFile(join(process.cwd(), 'src/assets/fonts/inter-sans-bold.ttf'))
+  const interSansBold = await readFile(
+    join(process.cwd(), 'src/assets/fonts/inter-sans-bold.ttf')
+  )
 
   return new ImageResponse(
     (
@@ -36,6 +38,11 @@ export default async function Image() {
         About Moa Torres
       </div>
     ),
-    { ...size, fonts: [{ name: 'Inter', data: interSansBold, style: 'normal', weight: 700 }] }
+    {
+      ...size,
+      fonts: [
+        { name: 'Inter', data: interSansBold, style: 'normal', weight: 700 },
+      ],
+    }
   )
 }

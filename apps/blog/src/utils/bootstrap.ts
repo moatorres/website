@@ -48,7 +48,9 @@ async function main() {
       withFileTypes: true,
     })
 
-    const mdxFiles = collectionFiles.filter((dirent) => dirent.name.endsWith('.mdx'))
+    const mdxFiles = collectionFiles.filter((dirent) =>
+      dirent.name.endsWith('.mdx')
+    )
 
     for await (const file of mdxFiles) {
       const filepath = join(collectionDirectory, file.name)

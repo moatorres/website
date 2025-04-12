@@ -18,8 +18,9 @@ export default function EssaysPage() {
         <h1 className="text-2xl md:text-3xl font-medium mb-6">Moa Torres</h1>
 
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Navigating complexity since the ’80s—across culture, politics, and science. Here, I share
-          insights on software development, thoughtful leadership, and personal growth.
+          Navigating complexity since the ’80s—across culture, politics, and
+          science. Here, I share insights on software development, thoughtful
+          leadership, and personal growth.
         </p>
       </div>
 
@@ -29,9 +30,13 @@ export default function EssaysPage() {
           <article key={article.id} className="mb-12 pb-12 ">
             <div className="grid md:grid-cols-[1fr_3fr] gap-6 md:gap-12">
               <div className="space-y-1 mt-0.5 md:block hidden">
-                <div className="text-xs text-muted-foreground">{article.category}</div>
+                <div className="text-xs text-muted-foreground">
+                  {article.category}
+                </div>
                 <div className="text-xs">{formatDate(article.date)}</div>
-                <div className="text-xs text-muted-foreground">{article.readTime} read</div>
+                <div className="text-xs text-muted-foreground">
+                  {article.readTime} read
+                </div>
               </div>
 
               <div>
@@ -40,7 +45,9 @@ export default function EssaysPage() {
                     {article.title}
                   </h2>
                 </Link>
-                <p className="text-sm text-muted-foreground mb-4">{article.summary}</p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {article.summary}
+                </p>
               </div>
             </div>
           </article>

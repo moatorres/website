@@ -20,7 +20,9 @@ type PageProps = {
 
 async function getContent(category: string, slug: string) {
   try {
-    const collectionMetadata = await import(`@/data/${category}.collection.json`)
+    const collectionMetadata = await import(
+      `@/data/${category}.collection.json`
+    )
     const [entry] = collectionMetadata.default.filter(
       (metadata: ContentMetadata) => metadata.slug === slug
     )
@@ -32,7 +34,9 @@ async function getContent(category: string, slug: string) {
 }
 
 export async function generateStaticParams() {
-  const categories = readdirSync(config.contentDirectory, { withFileTypes: true })
+  const categories = readdirSync(config.contentDirectory, {
+    withFileTypes: true,
+  })
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name)
 
@@ -52,7 +56,9 @@ export async function generateStaticParams() {
   return paths
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { category, slug } = await params
   const { content } = await getContent(category, slug)
   const { title, summary: description, href } = content.metadata
@@ -115,7 +121,9 @@ export default async function JournalArticle({ params }: PageProps) {
         {content.metadata.title}
       </h1>
 
-      <h6 className="text-sm text-muted-foreground mb-12">{formatDate(content.metadata.date)}</h6>
+      <h6 className="text-sm text-muted-foreground mb-12">
+        {formatDate(content.metadata.date)}
+      </h6>
 
       <TableOfContents />
 

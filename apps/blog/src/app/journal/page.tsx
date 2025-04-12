@@ -12,7 +12,10 @@ import { Button } from '@/components/button'
 import journalEntries from '@/data/articles.json'
 import { formatDate } from '@/utils/format'
 
-const categories = ['All', ...new Set(journalEntries.map((entry) => entry.category))]
+const categories = [
+  'All',
+  ...new Set(journalEntries.map((entry) => entry.category)),
+]
 
 export default function JournalPage() {
   const [activeCategory, setActiveCategory] = useState('All')
@@ -28,7 +31,10 @@ export default function JournalPage() {
   // Calculate pagination
   const indexOfLastEntry = currentPage * entriesPerPage
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage
-  const currentEntries = filteredEntries.slice(indexOfFirstEntry, indexOfLastEntry)
+  const currentEntries = filteredEntries.slice(
+    indexOfFirstEntry,
+    indexOfLastEntry
+  )
   const totalPages = Math.ceil(filteredEntries.length / entriesPerPage)
 
   return (
@@ -37,8 +43,9 @@ export default function JournalPage() {
       <div className="max-w-2xl mb-16">
         <h1 className="text-2xl font-medium mb-6">Journal</h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          No noise, just ideas—sorted to make browsing easier. Whether you&apos;re curious about
-          tech, leadership, or critical thinking, everything here is organized by category.
+          No noise, just ideas—sorted to make browsing easier. Whether
+          you&apos;re curious about tech, leadership, or critical thinking,
+          everything here is organized by category.
         </p>
       </div>
 
@@ -70,9 +77,13 @@ export default function JournalPage() {
           <article key={entry.id} className="py-4">
             <div className="grid md:grid-cols-[1fr_2fr] gap-6 md:gap-12">
               <div className="space-y-1 md:block hidden">
-                <div className="text-xs text-muted-foreground">{entry.category}</div>
+                <div className="text-xs text-muted-foreground">
+                  {entry.category}
+                </div>
                 <div className="text-xs">{formatDate(entry.date)}</div>
-                <div className="text-xs text-muted-foreground">{entry.readTime} read</div>
+                <div className="text-xs text-muted-foreground">
+                  {entry.readTime} read
+                </div>
               </div>
               <div className="space-y-2">
                 <Link href={entry.href}>
@@ -80,7 +91,9 @@ export default function JournalPage() {
                     {entry.title}
                   </h2>
                 </Link>
-                <p className="text-sm text-muted-foreground leading-relaxed">{entry.summary}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {entry.summary}
+                </p>
               </div>
             </div>
           </article>
@@ -105,7 +118,9 @@ export default function JournalPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
             className="text-xs uppercase tracking-wider h-8 px-3"
           >

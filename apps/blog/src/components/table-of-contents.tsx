@@ -12,7 +12,9 @@ import { cx } from '@/utils/cx'
 
 export function TableOfContents() {
   const [isOpen, setIsOpen] = useState(false)
-  const [headings, setHeadings] = useState<{ id: string; text: string; level: number }[]>([])
+  const [headings, setHeadings] = useState<
+    { id: string; text: string; level: number }[]
+  >([])
 
   useEffect(() => {
     const article = document.querySelector('article')
@@ -40,14 +42,21 @@ export function TableOfContents() {
         className="flex items-center justify-between w-full text-left"
       >
         <span className="text-xs uppercase tracking-widest">Contents</span>
-        {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        {isOpen ? (
+          <ChevronUp className="h-4 w-4" />
+        ) : (
+          <ChevronDown className="h-4 w-4" />
+        )}
       </button>
 
       {isOpen && (
         <nav className="mt-4">
           <ul className="space-y-2 list-none ps-0">
             {headings.map((heading) => (
-              <li key={heading.id} className={cx('p-0', heading.level === 3 ? 'ml-4' : '')}>
+              <li
+                key={heading.id}
+                className={cx('p-0', heading.level === 3 ? 'ml-4' : '')}
+              >
                 <a
                   href={`#${heading.id}`}
                   className="text-sm font-normal text-gray-500 dark:text-gray-400 hover:text-gray-300 no-underline"
