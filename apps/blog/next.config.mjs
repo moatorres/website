@@ -26,6 +26,7 @@ const nextConfig = {
     viewTransition: true,
   },
   images: {
+    formats: ['image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
