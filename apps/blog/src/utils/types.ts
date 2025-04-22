@@ -10,6 +10,7 @@
 export type ContentMetadata = {
   author: string
   category: string
+  createdAt: string
   date: string
   filename: string
   filePath: string
