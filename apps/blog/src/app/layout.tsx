@@ -16,14 +16,33 @@ import config from '@/data/config.json'
 import './global.css'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(config.previewUrl),
   alternates: {
     canonical: '/',
   },
-  description: config.description,
-  metadataBase: new URL(config.previewUrl),
   title: {
     default: config.title,
     template: `%s | ${config.author}`,
+  },
+  description: config.description,
+  openGraph: {
+    title: config.title,
+    description: config.description,
+    url: config.previewUrl,
+    siteName: config.title,
+    locale: 'en_US',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 }
 
