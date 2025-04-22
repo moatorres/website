@@ -4,8 +4,18 @@
 .PHONY: help
 help:
 	@echo ""
+	@echo "\033[1;32m bootstrap \033[0m \033[1;30m  Generates the metadata used in the blog application\033[0m"
+	@echo "\033[1;32m build     \033[0m \033[1;30m  Builds the blog application\033[0m"
 	@echo "\033[1;32m clean     \033[0m \033[1;30m  Cleans the workspace (removes node_modules, dist, .next, out-tsc)\033[0m"
-	@echo "\033[1;32m bootstrap \033[0m \033[1;30m  Generates the medatada used in the blog application\033[0m"
+	@echo "\033[1;32m dev       \033[0m \033[1;30m  Runs the blog application in development mode\033[0m"
+
+.PHONY: bootstrap
+bootstrap:
+	NODE_OPTIONS=--no-warnings npx tsx --loader @mdx-js/node-loader apps/blog/src/utils/bootstrap.ts
+
+.PHONY: build
+build:
+	make bootstrap && NODE_OPTIONS=--no-warnings npx nx build blog
 
 .PHONY: clean
 clean:
@@ -16,10 +26,6 @@ clean:
 		echo "Clean cancelled."; \
 	fi
 
-.PHONY: bootstrap
-bootstrap:
-	NODE_OPTIONS=--no-warnings pnpm exec -- tsx --loader @mdx-js/node-loader apps/blog/src/utils/bootstrap.ts
-
-.PHONY: build
-build:
-	make bootstrap && NODE_OPTIONS=--no-warnings pnpm exec -- nx build blog
+.PHONY: dev
+dev:
+	make bootstrap && npx nx dev blog
