@@ -5,11 +5,10 @@
 
 import { randomUUID } from 'crypto'
 import { readFileSync } from 'fs'
-import { readdir, writeFile } from 'fs/promises'
-import { mkdir, stat } from 'fs/promises'
+import { mkdir, readdir, stat, writeFile } from 'fs/promises'
 import { join } from 'path'
 
-import { config, writeConfig } from './config'
+import { config } from './config'
 import { slugify } from './format'
 
 function getReadTime(filepath: string, wordsPerMinute = 200) {
@@ -24,7 +23,10 @@ async function main() {
     await mkdir(config.metadataDirectory, { recursive: true })
   }
 
-  await writeConfig()
+  await writeFile(
+    join(config.metadataDirectory, 'config.json'),
+    JSON.stringify(config, null, 2)
+  )
 
   const contentFiles = await readdir(config.contentDirectory, {
     withFileTypes: true,
@@ -65,7 +67,7 @@ async function main() {
         createdAt: new Date(stats.ctime).toISOString(),
         filename: file.name,
         filepath: filepath,
-        href: `/journal/${collection}/${slug}`,
+        href: `/${config.baseRoute}/${collection}/${slug}`,
         readTime: getReadTime(filepath),
         slug: slug,
         updatedAt: stats.mtime,

@@ -3,8 +3,7 @@
  * @license MIT
  */
 
-import { writeFileSync } from 'fs'
-import { join, resolve } from 'path'
+import { resolve } from 'path'
 
 // static
 const APP_SOURCE_ROOT = 'apps/blog'
@@ -13,6 +12,7 @@ const AUTHOR_GITHUB_HANDLE = 'moatorres'
 const AUTHOR_LINKEDIN_HANDLE = 'moatorres'
 const AUTHOR_NAME = 'Moa Torres'
 const AUTHOR_ORCID = '0009-0006-2281-1690'
+const BASE_ROUTE_PATH = 'journal'
 const CONTENT_DIR_RELATIVE_PATH = 'src/content'
 const GITHUB_BASE_URL = 'https://github.com/'
 const LINKEDIN_BASE_URL = 'https://www.linkedin.com/in/'
@@ -44,6 +44,7 @@ const AUTHOR_ORCID_URL = ORCID_BASE_URL + AUTHOR_ORCID
 // external
 export const config = {
   author: AUTHOR_NAME,
+  baseRoute: BASE_ROUTE_PATH,
   contentDirectory: CONTENT_DIR_ABSOLUTE_PATH,
   description: WEBSITE_DESCRIPTION,
   email: AUTHOR_EMAIL,
@@ -60,11 +61,4 @@ export const config = {
   title: WEBSITE_TITLE,
   url: WEBSITE_PRODUCTION_URL,
   previewUrl: WEBSITE_PREVIEW_URL,
-}
-
-// config.json
-export async function writeConfig() {
-  const configuration = JSON.stringify(config, null, 2)
-  writeFileSync(join(METADATA_DIR_ABSOLUTE_PATH, 'config.json'), configuration)
-  return JSON.parse(configuration)
 }
