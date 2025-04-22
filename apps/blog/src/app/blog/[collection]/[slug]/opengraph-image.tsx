@@ -19,7 +19,7 @@ export const size = {
 
 interface ImageProps {
   params: {
-    category: string
+    collection: string
     slug: string
   }
 }
@@ -32,12 +32,12 @@ export default async function Image({ params }: ImageProps) {
   let content
   try {
     const collectionMetadata = await import(
-      `@/data/${params.category}.collection.json`
+      `@/data/${params.collection}.collection.json`
     )
     const [entry] = collectionMetadata.default.filter(
       (metadata: ContentMetadata) => metadata.slug === params.slug
     )
-    content = await import(`@/content/${params.category}/${entry.filename}`)
+    content = await import(`@/content/${params.collection}/${entry.filename}`)
   } catch {
     return new Response('Not found', { status: 404 })
   }

@@ -9,15 +9,12 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 import { Button } from '@/components/button'
-import journalEntries from '@/data/articles.json'
+import articles from '@/data/articles.json'
 import { formatDate } from '@/utils/format'
 
-const categories = [
-  'All',
-  ...new Set(journalEntries.map((entry) => entry.category)),
-]
+const categories = ['All', ...new Set(articles.map((entry) => entry.category))]
 
-export default function JournalPage() {
+export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
   const entriesPerPage = 8
@@ -25,8 +22,8 @@ export default function JournalPage() {
   // Filter entries by category
   const filteredEntries =
     activeCategory === 'All'
-      ? journalEntries
-      : journalEntries.filter((entry) => entry.category === activeCategory)
+      ? articles
+      : articles.filter((entry) => entry.category === activeCategory)
 
   // Calculate pagination
   const indexOfLastEntry = currentPage * entriesPerPage
@@ -39,9 +36,9 @@ export default function JournalPage() {
 
   return (
     <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
-      {/* Journal Header */}
+      {/* Blog Header */}
       <div className="max-w-2xl mb-16">
-        <h1 className="text-2xl font-medium mb-6">Journal</h1>
+        <h1 className="text-2xl font-medium mb-6">Blog</h1>
         <p className="text-sm leading-relaxed text-muted-foreground">
           No noise, just ideas—sorted to make browsing easier. Whether
           you&apos;re curious about tech, leadership, or critical thinking,
@@ -71,7 +68,7 @@ export default function JournalPage() {
         </div>
       </div>
 
-      {/* Journal Entries */}
+      {/* Blog Entries */}
       <div className="grid gap-y-8 pt-6">
         {currentEntries.map((entry) => (
           <article key={entry.id} className="py-4">

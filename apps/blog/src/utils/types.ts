@@ -5,7 +5,6 @@
 
 /**
  * @since 1.0.0
- * @category collections
  */
 export type ContentMetadata = {
   author: string

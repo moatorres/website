@@ -5,12 +5,12 @@
 
 import { unstable_ViewTransition as ViewTransition } from 'react'
 
-import { JournalLayout } from '@/components/journal-layout'
+import { BlogLayout } from '@/components/blog-layout'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ViewTransition>
-      <JournalLayout>{children}</JournalLayout>
+      <BlogLayout>{children}</BlogLayout>
     </ViewTransition>
   )
 }

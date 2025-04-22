@@ -15,18 +15,21 @@ import { formatDate } from '@/utils/format'
 import { ContentMetadata } from '@/utils/types'
 
 type PageProps = {
-  params: Promise<{ category: string; slug: string }>
+  params: Promise<{
+    collection: string
+    slug: string
+  }>
 }
 
-async function getContent(category: string, slug: string) {
+async function getContent(collection: string, slug: string) {
   try {
     const collectionMetadata = await import(
-      `@/data/${category}.collection.json`
+      `@/data/${collection}.collection.json`
     )
     const [entry] = collectionMetadata.default.filter(
       (metadata: ContentMetadata) => metadata.slug === slug
     )
-    const content = await import(`@/content/${category}/${entry.filename}`)
+    const content = await import(`@/content/${collection}/${entry.filename}`)
     return { content }
   } catch {
     throw notFound()
@@ -40,13 +43,13 @@ export async function generateStaticParams() {
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name)
 
-  let paths: { category: string; slug: string }[] = []
+  let paths: { collection: string; slug: string }[] = []
 
-  for (const category of categories) {
-    const files = readdirSync(join(config.contentDirectory, category))
+  for (const collection of categories) {
+    const files = readdirSync(join(config.contentDirectory, collection))
       .filter((file) => file.endsWith('.mdx'))
       .map((file) => ({
-        category,
+        collection,
         slug: file.replace(/\.mdx$/, ''),
       }))
 
@@ -59,8 +62,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { category, slug } = await params
-  const { content } = await getContent(category, slug)
+  const { collection, slug } = await params
+  const { content } = await getContent(collection, slug)
   const { title, summary: description, href } = content.metadata
   const ogImage = `${config.previewUrl}/og?title=${encodeURIComponent(title)}`
 
@@ -84,9 +87,9 @@ export async function generateMetadata({
   }
 }
 
-export default async function JournalArticle({ params }: PageProps) {
-  const { category, slug } = await params
-  const { content } = await getContent(category, slug)
+export default async function BlogArticle({ params }: PageProps) {
+  const { collection, slug } = await params
+  const { content } = await getContent(collection, slug)
 
   return (
     <section>

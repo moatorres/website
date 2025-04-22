@@ -10,10 +10,6 @@ import remarkGfm from 'remark-gfm'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
 
-Object.assign(process.env, {
-  NEXT_TELEMETRY_DISABLED: '1',
-})
-
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
@@ -48,6 +44,15 @@ const nextConfig = {
   pageExtensions: ['mdx', 'tsx'],
   poweredByHeader: false,
   reactStrictMode: true,
+  redirects: async function () {
+    return [
+      {
+        source: '/journal/:path*',
+        destination: '/blog/:path*',
+        permanent: false,
+      },
+    ]
+  },
 }
 
 const withMdx = createMDX({

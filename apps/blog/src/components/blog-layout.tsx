@@ -7,7 +7,7 @@ import React from 'react'
 
 import { FloatingActions } from './floating-actions'
 
-export function JournalLayout({ children }: { children: React.ReactNode }) {
+export function BlogLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex-1 px-4 md:px-6 pt-4 md:pt-6">
       <article className="prose max-w-none dark:prose-invert min-w-[100%]">
