@@ -17,7 +17,7 @@ If you'd like to see other in-depth guides, feel free to reach out at [hello@moa
 
 ## Nx, TypeScript, and the Need for Change
 
-I've been using Nx for a long time, and have witnessed many changes—from [incremental compilation](https://www.youtube.com/watch?v=O2xBQJMTs9E) and [migrating from Lerna to Nx](https://www.youtube.com/watch?v=BO1rwynFBLM), to the [rescope](https://nx.dev/deprecated/rescope) from `@nrwl/*` to `@nx/*`, the announcement of [Project Crystal](https://nx.dev/concepts/inferred-tasks), the introduction [SQLite](https://github.com/nrwl/nx/issues/28150), and [breaking updates](https://github.com/nrwl/nx/issues/28150) to the Remote Cache API.
+I've been using Nx for a long time, and have witnessed many changes—from [incremental compilation](https://www.youtube.com/watch?v=O2xBQJMTs9E) and [migrating from Lerna to Nx](https://www.youtube.com/watch?v=BO1rwynFBLM), to the [rescope](https://nx.dev/deprecated/rescope) from `@nrwl/*` to `@nx/*`, the announcement of [Project Crystal](https://nx.dev/concepts/inferred-tasks), the introduction [SQLite](https://github.com/nrwl/nx/issues/28150), and [breaking updates](https://github.com/nrwl/nx/issues/28150) to the Task Runner API.
 
 There are [long-standing issues](https://github.com/nrwl/nx/issues/3106) in TypeScript codebases that make heavy use of Nx, and adopting this approach meant dealing with change to stay up to date.
 
@@ -237,7 +237,7 @@ code nx-prefs
 
 Your workspace should look like this:
 
-![VSCode Nx TS Workspace](/images/journal/nx-prefs-001.png)
+![VSCode Nx TS Workspace](/images/blog/nx-prefs-001.png)
 
 Take a close look at the files Nx generated—especially `pnpm-workspace.yaml`, `tsconfig.base.json`, and `tsconfig.json`. In another article, we'll compare them with the path-based workspace.
 
