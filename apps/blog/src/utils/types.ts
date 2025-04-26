@@ -7,17 +7,20 @@
  * @since 1.0.0
  */
 export type ContentMetadata = {
+  // mdx
   author: string
   category: string
-  createdAt: string
   date: string
-  filename: string
-  filePath: string
-  href: string
-  id: string
-  readTime: string
-  slug: string
   summary: string
   title: string
+  // builder
+  id: string
+  slug: string
+  href: string
+  readTime: string
+  fileName: string
+  filePath: string
+  createdAt: string
+  publishedAt: string
   updatedAt: string
 }
