@@ -9,8 +9,16 @@
     "targets": {
       "bootstrap": {
         "executor": "nx:run-commands",
+        "inputs": [
+          "{projectRoot}/src/content/**/*"
+        ],
+        "outputs": [
+          "{projectRoot}/src/data"
+        ],
+        "cache": true,
         "options": {
-          "command": "make bootstrap"
+          "cwd": "{workspaceRoot}",
+          "command": "NODE_OPTIONS=--no-warnings npx tsx --loader @mdx-js/node-loader apps/blog/src/utils/bootstrap.ts"
         }
       },
       "build": {

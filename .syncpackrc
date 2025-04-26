@@ -1,0 +1,53 @@
+{
+  "dependencyTypes": [
+    "prod",
+    "peer",
+    "dev"
+  ],
+  "sortFirst": [
+    "name",
+    "description",
+    "version",
+    "scripts",
+    "engines",
+    "license",
+    "type",
+    "main",
+    "types",
+    "module",
+    "exports"
+  ],
+  "semverGroups": [
+    {
+      "label": "Allow minor or patch level version updates for dependencies",
+      "dependencyTypes": [
+        "prod",
+        "dev"
+      ],
+      "range": "^"
+    }
+  ],
+  "versionGroups": [
+    {
+      "label": "Use workspace protocol when developing local packages",
+      "dependencies": [
+        "$LOCAL"
+      ],
+      "dependencyTypes": [
+        "dev"
+      ],
+      "pinVersion": "workspace:*"
+    },
+    {
+      "label": "@types packages should only be under devDependencies",
+      "dependencies": [
+        "@types/**"
+      ],
+      "dependencyTypes": [
+        "!dev",
+        "!peer"
+      ],
+      "isBanned": true
+    }
+  ]
+}

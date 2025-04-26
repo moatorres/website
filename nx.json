@@ -1,6 +1,14 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "defaultBase": "main",
+  "generators": {
+    "@nx/next": {
+      "application": {
+        "style": "tailwind",
+        "linter": "eslint"
+      }
+    }
+  },
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
@@ -55,19 +63,14 @@
       }
     }
   ],
+  "sync": {
+    "applyChanges": true
+  },
   "targetDefaults": {
     "test": {
       "dependsOn": ["^build"],
       "options": {
         "passWithNoTests": true
-      }
-    }
-  },
-  "generators": {
-    "@nx/next": {
-      "application": {
-        "style": "tailwind",
-        "linter": "eslint"
       }
     }
   }
