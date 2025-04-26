@@ -5,7 +5,7 @@
 
 'use client'
 
-import { Download, FileText } from 'lucide-react'
+import { ArrowUp, Download, FileText } from 'lucide-react'
 import React from 'react'
 
 import { Button } from './button'
@@ -16,7 +16,22 @@ export function FloatingActions() {
       <Button
         variant="outline"
         size="icon"
-        className="rounded-full h-10 w-10"
+        title="Scroll to top"
+        aria-label="Scroll to top"
+        className="rounded-full h-10 w-10 cursor-pointer"
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }}
+      >
+        <ArrowUp className="h-5 w-5" />
+        <span className="sr-only">Scroll to top</span>
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        title="Toggle reader view"
+        aria-label="Toggle reader view"
+        className="rounded-full h-10 w-10 cursor-pointer"
         onClick={() => {
           document.body.classList.toggle('reader-view')
         }}
@@ -27,7 +42,9 @@ export function FloatingActions() {
       <Button
         variant="outline"
         size="icon"
-        className="rounded-full h-10 w-10"
+        title="Save"
+        aria-label="Download PDF"
+        className="rounded-full h-10 w-10 cursor-pointer"
         onClick={() => {
           window.print()
         }}

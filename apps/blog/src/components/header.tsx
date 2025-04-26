@@ -18,7 +18,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <header className="py-6 px-4 md:px-6">
+    <header className="py-6 px-4 md:px-6 print:hidden">
       <div className="flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tighter uppercase">
           {config.headerTitle}

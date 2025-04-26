@@ -162,3 +162,79 @@ pre code .sh__line::before {
 :not(pre) > code * {
   color: inherit !important;
 }
+
+@media print {
+  :root {
+    --sh-identifier: #111;
+    --sh-keyword: #1a1a1a;
+    --sh-string: #222;
+    --sh-class: #333;
+    --sh-property: #444;
+    --sh-entity: #555;
+    --sh-jsxliterals: #666;
+    --sh-sign: #777;
+    --sh-comment: #888;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+
+  .prose {
+    color: hsl(240 10% 3.9%) !important;
+    background-color: white !important;
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose p,
+  .prose li,
+  .prose strong,
+  .prose a,
+  .prose code {
+    font-size: inherit !important;
+    color: black !important;
+  }
+
+  .prose a {
+    text-decoration: none;
+  }
+
+  .prose code {
+    background-color: transparent !important;
+    color: black !important;
+  }
+
+  nav,
+  .navbar,
+  .print-hidden,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    font-size: 85% !important;
+  }
+
+  .prose {
+    font-size: 0.85rem !important;
+  }
+
+  .prose h1 {
+    font-size: 1.25rem !important;
+  }
+
+  .prose h2 {
+    font-size: 1.1rem !important;
+  }
+
+  .prose h3 {
+    font-size: 1rem !important;
+  }
+
+  .prose p,
+  .prose li {
+    font-size: 0.85rem !important;
+  }
+}

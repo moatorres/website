@@ -36,7 +36,7 @@ export function TableOfContents() {
   if (headings.length === 0) return null
 
   return (
-    <div className="mb-8 border-b border-border pb-6">
+    <div className="mb-8 border-b border-border pb-6 print:hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-full text-left"
