@@ -41,7 +41,7 @@ const nextConfig = {
   nx: {
     svgr: false,
   },
-  pageExtensions: ['mdx', 'tsx'],
+  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   poweredByHeader: false,
   reactStrictMode: true,
   redirects: async function () {
