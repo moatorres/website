@@ -2,32 +2,7 @@
   "name": "blog",
   "version": "0.0.1",
   "private": true,
-  "nx": {
-    "name": "blog",
-    "projectType": "application",
-    "sourceRoot": "apps/blog",
-    "targets": {
-      "bootstrap": {
-        "executor": "nx:run-commands",
-        "inputs": [
-          "{projectRoot}/src/content/**/*"
-        ],
-        "outputs": [
-          "{projectRoot}/src/data"
-        ],
-        "cache": true,
-        "options": {
-          "cwd": "{workspaceRoot}",
-          "command": "NODE_OPTIONS=--no-warnings npx tsx --loader @mdx-js/node-loader apps/blog/src/utils/bootstrap.ts"
-        }
-      },
-      "build": {
-        "dependsOn": [
-          "bootstrap"
-        ]
-      }
-    }
-  },
+  "description": "A blog built with Next.js and MDX.",
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.0",
     "@vercel/analytics": "^1.5.0",

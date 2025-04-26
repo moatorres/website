@@ -1,0 +1,28 @@
+{
+  "name": "blog",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/blog",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "bootstrap": {
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/src/content/**/*",
+        "{projectRoot}/src/utils/config.ts"
+      ],
+      "outputs": ["{projectRoot}/src/data"],
+      "cache": true,
+      "options": {
+        "cwd": "{workspaceRoot}",
+        "command": "NODE_OPTIONS=--no-warnings npx tsx --loader @mdx-js/node-loader apps/blog/src/utils/bootstrap.ts"
+      }
+    },
+    "build": {
+      "dependsOn": ["bootstrap"]
+    },
+    "dev": {
+      "dependsOn": ["bootstrap"]
+    }
+  }
+}
