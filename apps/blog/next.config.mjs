@@ -7,6 +7,7 @@ import { composePlugins, withNx } from '@nx/next'
 
 import createMDX from '@next/mdx'
 import remarkGfm from 'remark-gfm'
+import highlight from 'remark-sugar-high'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
 
@@ -58,7 +59,7 @@ const nextConfig = {
 const withMdx = createMDX({
   extension: /\.(md|mdx)?$/,
   options: {
-    remarkPlugins: [remarkGfm],
+    remarkPlugins: [remarkGfm, highlight],
     rehypePlugins: [
       rehypeSlug,
       [

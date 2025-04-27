@@ -3,6 +3,8 @@
 
 @plugin '@tailwindcss/typography';
 
+@import '../assets/styles/sugar-high.css';
+
 @variant dark (&:where(.dark, .dark *));
 
 @theme inline {
@@ -58,16 +60,6 @@
     --ring: hsl(240 5% 64.9%);
 
     --radius: 0.5rem;
-
-    --sh-identifier: #ffffff;
-    --sh-keyword: #b0b0b0;
-    --sh-string: #9d9d9d;
-    --sh-class: #bcbcbc;
-    --sh-property: #7f7e7e;
-    --sh-entity: #797878;
-    --sh-jsxliterals: #606060;
-    --sh-sign: #989898;
-    --sh-comment: #717171;
   }
 
   .dark {
@@ -145,18 +137,6 @@
     background: var(--border);
     border-radius: 5px;
   }
-}
-
-pre code {
-  counter-reset: sh-line-number;
-}
-
-pre code .sh__line::before {
-  counter-increment: sh-line-number 1;
-  content: counter(sh-line-number);
-  margin-right: 24px;
-  text-align: right;
-  color: #8f8f8f;
 }
 
 :not(pre) > code * {

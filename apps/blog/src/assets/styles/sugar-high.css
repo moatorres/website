@@ -1,0 +1,93 @@
+/*
+ * Define base theme colors for syntax highlighting.
+ * - https://github.com/huozhi/sugar-high/blob/main/README.md
+ * - https://sugar-high.vercel.app/
+ */
+@layer base {
+  :root {
+    --sh-identifier: #ffffff;
+    --sh-keyword: #b0b0b0;
+    --sh-string: #9d9d9d;
+    --sh-class: #bcbcbc;
+    --sh-property: #7f7e7e;
+    --sh-entity: #797878;
+    --sh-jsxliterals: #606060;
+    --sh-sign: #989898;
+    --sh-comment: #717171;
+
+    /* Line Highlight  */
+    --sh-highlight: #2c3848;
+  }
+
+  .dark {
+    --sh-identifier: #bfe3f8;
+    --sh-keyword: #4ec5ed;
+    --sh-string: #8da4ac;
+    --sh-class: #4eed7e;
+    --sh-property: #ff715b;
+    --sh-entity: #4eeda3;
+    --sh-jsxliterals: #92bbcb;
+    --sh-sign: #acbfc6;
+    --sh-comment: #5a6c74;
+
+    /* Line Highlight */
+    --sh-highlight: #222329;
+  }
+
+  .dark .sh-lang--sh {
+    --sh-identifier: #b7c3c6;
+    --sh-keyword: #b7c3c6;
+    --sh-string: #b7c3c6;
+    --sh-class: #b7c3c6;
+    --sh-property: #b7c3c6;
+    --sh-sign: #b7c3c6;
+    --sh-comment: #b7c3c6;
+  }
+}
+
+/*
+ * Reset line numbering for each <code> block inside <pre>.
+ * - This ensures that line numbers always start from 1 for each block.
+ */
+pre code {
+  counter-reset: sh-line-number;
+}
+
+/*
+ * Insert an incrementing line number before each .sh__line element.
+ * - Adds a right margin for spacing.
+ * - Aligns text to the right.
+ * - Styles the line number with a muted gray color.
+ */
+pre code .sh__line::before {
+  counter-increment: sh-line-number 1;
+  content: counter(sh-line-number);
+  margin-right: 24px;
+  text-align: right;
+  color: #8f8f8f;
+}
+
+/*
+ * Make each .sh__line behave as a block element.
+ * - This ensures lines occupy the full width of the parent container.
+ */
+.sh__line {
+  display: block;
+  width: 100%;
+}
+
+/*
+ * Style for highlighted lines inside code blocks.
+ * - The `2rem` in calc() and the `-1rem` margin-inline must exactly match the ancestor <pre> horizontal padding (left + right).
+ * - If the ancestor’s padding changes, these values must be updated accordingly.
+ */
+.sh__line.sh__line--highlighted {
+  /* Expand to account for ancestor's padding */
+  width: calc(100% + 2rem);
+  /* Offset horizontally to align with ancestor edge */
+  margin-inline: -1rem;
+  /* Preserve internal elements alignment */
+  padding-inline: 1rem;
+  /* Highlight color */
+  background: var(--sh-highlight);
+}
