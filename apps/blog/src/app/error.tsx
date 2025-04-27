@@ -21,10 +21,12 @@ export default function Error({ error, reset }: ErrorProps) {
     <div className="flex items-center min-h-[75vh] px-4 py-12 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       <div className="w-full space-y-6 text-center">
         <div className="space-y-3">
-          <h1 className="text-5xl font-bold tracking-tighter">500</h1>
-          <p>Something went wrong.</p>
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tighter">
+            Looks like our servers took an unexpected coffee break. ☕️
+          </h1>
+          <pre>500 Internal Server Error</pre>
           <div className="flex space-x-3 justify-center">
-            <Button asChild>
+            <Button asChild variant="soft">
               <Link href="/">
                 <ArrowLeft />
                 Home
