@@ -19,7 +19,7 @@ function fetchWeather(url: string) {
     try: () =>
       fetch(url, {
         method: 'GET',
-        next: { revalidate: 3600 },
+        next: { revalidate: 600 },
       }).then(async (res) => await res.json()),
     catch: identity,
   }).pipe(
