@@ -32,7 +32,7 @@ export async function GET() {
 
   return new Response(rssFeed, {
     headers: {
-      'Content-Type': 'application/rss+xml',
+      'Content-Type': 'text/xml',
     },
   })
 }
