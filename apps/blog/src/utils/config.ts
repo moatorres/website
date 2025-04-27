@@ -23,7 +23,11 @@ const WEBSITE_DESCRIPTION =
 const WEBSITE_HEADER_TITLE = 'MT'
 const WEBSITE_PREVIEW_URL = 'https://moatorres-blog.vercel.app'
 const WEBSITE_PRODUCTION_URL = 'https://moatorres.com'
-const WEBSITE_SECTIONS = [{ name: 'About' }]
+const WEBSITE_SECTIONS = [
+  { name: 'Blog' },
+  { name: 'Projects' },
+  { name: 'Talks' },
+]
 const WEBSITE_TITLE = 'Moa Torres'
 
 // derived

@@ -12,6 +12,7 @@ import { useState } from 'react'
 import config from '@/data/config.json'
 
 import { Button } from './button'
+import { NavIcons } from './nav-icons'
 import { ThemeSwitcher } from './theme-switcher'
 
 export function Header() {
@@ -24,7 +25,7 @@ export function Header() {
           {config.headerTitle}
         </Link>
 
-        <nav className="hidden md:flex items-center space-x-10">
+        <nav className="hidden sm:flex items-center space-x-10">
           {config.sections.map((section) => {
             return (
               <Link
@@ -39,6 +40,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center">
+          <NavIcons />
           <ThemeSwitcher />
           <Button
             variant="ghost"

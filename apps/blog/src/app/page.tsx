@@ -5,36 +5,125 @@
 
 import Link from 'next/link'
 
+import { Button } from '@/components/button'
+import { InlineLink } from '@/components/inline-link'
+import { LinksSection } from '@/components/links-section'
+import { AtIcon, DiscordIcon, GitHubIcon, InstagramIcon, XIcon } from '@/icons'
 import { getLatestArticles } from '@/utils/articles'
+import { config } from '@/utils/config'
 import { formatDate } from '@/utils/format'
+import { getWeatherEmoji } from '@/utils/weather'
 
-export default function EssaysPage() {
+export default async function BlogPage() {
   const articles = getLatestArticles()
+  const { emoji, temperature } = await getWeatherEmoji()
 
   return (
     <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
       {/* Page Header */}
       <div className="max-w-2xl mb-16">
         <h1 className="text-2xl md:text-3xl font-medium mb-6">Moa Torres</h1>
-
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Navigating complexity since the ’80s—across culture, politics, and
-          science. Here, I share insights on software development, thoughtful
-          leadership, and personal growth.
-        </p>
+        <div className="space-y-6 leading-relaxed text-muted-foreground">
+          <p>
+            Hey! I&apos;m Moa, an open-source developer focused on
+            human-centered technology.
+          </p>
+          <LinksSection />
+          <p>
+            I&apos;m driven by curiosity 👀. Crafting and collaborating with
+            others is a process that I really enjoy. Check out the{' '}
+            <InlineLink href="/projects" underline>
+              projects I&apos;m building
+            </InlineLink>
+            .
+          </p>
+          <p>
+            I write ✍🏼 about open source, programming, automation, and
+            everything in between. You can{' '}
+            <InlineLink href="/blog" underline>
+              find the blog posts here.
+            </InlineLink>{' '}
+            I&apos;m passionate about DX, simplifying infrastructure, and
+            balancing functional rigor with world-class aesthetics.
+          </p>
+          <p>
+            I interface between technical and non-technical audiences 📣,
+            backend and frontend, infrastructure and design, policy and
+            engineering. I&apos;m also a keen{' '}
+            <InlineLink href="/photos" underline>
+              photographer
+            </InlineLink>{' '}
+            and skillful project manager.
+          </p>
+          <p>
+            I&apos;m currently living in{' '}
+            <InlineLink href="https://en.wikipedia.org/wiki/Recife" underline>
+              Recife
+            </InlineLink>{' '}
+            <sup className="text-xs font-mono">
+              {temperature && `${Math.round(temperature)}°C`}{' '}
+            </sup>
+            {emoji}. If you&apos;re nearby, don&apos;t hesitate to reach out so
+            we can grab a coffee or work together.
+          </p>
+          <div className="space-y-3 space-x-3">
+            <p>Find me on</p>
+            <Button asChild variant="outline">
+              <InlineLink href={config.githubUrl} className="text-inherit">
+                <GitHubIcon /> GitHub
+              </InlineLink>
+            </Button>
+            <Button asChild variant="outline">
+              <InlineLink
+                href="https://instagram.com/moacirtorres"
+                className="text-inherit"
+              >
+                <InstagramIcon /> Instagram
+              </InlineLink>
+            </Button>
+            <Button asChild variant="outline">
+              <InlineLink
+                href="https://discord.com/users/1078701467332006039"
+                className="text-inherit"
+              >
+                <DiscordIcon />
+                Discord
+              </InlineLink>
+            </Button>
+          </div>
+          <div className="hidden">
+            <p>
+              Or email me at{' '}
+              <span className="font-mono">
+                hey
+                <AtIcon />
+                moatorres.com
+              </span>
+            </p>
+          </div>
+          <div className="space-y-3 space-x-3">
+            <p>Inactive on</p>
+            <Button asChild variant="ghost" size="sm">
+              <InlineLink className="text-inherit">
+                <XIcon /> Twitter
+              </InlineLink>
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Latest Articles */}
-      <div className="max-w-4xl">
+      <div className="max-w-4xl hidden">
+        <h2 className="text-2xl mb-6">Latest Articles</h2>
         {articles.map((article) => (
-          <article key={article.id} className="mb-12 pb-12 ">
-            <div className="grid md:grid-cols-[1fr_3fr] gap-6 md:gap-12">
-              <div className="space-y-1 mt-0.5 md:block hidden">
-                <div className="text-xs text-muted-foreground">
+          <article key={article.id} className="mb-4 pb-4">
+            <div className="grid sm:grid-cols-[1fr_3fr] gap-6 md:gap-12">
+              <div className="space-y-1 mt-0.5 sm:block hidden">
+                <div className="text-sm text-muted-foreground">
                   {article.category}
                 </div>
-                <div className="text-xs">{formatDate(article.date)}</div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-sm">{formatDate(article.date)}</div>
+                <div className="text-sm text-muted-foreground">
                   {article.readTime} read
                 </div>
               </div>

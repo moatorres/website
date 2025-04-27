@@ -7,6 +7,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useMemo } from 'react'
 
 import { Button } from '@/components/button'
 import articles from '@/data/articles.json'
@@ -20,10 +21,14 @@ export default function BlogPage() {
   const entriesPerPage = 8
 
   // Filter entries by category
-  const filteredEntries =
-    activeCategory === 'All'
-      ? articles
-      : articles.filter((entry) => entry.category === activeCategory)
+  const filteredEntries = useMemo(() => {
+    const sortedArticles = articles.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
+    return activeCategory === 'All'
+      ? sortedArticles
+      : sortedArticles.filter((entry) => entry.category === activeCategory)
+  }, [activeCategory])
 
   // Calculate pagination
   const indexOfLastEntry = currentPage * entriesPerPage
@@ -38,8 +43,8 @@ export default function BlogPage() {
     <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
       {/* Blog Header */}
       <div className="max-w-2xl mb-16">
-        <h1 className="text-2xl font-medium mb-6">Blog</h1>
-        <p className="text-sm leading-relaxed text-muted-foreground">
+        <h1 className="text-2xl md:text-3xl font-medium mb-6">Blog</h1>
+        <p className="hidden leading-relaxed text-muted-foreground">
           No noise, just ideas—sorted to make browsing easier. Whether
           you&apos;re curious about tech, leadership, or critical thinking,
           everything here is organized by category.
@@ -48,7 +53,7 @@ export default function BlogPage() {
 
       {/* Categories */}
       <div className="mb-8">
-        <div className="flex flex-wrap gap-4 text-xs">
+        <div className="flex flex-wrap gap-4 text-sm">
           {categories.map((category) => (
             <button
               key={category}
@@ -69,27 +74,28 @@ export default function BlogPage() {
       </div>
 
       {/* Blog Entries */}
-      <div className="grid gap-y-8 pt-6">
-        {currentEntries.map((entry) => (
-          <article key={entry.id} className="py-4">
-            <div className="grid md:grid-cols-[1fr_2fr] gap-6 md:gap-12">
-              <div className="space-y-1 md:block hidden">
-                <div className="text-xs text-muted-foreground">
-                  {entry.category}
+      <div className="max-w-4xl">
+        {currentEntries.map((article) => (
+          <article key={article.id} className="mb-4 pb-4">
+            <div className="grid md:grid-cols-[1fr_3fr] gap-6 md:gap-12">
+              <div className="space-y-1 mt-0.5 md:block hidden">
+                <div className="text-sm text-muted-foreground">
+                  {article.category}
                 </div>
-                <div className="text-xs">{formatDate(entry.date)}</div>
-                <div className="text-xs text-muted-foreground">
-                  {entry.readTime} read
+                <div className="text-sm">{formatDate(article.date)}</div>
+                <div className="text-sm text-muted-foreground">
+                  {article.readTime} read
                 </div>
               </div>
-              <div className="space-y-2">
-                <Link href={entry.href}>
-                  <h2 className="text-lg font-medium hover:text-muted-foreground transition-colors">
-                    {entry.title}
+
+              <div>
+                <Link href={article.href}>
+                  <h2 className="text-xl mb-3 hover:text-muted-foreground transition-colors">
+                    {article.title}
                   </h2>
                 </Link>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {entry.summary}
+                <p className="text-sm text-muted-foreground mb-4">
+                  {article.summary}
                 </p>
               </div>
             </div>

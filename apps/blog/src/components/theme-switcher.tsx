@@ -21,6 +21,7 @@ export function ThemeSwitcher() {
   return (
     <Button
       variant="soft"
+      title="Toggle Color Scheme"
       className="group/toggle h-8 w-8 px-0"
       onClick={toggleTheme}
     >

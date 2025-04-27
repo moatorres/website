@@ -163,6 +163,10 @@ pre code .sh__line::before {
   color: inherit !important;
 }
 
+.pre-wrapper {
+  @apply text-sm overflow-visible bg-transparent p-0 m-0;
+}
+
 @media print {
   :root {
     --sh-identifier: #111;

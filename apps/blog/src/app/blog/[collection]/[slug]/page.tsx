@@ -120,7 +120,7 @@ export default async function BlogArticle({ params }: PageProps) {
         {content.metadata.category}
       </h5>
 
-      <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight mb-6 text-[var(--tw-prose-headings)]">
+      <h1 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight mb-6 text-[var(--tw-prose-headings)]">
         {content.metadata.title}
       </h1>
 

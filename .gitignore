@@ -51,3 +51,4 @@ test-output
 
 # Dev
 apps/blog/src/data
+.env

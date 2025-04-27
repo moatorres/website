@@ -10,7 +10,7 @@ interface PageProps {
 
 export function Page({ children }: PageProps) {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col max-w-[60ch] print:max-w-[80ch] mx-auto">
+    <div className="min-h-screen bg-background text-foreground flex flex-col max-w-[70ch] print:max-w-[80ch] mx-auto">
       {children}
     </div>
   )

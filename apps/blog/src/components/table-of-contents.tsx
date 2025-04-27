@@ -39,7 +39,7 @@ export function TableOfContents() {
     <div className="mb-8 border-b border-border pb-6 print:hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full text-left"
+        className="flex items-center justify-between w-full text-lef cursor-pointer"
       >
         <span className="text-xs uppercase tracking-widest">Contents</span>
         {isOpen ? (
