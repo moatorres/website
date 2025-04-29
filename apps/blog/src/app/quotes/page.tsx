@@ -1,7 +1,6 @@
 import { Metadata } from 'next/types'
 
 import { QuoteDisplay } from '@/components/quote-display'
-import { QuotesNav } from '@/components/quotes-nav'
 import { config } from '@/utils/config'
 import { categories, Category, getRandomQuote } from '@/utils/quotes'
 
