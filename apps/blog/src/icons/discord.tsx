@@ -1,6 +1,8 @@
 import React from 'react'
 
-export function Discord() {
+import { IconProps } from './type'
+
+export function Discord({ className }: IconProps) {
   return (
     <svg
       fill="currentColor"
@@ -8,6 +10,7 @@ export function Discord() {
       height="800px"
       viewBox="0 0 32 32"
       version="1.1"
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
       <title>discord</title>

@@ -97,7 +97,7 @@ export default async function BlogPage() {
               Or email me at{' '}
               <span className="font-mono">
                 hey
-                <AtIcon />
+                <AtIcon className="inline py-0.5" />
                 moatorres.com
               </span>
             </p>

@@ -1,9 +1,11 @@
 import React from 'react'
 
-export function At({ className }: { className?: string }) {
+import { IconProps } from './type'
+
+export function At({ className }: IconProps) {
   return (
     <svg
-      className={`inline py-0.5 ${className}`}
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"

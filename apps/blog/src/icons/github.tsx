@@ -1,12 +1,15 @@
 import React from 'react'
 
-export function GitHub() {
+import { IconProps } from './type'
+
+export function GitHub({ className }: IconProps) {
   return (
     <svg
       width="800px"
       height="800px"
       viewBox="0 0 20 20"
       version="1.1"
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
       <title>github</title>

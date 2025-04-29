@@ -1,12 +1,15 @@
 import React from 'react'
 
-export function Instagram() {
+import { IconProps } from './type'
+
+export function Instagram({ className }: IconProps) {
   return (
     <svg
       width="800px"
       height="800px"
       viewBox="0 0 24 24"
       fill="none"
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

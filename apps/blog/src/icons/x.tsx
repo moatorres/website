@@ -1,6 +1,8 @@
 import React from 'react'
 
-export function X() {
+import { IconProps } from './type'
+
+export function X({ className }: IconProps) {
   return (
     <svg
       fill="currentColor"
@@ -8,6 +10,7 @@ export function X() {
       width="1200"
       height="1227"
       viewBox="0 0 1200 1227"
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path

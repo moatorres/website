@@ -1,12 +1,15 @@
 import React from 'react'
 
-export function BlueSky() {
+import { IconProps } from './type'
+
+export function BlueSky({ className }: IconProps) {
   return (
     <svg
       aria-label="BlueSky"
       width="600"
       height="530"
       version="1.1"
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
       <title>bluesky</title>
