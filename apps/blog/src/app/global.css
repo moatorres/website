@@ -85,6 +85,18 @@
     --input: hsl(222 10% 20%);
     --ring: hsl(222 5% 70%);
   }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scroll-area {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @layer base {

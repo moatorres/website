@@ -1,0 +1,44 @@
+'use client'
+
+import Link from 'next/link'
+import React from 'react'
+
+import { cx } from '@/utils/cx'
+import { categories, Category, getCollections } from '@/utils/quotes'
+
+export function QuotesNav({ subject }: { subject: Category }) {
+  const collections = getCollections()
+
+  return (
+    <div className="relative">
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-background to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background to-transparent z-10" />
+      <nav
+        className={cx(
+          'relative flex gap-4 px-2 overflow-x-auto scroll-smooth touch-pan-x snap-x snap-mandatory',
+          'no-scrollbar scroll-area'
+        )}
+      >
+        {Object.keys(categories).map((key) => (
+          <Link
+            key={key}
+            href={`/quotes?subject=${key}`}
+            scroll={false}
+            className={`snap-start tracking-wider text-sm lowercase ${
+              key === subject
+                ? 'text-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <span className="inline-flex items-center gap-1">
+              {key}{' '}
+              <sup className="text-xs hidden sm:inline relative -top-0.5">
+                {collections[key]?.size ?? 0}
+              </sup>
+            </span>
+          </Link>
+        ))}
+      </nav>
+    </div>
+  )
+}

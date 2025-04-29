@@ -1,0 +1,86 @@
+{
+  "business": [
+    "success",
+    "strategy",
+    "growth",
+    "customer",
+    "leadership",
+    "innovation",
+    "work",
+    "marketing",
+    "networking",
+    "investment"
+  ],
+  "creativity": [
+    "art",
+    "imagination",
+    "idea",
+    "design",
+    "innovation",
+    "expression",
+    "creativity",
+    "creation",
+    "vision",
+    "craft"
+  ],
+  "friendship": [
+    "friend",
+    "bond",
+    "connection",
+    "trust",
+    "support",
+    "companionship",
+    "ally",
+    "relationship",
+    "loyalty",
+    "affection"
+  ],
+  "inspiration": [
+    "dream",
+    "hope",
+    "future",
+    "light",
+    "believe",
+    "shine",
+    "aspire",
+    "vision",
+    "goal",
+    "motivation"
+  ],
+  "life": [
+    "life",
+    "happiness",
+    "journey",
+    "path",
+    "existence",
+    "growth",
+    "experience",
+    "moment",
+    "time",
+    "living"
+  ],
+  "love": [
+    "love",
+    "heart",
+    "passion",
+    "affection",
+    "romance",
+    "relationship",
+    "connection",
+    "intimacy",
+    "trust",
+    "devotion"
+  ],
+  "wisdom": [
+    "knowledge",
+    "truth",
+    "insight",
+    "learning",
+    "thought",
+    "mind",
+    "wisdom",
+    "reflection",
+    "peace",
+    "reason"
+  ]
+}
