@@ -1,11 +1,18 @@
 import { Metadata } from 'next/types'
 
+import { PageHeading, PageSection } from '@/components/page'
 import { QuoteDisplay } from '@/components/quote-display'
 import { config } from '@/utils/config'
-import { categories, Category, getRandomQuote } from '@/utils/quotes'
+import { capitalize } from '@/utils/format'
+import {
+  categories,
+  Category,
+  getCategoryDescription,
+  getRandomQuote,
+} from '@/utils/quotes'
 
 type Props = {
-  searchParams: Promise<{ subject: string }>
+  searchParams: Promise<{ subject: Category }>
 }
 
 export async function generateStaticParams() {
@@ -18,10 +25,8 @@ export async function generateMetadata({
   searchParams,
 }: Props): Promise<Metadata> {
   const { subject } = await searchParams
-  const description = `Curated random ${subject} quotes.`
-  const title = !subject
-    ? 'Quotes'
-    : `${subject.slice(0, 1).toUpperCase() + subject.slice(1)} Quotes`
+  const description = getCategoryDescription(subject)
+  const title = !subject ? 'Quotes' : `${capitalize(subject)} Quotes`
 
   return {
     description: description,
@@ -47,9 +52,12 @@ export default async function QuotesPage({
 }) {
   const { subject } = await searchParams
   const quote = getRandomQuote(subject)
+  const url = new URL(
+    `${config.previewUrl}/quotes` + `${subject ? `?subject=${subject}` : ''}`
+  )
 
   return (
-    <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
+    <PageSection>
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -57,9 +65,9 @@ export default async function QuotesPage({
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Quotation',
-            about: subject,
+            about: subject ?? 'General',
             description: quote.text,
-            url: `${config.previewUrl}/quotes${subject}`,
+            url: url.toString(),
             author: {
               '@type': 'Person',
               name: quote.author,
@@ -68,9 +76,8 @@ export default async function QuotesPage({
         }}
       />
 
-      <h1 className="text-2xl font-medium mb-6">Quotes</h1>
-
+      <PageHeading>Quotes</PageHeading>
       <QuoteDisplay subject={subject} quote={quote} />
-    </main>
+    </PageSection>
   )
 }

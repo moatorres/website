@@ -11,7 +11,7 @@ export type Quote = {
   text: string
 }
 
-export type Category = keyof typeof categories
+export type Category = keyof typeof categories | 'random'
 
 export const getCollections = memoize(() => {
   const collections: Record<string, Set<Quote>> = {}
@@ -62,3 +62,17 @@ export async function fetchQuoteBySubject(subject?: Category) {
   const quote = (await response.json()) as Quote
   return { quote }
 }
+
+export const getCategoryDescription = memoize((subject: Category) => {
+  const descriptions = new Map<Category, string>([
+    ['business', 'Quotes about work, leadership, and business topics.'],
+    ['creativity', 'Quotes about art, ideas, and creative thinking.'],
+    ['friendship', 'Quotes about relationships and interpersonal connection.'],
+    ['inspiration', 'Quotes meant to encourage or uplift.'],
+    ['life', 'Quotes about everyday experiences and human behavior.'],
+    ['love', 'Quotes about romantic and emotional relationships.'],
+    ['wisdom', 'Quotes that express general knowledge or life principles.'],
+  ])
+
+  return descriptions.get(subject)
+})
