@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { Button } from '@/components/button'
 import { InlineLink } from '@/components/inline-link'
 import { LinksSection } from '@/components/links-section'
+import { PageHeading, PageSection } from '@/components/page'
 import { AtIcon, DiscordIcon, GitHubIcon, InstagramIcon, XIcon } from '@/icons'
 import { getLatestArticles } from '@/utils/articles'
 import { config } from '@/utils/config'
@@ -19,10 +20,10 @@ export default async function BlogPage() {
   const { emoji, temperature } = await getWeatherEmoji()
 
   return (
-    <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
+    <PageSection>
       {/* Page Header */}
       <div className="max-w-2xl mb-16">
-        <h1 className="text-2xl md:text-3xl font-medium mb-6">Moa Torres</h1>
+        <PageHeading>Moa Torres</PageHeading>
         <div className="space-y-6 leading-relaxed text-muted-foreground">
           <p>
             Hey! I&apos;m Moa, an open-source developer focused on
@@ -142,6 +143,6 @@ export default async function BlogPage() {
           </article>
         ))}
       </div>
-    </main>
+    </PageSection>
   )
 }

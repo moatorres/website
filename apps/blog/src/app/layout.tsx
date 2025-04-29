@@ -10,7 +10,7 @@ import LocalFont from 'next/font/local'
 
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
-import { Page } from '@/components/page-component'
+import { Page } from '@/components/page'
 import { ThemeProvider } from '@/components/theme-provider'
 import config from '@/data/config.json'
 

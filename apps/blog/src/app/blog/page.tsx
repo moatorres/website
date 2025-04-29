@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { useMemo } from 'react'
 
 import { Button } from '@/components/button'
+import { PageHeading, PageSection } from '@/components/page'
 import articles from '@/data/articles.json'
 import { formatDate } from '@/utils/format'
 
@@ -40,10 +41,9 @@ export default function BlogPage() {
   const totalPages = Math.ceil(filteredEntries.length / entriesPerPage)
 
   return (
-    <main className="flex-1 px-4 md:px-6 py-12 md:py-16">
-      {/* Blog Header */}
-      <div className="max-w-2xl mb-16">
-        <h1 className="text-2xl md:text-3xl font-medium mb-6">Blog</h1>
+    <PageSection>
+      <PageHeading>Blog</PageHeading>
+      <div className="max-w-2xl">
         <p className="hidden leading-relaxed text-muted-foreground">
           No noise, just ideas—sorted to make browsing easier. Whether
           you&apos;re curious about tech, leadership, or critical thinking,
@@ -131,6 +131,6 @@ export default function BlogPage() {
           </Button>
         </div>
       )}
-    </main>
+    </PageSection>
   )
 }
