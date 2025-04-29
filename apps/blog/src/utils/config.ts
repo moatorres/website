@@ -66,3 +66,8 @@ export const config = {
   url: WEBSITE_PRODUCTION_URL,
   previewUrl: WEBSITE_PREVIEW_URL,
 }
+
+export const baseUrl =
+  process.env.NODE_ENV === 'production'
+    ? config.previewUrl
+    : 'http://localhost:3000'
