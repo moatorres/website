@@ -120,6 +120,7 @@
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
+    scrollbar-gutter: stable;
   }
 
   body {
