@@ -7,7 +7,7 @@ export function Page({
   children,
 }: React.PropsWithChildren<{ className?: string }>) {
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col w-[70ch] print:w-[80ch] mx-auto">
+    <main className="min-h-screen bg-background text-foreground flex flex-col max-w-[70ch] print:max-w-[80ch] mx-auto">
       {children}
     </main>
   )
