@@ -1,4 +1,38 @@
-import { Effect, identity, Schedule } from 'effect'
+import { Data, Effect, Schedule } from 'effect'
+
+export class WeatherAPIError extends Data.TaggedError('WeatherAPIError')<{
+  cause?: unknown
+}> {}
+
+export class FetchError extends Data.TaggedError('FetchError')<{
+  cause?: unknown
+}> {}
+
+const TEN_MINUTES_IN_SECONDS = 10 * 60
+
+const FETCH_OPTIONS = {
+  method: 'GET',
+  next: { revalidate: TEN_MINUTES_IN_SECONDS },
+}
+
+function handleApiError(data: {
+  error?: unknown
+  current: { is_day: number; condition: { text: string }; temp_c: number }
+}) {
+  if (data.error) {
+    return Effect.fail(
+      new WeatherAPIError({ cause: new Error(JSON.stringify(data.error)) })
+    )
+  }
+  return Effect.succeed(data)
+}
+
+function fetchWeather(url: string) {
+  return Effect.tryPromise({
+    try: () => fetch(url, FETCH_OPTIONS).then(async (res) => await res.json()),
+    catch: (error) => new FetchError({ cause: error }),
+  }).pipe(Effect.flatMap(handleApiError))
+}
 
 function getHour(timezone = 'America/Recife') {
   const now = new Date()
@@ -14,26 +48,6 @@ function getHour(timezone = 'America/Recife') {
   return parseInt(hour, 10)
 }
 
-function fetchWeather(url: string) {
-  return Effect.tryPromise({
-    try: () =>
-      fetch(url, {
-        method: 'GET',
-        next: { revalidate: 600 },
-      }).then(async (res) => await res.json()),
-    catch: identity,
-  }).pipe(
-    Effect.flatMap((data) => {
-      if (data.error) {
-        return Effect.fail(
-          new Error(`WeatherAPI error: ${JSON.stringify(data.error)}`)
-        )
-      }
-      return Effect.succeed(data)
-    })
-  )
-}
-
 export async function getWeatherEmoji(
   city = 'Recife',
   timezone = 'America/Recife',
@@ -41,17 +55,18 @@ export async function getWeatherEmoji(
 ) {
   const currentHour = getHour(timezone)
   const fallback = currentHour >= 6 && currentHour < 18 ? '☀️' : '🌙'
-  const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
 
   try {
     const data = await Effect.gen(function* () {
-      return yield* fetchWeather(url).pipe(
+      return yield* fetchWeather(
+        `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
+      ).pipe(
         Effect.retry(Schedule.jittered(Schedule.exponential('1 seconds'))),
         Effect.timeout('5 seconds')
       )
     }).pipe(Effect.runPromise)
 
-    const isDay = data.current.is_day === 1
+    const isDay = Number(data.current.is_day) === 1
 
     const emoji = getWeatherEmojiFromCondition(
       data.current.condition.text,
