@@ -1,16 +1,19 @@
 'use client'
 
 import { CopyIcon } from 'lucide-react'
-import { ComponentPropsWithoutRef } from 'react'
+import { ComponentPropsWithoutRef, useRef } from 'react'
 
 export function CodeBlock({
   children,
   ...props
 }: ComponentPropsWithoutRef<'code'>) {
+  const codeRef = useRef<HTMLElement>(null)
   const language = props.className?.replace(/language-/, '') ?? 'plaintext'
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(String(children))
+    if (codeRef.current) {
+      navigator.clipboard.writeText(codeRef.current.innerText)
+    }
   }
 
   if (language === 'plaintext') {
@@ -23,7 +26,11 @@ export function CodeBlock({
 
   return (
     <pre className="pre-wrapper relative">
-      <code className={`language-${language}`} {...props}>
+      <code
+        ref={codeRef}
+        className={`language-${language} overflow-auto`}
+        {...props}
+      >
         {children}
       </code>
 
