@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import articles from '@/data/articles.json'
 import config from '@/data/config.json'
 

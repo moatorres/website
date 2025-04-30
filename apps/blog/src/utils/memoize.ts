@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 export function memoize<T extends (...args: any[]) => any>(fn: T): T {
   const cache = new Map<string, ReturnType<T>>()
 

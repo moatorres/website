@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import categories from '@/assets/json/categories.json'
 import quotes from '@/assets/json/quotes.json'
 

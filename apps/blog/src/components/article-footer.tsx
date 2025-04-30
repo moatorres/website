@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 'use client'
 
 import { Share2 } from 'lucide-react'

@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import * as lucide from 'lucide-react'
 
 import { config } from '@/utils/config'

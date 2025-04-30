@@ -12,30 +12,40 @@ const TEMPLATE = `/**
  * @license MIT
  */`
 
-const files = execSync('git ls-files').toString().split('\n')
+const allowedExtensions = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx'])
+const excludedFiles = new Set(['next-env.d.ts'])
 
-const extensions = ['.js', '.jsx', '.mjs', '.ts', '.tsx']
+function main() {
+  console.log('🚀 Copyright Script')
 
-files.forEach((file) => {
-  if (!extensions.includes(path.extname(file)) || path.extname('.d.ts')) return
+  const files = execSync('git ls-files').toString().split('\n')
 
-  const content = fs.readFileSync(file, 'utf-8')
-  const lines = content.split('\n')
-  const copyrightLineIndex = lines.findIndex((line) =>
-    line.includes('Copyright (c)')
-  )
+  files.forEach((file) => {
+    if (excludedFiles.has(path.basename(file))) return
+    if (!allowedExtensions.has(path.extname(file))) return
 
-  if (copyrightLineIndex !== -1) {
-    const currentCopyright = lines[copyrightLineIndex]
-    const newCopyright = TEMPLATE.split('\n')[1]
+    const content = fs.readFileSync(file, 'utf-8')
+    const lines = content.split('\n')
+    const copyrightLineIndex = lines.findIndex((line) =>
+      line.includes('Copyright (c)')
+    )
 
-    if (currentCopyright !== newCopyright) {
-      lines[copyrightLineIndex] = newCopyright
-      fs.writeFileSync(file, lines.join('\n'))
-      console.log(`Updated copyright in ${path.basename(file)}`)
+    if (copyrightLineIndex !== -1) {
+      const currentCopyright = lines[copyrightLineIndex]
+      const newCopyright = TEMPLATE.split('\n')[1]
+
+      if (currentCopyright !== newCopyright) {
+        lines[copyrightLineIndex] = newCopyright
+        console.log(`⚡️ Updating copyright in: ${path.basename(file)}`)
+        fs.writeFileSync(file, lines.join('\n'))
+      }
+    } else {
+      console.log(`⚡️ Adding copyright to: ${path.basename(file)}`)
+      fs.writeFileSync(file, `${TEMPLATE}\n\n${content}`)
     }
-  } else {
-    fs.writeFileSync(file, `${TEMPLATE}\n\n${content}`)
-    console.log(`Added copyright to ${path.basename(file)}`)
-  }
-})
+  })
+
+  console.log('✅ Done')
+}
+
+main()

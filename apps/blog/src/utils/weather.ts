@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { Data, Effect, Schedule } from 'effect'
 
 export class WeatherAPIError extends Data.TaggedError('WeatherAPIError')<{

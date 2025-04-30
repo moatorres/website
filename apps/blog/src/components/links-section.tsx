@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { ExternalLinkIcon } from 'lucide-react'
 import { JSX } from 'react'
 
