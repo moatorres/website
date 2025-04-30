@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 'use client'
 
 import * as AspectRatioPrimitive from '@radix-ui/react-aspect-ratio'
