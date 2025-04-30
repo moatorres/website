@@ -8,7 +8,7 @@ import { join } from 'path'
 
 import { ImageResponse } from 'next/og'
 
-import { ContentMetadata } from '@/utils/types'
+import { getArticleBySlug } from '@/utils/articles'
 
 export const alt = 'Moa Torres'
 
@@ -29,20 +29,14 @@ export default async function Image({ params }: ImageProps) {
     join(process.cwd(), 'src/assets/fonts/inter-sans-bold.ttf')
   )
 
-  let content
+  let metadata
   try {
-    const collectionMetadata = await import(
-      `@/data/${params.collection}.collection.json`
-    )
-    const [entry] = collectionMetadata.default.filter(
-      (metadata: ContentMetadata) => metadata.slug === params.slug
-    )
-    content = await import(`@/content/${params.collection}/${entry.filename}`)
+    metadata = getArticleBySlug(params.slug)
   } catch {
     return new Response('Not found', { status: 404 })
   }
 
-  const { title, category } = content.metadata
+  const { title, category } = metadata
 
   return new ImageResponse(
     (

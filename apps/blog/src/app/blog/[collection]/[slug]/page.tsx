@@ -3,18 +3,20 @@
  * @license MIT
  */
 
-import { readdirSync } from 'fs'
-import { join } from 'path'
-
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next/types'
+import React from 'react'
+import { Suspense } from 'react'
 
+import { PageSection } from '@/components/page'
+import { ArticleSkeleton, Skeleton } from '@/components/skeleton'
 import { TableOfContents } from '@/components/table-of-contents'
+import collections from '@/data/collections.json'
 import config from '@/data/config.json'
+import { getArticleBySlug, getCollectionByName } from '@/utils/articles'
 import { formatDate } from '@/utils/format'
-import { ContentMetadata } from '@/utils/types'
 
-type PageProps = {
+type Props = {
   params: Promise<{
     collection: string
     slug: string
@@ -23,35 +25,21 @@ type PageProps = {
 
 async function getContent(collection: string, slug: string) {
   try {
-    const collectionMetadata = await import(
-      `@/data/${collection}.collection.json`
-    )
-    const [entry] = collectionMetadata.default.filter(
-      (metadata: ContentMetadata) => metadata.slug === slug
-    )
-    const content = await import(`@/content/${collection}/${entry.filename}`)
-    return { content }
+    const { fileName } = getArticleBySlug(slug)
+    return React.lazy(() => import(`@/content/${collection}/${fileName}`))
   } catch {
     throw notFound()
   }
 }
 
 export async function generateStaticParams() {
-  const categories = readdirSync(config.contentDirectory, {
-    withFileTypes: true,
-  })
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name)
+  let paths: Array<{ collection: string; slug: string }> = []
 
-  let paths: { collection: string; slug: string }[] = []
-
-  for (const collection of categories) {
-    const files = readdirSync(join(config.contentDirectory, collection))
-      .filter((file) => file.endsWith('.mdx'))
-      .map((file) => ({
-        collection,
-        slug: file.replace(/\.mdx$/, ''),
-      }))
+  for (const collection of collections) {
+    const files = getCollectionByName(collection).map((file) => ({
+      collection,
+      slug: file.slug,
+    }))
 
     paths = paths.concat(files)
   }
@@ -59,40 +47,40 @@ export async function generateStaticParams() {
   return paths
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const { collection, slug } = await params
-  const { content } = await getContent(collection, slug)
-  const { title, summary: description, href } = content.metadata
-  const ogImage = `${config.previewUrl}/og?title=${encodeURIComponent(title)}`
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const { date, href, summary: description, title } = getArticleBySlug(slug)
 
   return {
+    authors: [{ name: config.author, url: config.githubUrl }],
     description,
     openGraph: {
       description,
-      images: [{ url: ogImage }],
-      publishedTime: new Date(content.metadata.date).toISOString(),
+      publishedTime: new Date(date).toISOString(),
       title,
       type: 'article',
       url: config.previewUrl + href,
     },
+    publisher: config.author,
+    referrer: 'origin-when-cross-origin',
     title,
     twitter: {
       card: 'summary_large_image',
       description,
-      images: [ogImage],
       title,
     },
   }
 }
 
-export default async function BlogArticle({ params }: PageProps) {
+export default async function BlogArticle({ params }: Props) {
   const { collection, slug } = await params
-  const { content } = await getContent(collection, slug)
+  const { category, date, summary, title, href, updatedAt } =
+    getArticleBySlug(slug)
+
+  const MdxContent = await getContent(collection, slug)
 
   return (
-    <section>
+    <PageSection>
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -100,14 +88,11 @@ export default async function BlogArticle({ params }: PageProps) {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
-            headline: content.metadata.title,
-            datePublished: content.metadata.date,
-            dateModified: content.metadata.date,
-            description: content.metadata.summary,
-            image: content.metadata.image
-              ? `${config.previewUrl}${content.metadata.image}`
-              : `/og?title=${encodeURIComponent(content.metadata.title)}`,
-            url: `${config.previewUrl}/blog/${content.slug}`,
+            headline: title,
+            datePublished: date,
+            dateModified: updatedAt,
+            description: summary,
+            url: `${config.previewUrl + href}`,
             author: {
               '@type': 'Person',
               name: 'Moa Torres',
@@ -117,20 +102,24 @@ export default async function BlogArticle({ params }: PageProps) {
       />
 
       <h5 className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
-        {content.metadata.category}
+        {category}
       </h5>
 
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight mb-6 text-[var(--tw-prose-headings)]">
-        {content.metadata.title}
+      <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight mb-6 text-[var(--tw-prose-headings)]">
+        {title}
       </h1>
 
-      <h6 className="text-sm text-muted-foreground mb-12">
-        {formatDate(content.metadata.date)}
+      <h6 className="flex justify-between text-sm text-muted-foreground mb-12">
+        {formatDate(date)}{' '}
+        <span className="text-xs">Updated on {formatDate(updatedAt)}</span>
       </h6>
 
-      <TableOfContents />
-
-      <content.default />
-    </section>
+      <Suspense fallback={<Skeleton className="h-14" />}>
+        <TableOfContents />
+      </Suspense>
+      <Suspense fallback={<ArticleSkeleton />}>
+        <MdxContent />
+      </Suspense>
+    </PageSection>
   )
 }

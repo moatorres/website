@@ -17,20 +17,28 @@ export function TableOfContents() {
   >([])
 
   useEffect(() => {
-    const article = document.querySelector('article')
+    let attempts = 0
+    const maxAttempts = 10
+    const delay = 200 // ms between checks
+    const checkForHeadings = () => {
+      const article = document.querySelector('article')
+      if (!article) return
 
-    if (!article) return
-
-    const headingElements = article.querySelectorAll('h2, h3')
-    const headingsData = Array.from(headingElements).map((heading) => {
-      return {
-        id: heading.id,
-        text: heading.textContent || '',
-        level: heading.tagName === 'H2' ? 2 : 3,
+      const headingElements = article.querySelectorAll('h2, h3')
+      if (headingElements.length > 0) {
+        const headingsData = Array.from(headingElements).map((heading) => ({
+          id: heading.id,
+          text: heading.textContent || '',
+          level: heading.tagName === 'H2' ? 2 : 3,
+        }))
+        setHeadings(headingsData)
+      } else if (attempts < maxAttempts) {
+        attempts++
+        setTimeout(checkForHeadings, delay)
       }
-    })
+    }
 
-    setHeadings(headingsData)
+    checkForHeadings()
   }, [])
 
   if (headings.length === 0) return null
