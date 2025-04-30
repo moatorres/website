@@ -161,6 +161,12 @@
   @apply text-sm overflow-visible bg-transparent p-0 m-0;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 @media print {
   :root {
     --sh-identifier: #111;
