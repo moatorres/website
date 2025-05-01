@@ -5,8 +5,8 @@
 
 import categories from '@/assets/json/categories.json'
 import quotes from '@/assets/json/quotes.json'
+import config from '@/data/config.json'
 
-import { baseUrl } from './config'
 import { memoize } from './memoize'
 
 export { categories }
@@ -63,7 +63,9 @@ export function getRandomQuote(category: Category): Quote {
 }
 
 export async function fetchQuoteBySubject(subject?: Category) {
-  const response = await fetch(`${baseUrl}/api/quotes?subject=${subject}`)
+  const response = await fetch(
+    `${config.baseUrl}/api/quotes?subject=${subject}`
+  )
   const quote = (await response.json()) as Quote
   return { quote }
 }

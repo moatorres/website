@@ -3,6 +3,7 @@
  * @license MIT
  */
 
+// @ts-check
 import { composePlugins, withNx } from '@nx/next'
 
 import createMDX from '@next/mdx'
@@ -53,6 +54,37 @@ const nextConfig = {
         permanent: false,
       },
     ]
+  },
+  webpack: (config, { dev }) => {
+    config.module.rules.forEach((rule) => {
+      if (!rule.oneOf) return
+      rule.oneOf.forEach((oneOf) => {
+        if (
+          oneOf.test &&
+          oneOf.test.toString().includes('\\.module\\.(css|scss|sass)$') &&
+          oneOf.use
+        ) {
+          oneOf.use.forEach((loader) => {
+            if (
+              loader.loader &&
+              loader.loader.includes('css-loader') &&
+              !loader.loader.includes('postcss-loader')
+            ) {
+              loader.options = {
+                ...loader.options,
+                modules: {
+                  ...loader.options.modules,
+                  localIdentName: dev
+                    ? '[name]__[local]__[hash:base64:5]'
+                    : '[hash:base64:8]',
+                },
+              }
+            }
+          })
+        }
+      })
+    })
+    return config
   },
 }
 

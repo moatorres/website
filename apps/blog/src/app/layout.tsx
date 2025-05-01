@@ -16,19 +16,19 @@ import config from '@/data/config.json'
 import './global.css'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(config.previewUrl),
+  metadataBase: new URL(config.baseUrl),
   alternates: {
     canonical: '/',
   },
   title: {
     default: config.title,
-    template: `%s | ${config.author}`,
+    template: `%s | ${config.title}`,
   },
   description: config.description,
   openGraph: {
     title: config.title,
     description: config.description,
-    url: config.previewUrl,
+    url: config.baseUrl,
     siteName: config.title,
     locale: 'en_US',
     type: 'website',

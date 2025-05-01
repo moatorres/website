@@ -6,7 +6,7 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-import config from '../data/config.json'
+import config from '@/data/config.json'
 
 import { memoize } from './memoize'
 

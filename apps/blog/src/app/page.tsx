@@ -9,9 +9,9 @@ import { Button } from '@/components/button'
 import { InlineLink } from '@/components/inline-link'
 import { LinksSection } from '@/components/links-section'
 import { Page, PageHeading, PageSection } from '@/components/page'
+import config from '@/data/config.json'
 import { AtIcon, DiscordIcon, GitHubIcon, InstagramIcon, XIcon } from '@/icons'
 import { getLatestArticles } from '@/utils/articles'
-import { config } from '@/utils/config'
 import { formatDate } from '@/utils/format'
 import { getWeatherEmoji } from '@/utils/weather'
 
@@ -71,7 +71,10 @@ export default async function BlogPage() {
             <div className="space-y-3 space-x-3">
               <p>Find me on</p>
               <Button asChild variant="outline">
-                <InlineLink href={config.githubUrl} className="text-inherit">
+                <InlineLink
+                  href={config.authorGithubUrl}
+                  className="text-inherit"
+                >
                   <GitHubIcon /> GitHub
                 </InlineLink>
               </Button>

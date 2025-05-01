@@ -18,7 +18,7 @@ export async function GET() {
       (post) =>
         `<item>
           <title>${post.title}</title>
-          <link>${config.previewUrl + post.href}</link>
+          <link>${config.baseUrl + post.href}</link>
           <description>${post.summary || ''}</description>
           <pubDate>${new Date(post.date).toUTCString()}</pubDate>
         </item>`
@@ -29,8 +29,8 @@ export async function GET() {
   <rss version="2.0">
     <channel>
         <title>${config.title}</title>
-        <link>${config.previewUrl}</link>
-        <description>This is ${config.author}'s RSS feed</description>
+        <link>${config.baseUrl}</link>
+        <description>This is ${config.authorName}'s RSS feed</description>
         ${itemsXml}
     </channel>
   </rss>`

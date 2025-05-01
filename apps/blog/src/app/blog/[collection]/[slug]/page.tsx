@@ -52,16 +52,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { date, href, summary: description, title } = getArticleBySlug(slug)
 
   return {
-    authors: [{ name: config.author, url: config.githubUrl }],
+    authors: [{ name: config.authorName, url: config.authorGithubUrl }],
     description,
     openGraph: {
       description,
       publishedTime: new Date(date).toISOString(),
       title,
       type: 'article',
-      url: config.previewUrl + href,
+      url: config.baseUrl + href,
     },
-    publisher: config.author,
+    publisher: config.authorName,
     referrer: 'origin-when-cross-origin',
     title,
     twitter: {
@@ -92,7 +92,7 @@ export default async function BlogArticle({ params }: Props) {
             datePublished: date,
             dateModified: updatedAt,
             description: summary,
-            url: `${config.previewUrl + href}`,
+            url: `${config.baseUrl + href}`,
             author: {
               '@type': 'Person',
               name: 'Moa Torres',

@@ -7,7 +7,7 @@ import { Metadata } from 'next/types'
 
 import { PageHeading, PageSection } from '@/components/page'
 import { QuoteDisplay } from '@/components/quote-display'
-import { config } from '@/utils/config'
+import config from '@/data/config.json'
 import { capitalize } from '@/utils/format'
 import {
   categories,
@@ -42,9 +42,9 @@ export async function generateMetadata({
     },
     openGraph: {
       description,
-      images: `${config.previewUrl}/images/wave-moa-torres.png`,
+      images: `${config.baseUrl}/images/wave-moa-torres.png`,
     },
-    publisher: config.author,
+    publisher: config.authorName,
     referrer: 'origin-when-cross-origin',
     title,
   }
@@ -58,7 +58,7 @@ export default async function QuotesPage({
   const { subject } = await searchParams
   const quote = getRandomQuote(subject)
   const url = new URL(
-    `${config.previewUrl}/quotes` + `${subject ? `?subject=${subject}` : ''}`
+    `${config.baseUrl}/quotes` + `${subject ? `?subject=${subject}` : ''}`
   )
 
   return (

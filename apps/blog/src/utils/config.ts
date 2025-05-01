@@ -5,69 +5,80 @@
 
 import { resolve } from 'path'
 
-// static
-const APP_SOURCE_ROOT = 'apps/blog'
-const AUTHOR_EMAIL = 'hello@moatorres.com'
-const AUTHOR_GITHUB_HANDLE = 'moatorres'
-const AUTHOR_LINKEDIN_HANDLE = 'moatorres'
-const AUTHOR_NAME = 'Moa Torres'
-const AUTHOR_ORCID = '0009-0006-2281-1690'
-const BASE_ROUTE_PATH = 'blog'
-const CONTENT_DIR_RELATIVE_PATH = 'src/content'
-const GITHUB_BASE_URL = 'https://github.com/'
-const LINKEDIN_BASE_URL = 'https://www.linkedin.com/in/'
-const METADATA_DIR_RELATIVE_PATH = 'src/data'
-const ORCID_BASE_URL = 'https://orcid.org/'
-const WEBSITE_DESCRIPTION =
-  'Leading Through Complexity—At the Intersection of Culture, Science & Technology'
-const WEBSITE_HEADER_TITLE = 'MT'
-const WEBSITE_PREVIEW_URL = 'https://moatorres-blog.vercel.app'
-const WEBSITE_PRODUCTION_URL = 'https://moatorres.com'
-const WEBSITE_SECTIONS = [
-  { name: 'Blog' },
-  { name: 'Projects' },
-  { name: 'Talks' },
-]
-const WEBSITE_TITLE = 'Moa Torres'
+// public
+const AUTHOR_DISCORD_URL = process.env.NEXT_PUBLIC_AUTHOR_DISCORD_URL
+const AUTHOR_FACEBOOK_URL = process.env.NEXT_PUBLIC_AUTHOR_FACEBOOK_URL
+const AUTHOR_GITHUB_URL = process.env.NEXT_PUBLIC_AUTHOR_GITHUB_URL
+const AUTHOR_INSTAGRAM_URL = process.env.NEXT_PUBLIC_AUTHOR_INSTAGRAM_URL
+const AUTHOR_LINKEDIN_URL = process.env.NEXT_PUBLIC_AUTHOR_LINKEDIN_URL
+const AUTHOR_NAME = process.env.NEXT_PUBLIC_AUTHOR_NAME
+const AUTHOR_ORCID_URL = process.env.NEXT_PUBLIC_ORCID_URL
+const AUTHOR_TWITTER_URL = process.env.NEXT_PUBLIC_TWITTER_URL
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
-// derived
-const CONTENT_DIR_ABSOLUTE_PATH = resolve(
-  process.cwd(),
-  APP_SOURCE_ROOT,
-  CONTENT_DIR_RELATIVE_PATH
-)
-const METADATA_DIR_ABSOLUTE_PATH = resolve(
-  process.cwd(),
-  APP_SOURCE_ROOT,
-  METADATA_DIR_RELATIVE_PATH
-)
-const AUTHOR_GITHUB_URL = GITHUB_BASE_URL + AUTHOR_GITHUB_HANDLE
-const AUTHOR_LINKEDIN_URL = LINKEDIN_BASE_URL + AUTHOR_LINKEDIN_HANDLE
-const AUTHOR_ORCID_URL = ORCID_BASE_URL + AUTHOR_ORCID
+// template
+const APP_CONTENT_ROUTE = process.env.TEMPLATE_APP_CONTENT_ROUTE
+const APP_CONTENT_DIRECTORY = process.env.TEMPLATE_APP_CONTENT_DIRECTORY
+const APP_DESCRIPTION = process.env.TEMPLATE_APP_DESCRIPTION
+const APP_METADATA_DIRECTORY = process.env.TEMPLATE_APP_METADATA_DIRECTORY
+const APP_SECTIONS = process.env.TEMPLATE_APP_SECTIONS
+const APP_TITLE = process.env.TEMPLATE_APP_TITLE
 
-// external
-export const config = {
-  author: AUTHOR_NAME,
-  baseRoute: BASE_ROUTE_PATH,
-  contentDirectory: CONTENT_DIR_ABSOLUTE_PATH,
-  description: WEBSITE_DESCRIPTION,
-  email: AUTHOR_EMAIL,
-  githubUser: AUTHOR_GITHUB_HANDLE,
-  githubUrl: AUTHOR_GITHUB_URL,
-  headerTitle: WEBSITE_HEADER_TITLE,
-  linkedinUser: AUTHOR_LINKEDIN_HANDLE,
-  linkedinUrl: AUTHOR_LINKEDIN_URL,
-  metadataDirectory: METADATA_DIR_ABSOLUTE_PATH,
-  orcid: AUTHOR_ORCID,
-  orcidUrl: AUTHOR_ORCID_URL,
-  sections: WEBSITE_SECTIONS,
-  sourceRoot: APP_SOURCE_ROOT,
-  title: WEBSITE_TITLE,
-  url: WEBSITE_PRODUCTION_URL,
-  previewUrl: WEBSITE_PREVIEW_URL,
+const DEFAULT_CONFIG = {
+  authorDiscordUrl: 'https://discord.com/',
+  authorFacebookUrl: 'https://facebook.com/',
+  authorGithubUrl: 'https://github.com/',
+  authorInstagramUrl: 'https://instagram.com/',
+  authorLinkedinUrl: 'https://linkedin.com/in/',
+  authorName: 'John Doe',
+  authorOrcidUrl: 'https://orcid.org/',
+  authorTwitterUrl: 'https://twitter.com/',
+  baseUrl: 'http://localhost:3000',
+  contentDirectory: absolute('src/content'),
+  contentRoute: 'blog',
+  description: "John Doe's Personal Blog",
+  metadataDirectory: absolute('src/data'),
+  sections: [{ name: 'blog' }],
+  title: 'John Doe',
 }
 
-export const baseUrl =
-  process.env.NODE_ENV === 'production'
-    ? config.previewUrl
-    : 'http://localhost:3000'
+export const config = withDefaults(DEFAULT_CONFIG, {
+  authorDiscordUrl: AUTHOR_DISCORD_URL,
+  authorFacebookUrl: AUTHOR_FACEBOOK_URL,
+  authorGithubUrl: AUTHOR_GITHUB_URL,
+  authorInstagramUrl: AUTHOR_INSTAGRAM_URL,
+  authorLinkedinUrl: AUTHOR_LINKEDIN_URL,
+  authorName: AUTHOR_NAME,
+  authorOrcidUrl: AUTHOR_ORCID_URL,
+  authorTwitterUrl: AUTHOR_TWITTER_URL,
+  baseUrl: BASE_URL,
+  contentDirectory: absolute(APP_CONTENT_DIRECTORY),
+  contentRoute: APP_CONTENT_ROUTE,
+  description: APP_DESCRIPTION,
+  metadataDirectory: absolute(APP_METADATA_DIRECTORY),
+  sections: sections(APP_SECTIONS),
+  title: APP_TITLE,
+})
+
+function absolute(path?: string): string {
+  if (!path) return undefined as unknown as string
+  return resolve(process.cwd(), path) as string
+}
+
+function sections(sections?: string) {
+  if (!sections) return
+  return sections
+    .split(',')
+    .filter(Boolean)
+    .map((name) => ({ name: name.trim() }))
+}
+
+function withDefaults<T extends object, D extends Partial<T>>(
+  defaults: D,
+  obj: T
+): T & D {
+  return {
+    ...defaults,
+    ...obj,
+  }
+}

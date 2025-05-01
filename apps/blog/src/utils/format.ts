@@ -26,3 +26,10 @@ export function slugify(str: string): string {
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+export function initials(input: string): string {
+  const words = input.trim().split(/\s+/)
+  const firstTwo = words.slice(0, 2)
+  const initials = firstTwo.map((word) => word.charAt(0).toUpperCase())
+  return initials.join('')
+}

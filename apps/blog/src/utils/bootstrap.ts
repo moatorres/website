@@ -67,8 +67,8 @@ async function main() {
       const articleMetadata: ArticleMetadata = {
         id: randomUUID(),
         slug: slug,
-        href: `/${config.baseRoute}/${collection}/${slug}`,
-        author: config.author,
+        href: `/${config.contentRoute}/${collection}/${slug}`,
+        author: config.authorName,
         category: content.metadata.category,
         date: content.metadata.date,
         title: content.metadata.title,

@@ -5,7 +5,7 @@
 
 import * as lucide from 'lucide-react'
 
-import { config } from '@/utils/config'
+import config from '@/data/config.json'
 
 import { Button } from './button'
 import { InlineLink } from './inline-link'
@@ -38,7 +38,7 @@ const defaultItems: NavIconItem[] = [
   },
   {
     title: 'GitHub',
-    href: config.githubUrl,
+    href: config.authorGithubUrl,
     icon: 'GithubIcon',
   },
   {
