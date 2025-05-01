@@ -8,7 +8,7 @@
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 
-export function ScrollToHash({ offset = -56 }: { offset?: number }) {
+export function ScrollToHash({ offset = 0 }: { offset?: number }) {
   const pathname = usePathname()
 
   useEffect(() => {
