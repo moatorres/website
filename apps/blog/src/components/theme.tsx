@@ -6,10 +6,21 @@
 'use client'
 
 import { MoonIcon, SunIcon } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import type { ThemeProviderProps } from 'next-themes'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
 
 import { Button } from './button'
+
+const NextThemesProvider = dynamic(
+  () => import('next-themes').then((e) => e.ThemeProvider),
+  { ssr: false }
+)
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+}
 
 export function ThemeSwitcher() {
   const { setTheme, resolvedTheme } = useTheme()

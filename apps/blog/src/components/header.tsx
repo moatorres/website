@@ -13,7 +13,7 @@ import config from '@/data/config.json'
 
 import { Button } from './button'
 import { NavIcons } from './nav-icons'
-import { ThemeSwitcher } from './theme-switcher'
+import { ThemeSwitcher } from './theme'
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)

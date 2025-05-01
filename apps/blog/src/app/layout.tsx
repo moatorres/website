@@ -11,7 +11,7 @@ import LocalFont from 'next/font/local'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { Page } from '@/components/page'
-import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeProvider } from '@/components/theme'
 import config from '@/data/config.json'
 
 import './global.css'
