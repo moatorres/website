@@ -10,7 +10,6 @@ import LocalFont from 'next/font/local'
 
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
-import { Page } from '@/components/page'
 import { ThemeProvider } from '@/components/theme'
 import config from '@/data/config.json'
 
@@ -82,13 +81,11 @@ export default function RootLayout({ children }: React.PropsWithChildren) {
           enableSystem
           disableTransitionOnChange
         >
-          <Page>
-            <Header />
-            {children}
-            <Footer />
-            <Analytics />
-            <SpeedInsights />
-          </Page>
+          <Header />
+          {children}
+          <Footer />
+          <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>

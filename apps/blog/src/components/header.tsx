@@ -10,16 +10,20 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 import config from '@/data/config.json'
+import { cx } from '@/utils/cx'
 
 import { Button } from './button'
 import { NavIcons } from './nav-icons'
+import { PAGE_LAYOUT } from './page'
 import { ThemeSwitcher } from './theme'
 
-export function Header() {
+export function Header({ className }: { className?: string }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <header className="py-6 px-4 md:px-6 print:hidden">
+    <header
+      className={cx('py-6 px-4 md:px-6 print:hidden', PAGE_LAYOUT, className)}
+    >
       <div className="flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tighter uppercase">
           {config.headerTitle}
