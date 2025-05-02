@@ -28,7 +28,8 @@ const defaultItems: NavIconItem[] = [
   },
   {
     title: 'Sponsor',
-    href: 'https://github.com/sponsors/moatorres',
+    href:
+      'https://github.com/sponsors/' + config.authorGithubUrl.split('/').pop(),
     icon: 'HeartIcon',
   },
   {

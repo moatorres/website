@@ -80,7 +80,7 @@ export default async function BlogPage() {
               </Button>
               <Button asChild variant="outline">
                 <InlineLink
-                  href="https://instagram.com/moacirtorres"
+                  href={config.authorInstagramUrl}
                   className="text-inherit"
                 >
                   <InstagramIcon /> Instagram
@@ -88,7 +88,7 @@ export default async function BlogPage() {
               </Button>
               <Button asChild variant="outline">
                 <InlineLink
-                  href="https://discord.com/users/1078701467332006039"
+                  href={config.authorDiscordUrl}
                   className="text-inherit"
                 >
                   <DiscordIcon />
@@ -100,7 +100,7 @@ export default async function BlogPage() {
               <p>
                 Or email me at{' '}
                 <span className="font-mono">
-                  hey
+                  hello
                   <AtIcon className="inline py-0.5" />
                   moatorres.com
                 </span>

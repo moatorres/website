@@ -24,6 +24,7 @@ type NavIconItem = {
   href: string
   icon: keyof typeof lucide
 }
+
 const items: NavIconItem[] = [
   {
     title: 'Bookmarks',
@@ -42,7 +43,8 @@ const items: NavIconItem[] = [
   },
   {
     title: 'Sponsor',
-    href: 'https://github.com/sponsors/moatorres',
+    href:
+      'https://github.com/sponsors/' + config.authorGithubUrl.split('/').pop(),
     icon: 'HeartIcon',
   },
   {

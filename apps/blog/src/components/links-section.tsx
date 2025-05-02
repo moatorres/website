@@ -6,6 +6,7 @@
 import { ExternalLinkIcon } from 'lucide-react'
 import { JSX } from 'react'
 
+import config from '@/data/config.json'
 import { cx } from '@/utils/cx'
 
 import { InlineLink } from './inline-link'
@@ -23,7 +24,7 @@ type LinkItem = {
 const links: LinkItem[] = [
   {
     label: 'Available',
-    url: 'https://linkedin.com/in/moatorres',
+    url: config.authorLinkedinUrl,
     suffix: 'for work.',
     underline: true,
   },

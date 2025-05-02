@@ -15,6 +15,7 @@ export function Facebook({ className }: IconProps) {
       aria-labelledby="facebook-logo"
       fill="none"
       className={className}
+      xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 500 500"
     >
       <title id="facebook-logo">Facebook Logo</title>
