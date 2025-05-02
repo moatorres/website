@@ -28,8 +28,7 @@ const defaultItems: NavIconItem[] = [
   },
   {
     title: 'Sponsor',
-    href:
-      'https://github.com/sponsors/' + config.authorGithubUrl.split('/').pop(),
+    href: 'https://github.com/sponsors/' + config.githubUrl.split('/').pop(),
     icon: 'HeartIcon',
   },
   {
@@ -39,7 +38,7 @@ const defaultItems: NavIconItem[] = [
   },
   {
     title: 'GitHub',
-    href: config.authorGithubUrl,
+    href: config.githubUrl,
     icon: 'GithubIcon',
   },
   {

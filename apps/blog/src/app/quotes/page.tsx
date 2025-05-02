@@ -44,7 +44,7 @@ export async function generateMetadata({
       description,
       images: `${config.baseUrl}/images/wave-moa-torres.png`,
     },
-    publisher: config.authorName,
+    publisher: config.author,
     referrer: 'origin-when-cross-origin',
     title,
   }

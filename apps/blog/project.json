@@ -14,8 +14,11 @@
       "outputs": ["{projectRoot}/src/data"],
       "cache": true,
       "options": {
+        "env": {
+          "NODE_OPTIONS": "--no-warnings --loader @mdx-js/node-loader"
+        },
         "cwd": "{workspaceRoot}",
-        "command": "NODE_OPTIONS=--no-warnings npx tsx --loader @mdx-js/node-loader apps/blog/src/utils/bootstrap.ts"
+        "command": "tsx apps/blog/src/utils/bootstrap.ts {projectRoot}"
       }
     },
     "build": {

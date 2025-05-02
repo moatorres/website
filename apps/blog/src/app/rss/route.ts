@@ -30,7 +30,7 @@ export async function GET() {
     <channel>
         <title>${config.title}</title>
         <link>${config.baseUrl}</link>
-        <description>This is ${config.authorName}'s RSS feed</description>
+        <description>This is ${config.author}'s RSS feed</description>
         ${itemsXml}
     </channel>
   </rss>`

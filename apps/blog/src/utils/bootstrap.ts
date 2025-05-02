@@ -68,7 +68,7 @@ async function main() {
         id: randomUUID(),
         slug: slug,
         href: `/${config.contentRoute}/${collection}/${slug}`,
-        author: config.authorName,
+        author: config.author,
         category: content.metadata.category,
         date: content.metadata.date,
         title: content.metadata.title,

@@ -71,26 +71,17 @@ export default async function BlogPage() {
             <div className="space-y-3 space-x-3">
               <p>Find me on</p>
               <Button asChild variant="outline">
-                <InlineLink
-                  href={config.authorGithubUrl}
-                  className="text-inherit"
-                >
+                <InlineLink href={config.githubUrl} className="text-inherit">
                   <GitHubIcon /> GitHub
                 </InlineLink>
               </Button>
               <Button asChild variant="outline">
-                <InlineLink
-                  href={config.authorInstagramUrl}
-                  className="text-inherit"
-                >
+                <InlineLink href={config.instagramUrl} className="text-inherit">
                   <InstagramIcon /> Instagram
                 </InlineLink>
               </Button>
               <Button asChild variant="outline">
-                <InlineLink
-                  href={config.authorDiscordUrl}
-                  className="text-inherit"
-                >
+                <InlineLink href={config.discordUrl} className="text-inherit">
                   <DiscordIcon />
                   Discord
                 </InlineLink>

@@ -24,7 +24,7 @@ type LinkItem = {
 const links: LinkItem[] = [
   {
     label: 'Available',
-    url: config.authorLinkedinUrl,
+    url: config.linkedinUrl,
     suffix: 'for work.',
     underline: true,
   },

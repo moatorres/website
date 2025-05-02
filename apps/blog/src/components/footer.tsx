@@ -9,8 +9,8 @@ import { cx } from '@/utils/cx'
 import { PAGE_LAYOUT } from './page'
 
 const links = [
-  { name: 'LinkedIn', url: config.authorLinkedinUrl },
-  { name: 'GitHub', url: config.authorGithubUrl },
+  { name: 'LinkedIn', url: config.linkedinUrl },
+  { name: 'GitHub', url: config.githubUrl },
 ]
 
 export function Footer({ className }: { className?: string }) {
@@ -31,7 +31,7 @@ export function Footer({ className }: { className?: string }) {
             CC BY-NC-SA 4.0
           </a>
           <span className="hidden sm:flex">
-            {new Date().getFullYear()}–Present © {config.authorGithubUrl}
+            {new Date().getFullYear()}–Present © {config.githubUrl}
           </span>
         </div>
         <nav className="flex gap-6">
