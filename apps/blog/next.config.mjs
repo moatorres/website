@@ -18,7 +18,8 @@ import rehypeSlug from 'rehype-slug'
 const nextConfig = {
   cleanDistDir: true,
   env: {
-    NEXT_TELEMETRY_DISABLED: '1',
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    NEXT_TELEMETRY_DISABLED: process.env.NEXT_TELEMETRY_DISABLED,
   },
   experimental: {
     viewTransition: true,

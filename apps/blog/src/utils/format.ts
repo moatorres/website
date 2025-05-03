@@ -23,13 +23,21 @@ export function slugify(str: string): string {
     .replace(/--+/g, '-')
 }
 
-export function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+export function initials(input: string, count = 2, separator = ''): string {
+  const words = input.trim().split(/\s+/)
+  const parts = words.slice(0, count).filter(Boolean)
+  const initials = parts.map((word) => word.charAt(0).toUpperCase())
+  return initials.join(separator)
 }
 
-export function initials(input: string): string {
-  const words = input.trim().split(/\s+/)
-  const firstTwo = words.slice(0, 2)
-  const initials = firstTwo.map((word) => word.charAt(0).toUpperCase())
-  return initials.join('')
+export function prune<T extends object>(obj: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(
+      ([_, value]) => value !== undefined && value !== '' && value !== null
+    )
+  ) as Partial<T>
+}
+
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }

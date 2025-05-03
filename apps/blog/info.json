@@ -1,0 +1,18 @@
+{
+  "author": "Moa Torres",
+  "baseUrl": "https://moatorres-blog.vercel.app",
+  "contentDirectory": "apps/blog/src/content",
+  "contentRoute": "blog",
+  "description": "Leading Through Complexity—At the Intersection of Culture, Science & Technology",
+  "discordUrl": "https://discord.com/users/1078701467332006039",
+  "facebookUrl": "https://facebook.com/moatorres",
+  "githubUrl": "https://github.com/moatorres",
+  "instagramUrl": "https://instagram.com/moatorres",
+  "linkedinUrl": "https://linkedin.com/in/moatorres",
+  "metadataDirectory": "apps/blog/src/data",
+  "orcidUrl": "https://orcid.org/0009-0006-2281-1690",
+  "projectRoot": "apps/blog",
+  "sections": "blog,projects,talks",
+  "title": "Moa Torres",
+  "twitterUrl": "https://twitter.com/moatorres"
+}

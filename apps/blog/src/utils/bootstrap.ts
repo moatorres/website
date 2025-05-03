@@ -4,36 +4,52 @@
  */
 
 import { randomUUID } from 'crypto'
-import { readFileSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
 import { mkdir, readdir, stat, writeFile } from 'fs/promises'
 import { join } from 'path'
 
+import { green, red } from './ansi'
 import { ArticleMetadata } from './articles'
-import { config } from './config'
+import { getConfig } from './config'
 import { slugify } from './format'
+import * as print from './print'
 
 function getReadTime(filepath: string, wordsPerMinute = 200) {
   const wordsCount = readFileSync(filepath).toString().split(/\s+/).length
   return `${Math.ceil(wordsCount / wordsPerMinute)} min`
 }
 
+const config = getConfig()
+
 async function write(filename: string, content: object) {
   try {
     await stat(config.metadataDirectory)
   } catch {
-    console.log(`⚡️ Creating directory: ${config.metadataDirectory}`)
+    print.info(
+      `Creating ${green(config.metadataDirectory.split(process.cwd())?.pop())}`
+    )
     await mkdir(config.metadataDirectory, { recursive: true })
   }
 
-  console.log(`⚡️ Writing file: "${filename}"`)
+  print.info(`Writing ${green(filename)}`)
   const filePath = join(config.metadataDirectory, filename)
   const contentJson = JSON.stringify(content, null, 2)
   await writeFile(filePath, contentJson)
 }
 
 async function main() {
-  console.log(`🚀 Blog Metadata`)
+  if (!existsSync(config.contentDirectory)) {
+    print.error(
+      `Content directory ${red(config.contentDirectory)} doesn't exist, aborting.`
+    )
+    process.exit(1)
+  }
+
   await write('config.json', config)
+
+  print.info(
+    `Reading ${green(config.contentDirectory.split(process.cwd())?.pop())}`
+  )
 
   const contentFiles = await readdir(config.contentDirectory, {
     withFileTypes: true,
@@ -89,7 +105,11 @@ async function main() {
 
   await write('articles.json', metadata)
 
-  console.log(`✅ Done`)
+  print.info(
+    `Files written to ${green(config.metadataDirectory.split(process.cwd())?.pop())}`
+  )
+
+  print.success(`Bootstrap completed successfully ${green('✓')}`)
 }
 
 main()
