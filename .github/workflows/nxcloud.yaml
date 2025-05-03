@@ -1,6 +1,7 @@
 name: NxCloud
 
 env:
+  APP_CONFIG_FILE: 'apps/blog/info.json'
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 on:
