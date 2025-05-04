@@ -7,14 +7,7 @@
   "targets": {
     "bootstrap": {
       "executor": "nx:run-commands",
-      "inputs": [
-        "{projectRoot}/public/**/*",
-        "{projectRoot}/src/content/**/*",
-        "{projectRoot}/src/utils/config.ts",
-        "{projectRoot}/src/utils/bootstrap.ts"
-      ],
       "outputs": ["{projectRoot}/src/data"],
-      "cache": true,
       "options": {
         "env": {
           "NODE_OPTIONS": "--no-warnings --loader @mdx-js/node-loader"
