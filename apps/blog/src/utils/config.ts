@@ -6,11 +6,9 @@
 import { existsSync } from 'fs'
 import { resolve } from 'path'
 
+import { blue, dim, print, yellow } from '@blog/utils'
 import * as z from '@zod/mini'
 import dotenv from 'dotenv'
-
-import { blue, dim, yellow } from './ansi'
-import * as print from './print'
 
 z.config(z.locales.en())
 

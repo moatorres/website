@@ -8,15 +8,14 @@ import { existsSync, readFileSync } from 'fs'
 import { mkdir, readdir, stat, writeFile } from 'fs/promises'
 import { join } from 'path'
 
+import { green, print, red, yellow } from '@blog/utils'
 import { imageSize } from 'image-size'
 import { ISizeCalculationResult } from 'image-size/types/interface'
 
-import { green, red, yellow } from './ansi'
 import { ArticleMetadata } from './articles'
 import { getConfig } from './config'
 import { slugify } from './format'
 import { PhotoMetadata } from './photos'
-import * as print from './print'
 
 function getReadTime(filepath: string, wordsPerMinute = 200) {
   const wordsCount = readFileSync(filepath).toString().split(/\s+/).length

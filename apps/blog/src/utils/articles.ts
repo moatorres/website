@@ -6,9 +6,9 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-import config from '@/data/config.json'
+import { memoize } from '@blog/utils'
 
-import { memoize } from './memoize'
+import config from '@/data/config.json'
 
 export type ContentMetadata = {
   author: string

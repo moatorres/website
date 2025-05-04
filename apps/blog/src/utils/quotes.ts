@@ -3,11 +3,11 @@
  * @license MIT
  */
 
+import { memoize } from '@blog/utils'
+
 import categories from '@/assets/json/categories.json'
 import quotes from '@/assets/json/quotes.json'
 import config from '@/data/config.json'
-
-import { memoize } from './memoize'
 
 export { categories }
 

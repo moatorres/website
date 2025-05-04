@@ -1,4 +1,4 @@
-import { blue, dim, gray, green, purple, red, yellow } from './ansi'
+import { blue, dim, gray, green, purple, red, yellow } from './ansi.js'
 
 export function warn(...args: unknown[]): void {
   console.warn(yellow('WARNING:'), ...args)
