@@ -4,10 +4,10 @@
  */
 
 import type { MDXComponents } from 'mdx/types'
-import Link from 'next/link'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { CodeBlock } from './components/code-block'
+import { InlineLink } from './components/inline-link'
 
 export function useMDXComponents(): MDXComponents {
   return {
@@ -62,36 +62,7 @@ export function useMDXComponents(): MDXComponents {
     strong: (props: ComponentPropsWithoutRef<'strong'>) => (
       <strong className="font-medium" {...props} />
     ),
-    a: ({ href, children, ...props }: ComponentPropsWithoutRef<'a'>) => {
-      const className =
-        'text-gray-600 hover:text-gray-800 dark:text-gray-300 hover:dark:text-gray-400 dark:underline dark:underline-offset-2 dark:decoration-gray-300 hover:dark:decoration-gray-400 underline underline-offset-2 transition-all duration-50'
-
-      if (href?.startsWith('/')) {
-        return (
-          <Link href={href} className={className} {...props}>
-            {children}
-          </Link>
-        )
-      }
-      if (href?.startsWith('#')) {
-        return (
-          <a href={href} className={className} {...props}>
-            {children}
-          </a>
-        )
-      }
-      return (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={className}
-          {...props}
-        >
-          {children}
-        </a>
-      )
-    },
+    a: InlineLink,
     code: CodeBlock,
     Table: ({ data }: { data: { headers: string[]; rows: string[][] } }) => (
       <table>
