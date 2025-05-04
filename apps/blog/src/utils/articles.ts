@@ -3,14 +3,12 @@
  * @license MIT
  */
 
-import { randomUUID } from 'crypto'
 import { readFileSync } from 'fs'
-import { stat } from 'fs/promises'
 import { join } from 'path'
 
-import { memoize, slugify } from '@blog/utils'
+import { memoize } from '@blog/utils'
 
-import config from '../data/config.json'
+import config from '@/data/config.json'
 
 export type ContentMetadata = {
   author: string
@@ -77,6 +75,7 @@ export const getCollectionByName = memoize((collection: string) => {
     config.metadataDirectory,
     `${collection}.collection.json`
   )
+  console.log('filePath', filePath)
   const fileContent = readFileSync(filePath, 'utf-8')
   return JSON.parse(fileContent) as ArticleMetadata[]
 })
@@ -110,44 +109,3 @@ export const getCollectionSlugsAsync = memoize(async (collection: string) => {
   const collectionMetadata = await getCollectionByNameAsync(collection)
   return collectionMetadata.map((article) => article.slug)
 })
-
-/**
- * Calculates the read time of an article based on its word count.
- * @returns The estimated read time in minutes.
- */
-export function getReadTime(filepath: string, wordsPerMinute = 200) {
-  const wordsCount = readFileSync(filepath).toString().split(/\s+/).length
-  return `${Math.ceil(wordsCount / wordsPerMinute)} min`
-}
-
-/**
- * Extracts metadata from an article file and returns it as an object.
- * @throws {Error} If the file cannot be read or the content is not valid JSON.
- */
-export async function extractArticleMetadata(
-  filepath: string,
-  fileName: string,
-  collection: string
-): Promise<ArticleMetadata> {
-  const slug = slugify(fileName.replace(/\.mdx$/, ''))
-  const content = await import(filepath)
-  const stats = await stat(filepath)
-
-  return {
-    id: randomUUID(),
-    slug,
-    href: `/${config.contentRoute}/${collection}/${slug}`,
-    author: config.author,
-    category: content.metadata.category,
-    date: content.metadata.date,
-    title: content.metadata.title,
-    summary: content.metadata.summary,
-    fileName,
-    filePath: filepath,
-    collection,
-    readTime: getReadTime(filepath),
-    createdAt: new Date(stats.ctime).toISOString(),
-    updatedAt: new Date(stats.mtime).toISOString(),
-    publishedAt: new Date(content.metadata.date).toISOString(),
-  }
-}

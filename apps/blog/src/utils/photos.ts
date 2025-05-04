@@ -3,14 +3,12 @@
  * @license MIT
  */
 
-import { Dirent, readFileSync } from 'fs'
+import { readFileSync } from 'fs'
 import { join } from 'path'
 
-import { print, yellow } from '@blog/utils'
-import { imageSize } from 'image-size'
-import { ISizeCalculationResult } from 'image-size/types/interface'
+import { memoize } from '@blog/utils'
 
-import config from '../data/config.json'
+import config from '@/data/config.json'
 
 export type PhotoMetadata = {
   id: number
@@ -18,28 +16,49 @@ export type PhotoMetadata = {
   alt: string
   width: number
   height: number
+  category?: string
 }
 
-export function extractPhotoMetadata(
-  dirent: Dirent,
-  index: number
-): PhotoMetadata {
-  const filepath = join(config.photosDirectory, dirent.name)
-  let size: ISizeCalculationResult = { width: 0, height: 0 }
+/**
+ * Retrieves and parses the list of photo metadata from a JSON file.
+ * @throws {Error} If the file cannot be read or the content is not valid JSON.
+ */
+export const getPhotos = memoize(function getPhotos() {
+  const filePath = join(config.metadataDirectory, 'photos.json')
+  const fileContent = readFileSync(filePath, 'utf-8')
+  return JSON.parse(fileContent) as PhotoMetadata[]
+})
 
-  try {
-    size = imageSize(readFileSync(filepath))
-  } catch {
-    print.warn(
-      `Could not read image size for ${yellow(dirent.name)}, skipping.`
-    )
-  }
+/**
+ * Returns a list of unique photo categories.
+ * @returns An array of unique photo categories.
+ */
+export const getPhotoCategories = memoize(function getPhotoCategories() {
+  const uniqueCategories = new Set(getPhotos().map((photo) => photo.category))
+  return Array.from(uniqueCategories).filter(Boolean)
+})
 
-  return {
-    id: index + 1,
-    alt: dirent.name,
-    src: join(dirent.parentPath.split('public').pop() ?? '', dirent.name),
-    width: size.width,
-    height: size.height,
+/**
+ * Retrieves photos filtered by category and sorted by ID.
+ * @returns An array of photos belonging to the specified category, sorted by ID.
+ */
+export const getPhotosByCategory = memoize(function getPhotoByCategory(
+  category: string
+) {
+  return getPhotos()
+    .filter((photo) => photo.category === category)
+    .sort((a, b) => a.id - b.id)
+})
+
+/**
+ * Retrieves a single photo by its ID.
+ * @throws {Error} If no photo is found for the provided ID.
+ * @returns The photo metadata object if found, otherwise undefined.
+ */
+export const getPhotoById = memoize(function getPhotoById(id: number) {
+  const photo = getPhotos().find((photo) => photo.id === id)
+  if (!photo) {
+    throw new Error(`No photo found for ID: ${id}`)
   }
-}
+  return photo
+})

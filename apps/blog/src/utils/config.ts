@@ -296,7 +296,7 @@ export function getConfig(): ConfigDecoded {
   const envFilePath = absolutePath(envFileFromArg)
 
   if (process.argv.length < 3 || !existsSync(envFilePath)) {
-    print.warn(`Could not find ${yellow(envFilePath)}, loading from process.`)
+    print.warn(`Could not find ${yellow(envFilePath)}, skipping.`)
   } else {
     dotenv.config({ path: envFilePath })
     print.info(`Loaded ${blue('.env')} ${dim(envFilePath)}`)
