@@ -5,12 +5,12 @@
 
 'use client'
 
+import { capitalize } from '@blog/utils'
 import { Share2 } from 'lucide-react'
 import React from 'react'
 
 import * as icons from '@/icons'
 import { cx } from '@/utils/cx'
-import { capitalize } from '@/utils/format'
 
 import { Button } from './button'
 

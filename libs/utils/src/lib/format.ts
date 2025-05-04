@@ -1,7 +1,4 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
+import { resolve } from 'path'
 
 export function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
@@ -23,21 +20,37 @@ export function slugify(str: string): string {
     .replace(/--+/g, '-')
 }
 
-export function initials(input: string, count = 2, separator = ''): string {
+export function initials(
+  input: string,
+  count = 2,
+  separator: '' | '.' = ''
+): string {
   const words = input.trim().split(/\s+/)
-  const parts = words.slice(0, count).filter(Boolean)
+  const parts = words.slice(0, count < 0 ? 1 : count).filter(Boolean)
   const initials = parts.map((word) => word.charAt(0).toUpperCase())
-  return initials.join(separator)
+  return separator === '.' ? initials.join(separator) + '.' : initials.join('')
 }
 
 export function prune<T extends object>(obj: T): Partial<T> {
   return Object.fromEntries(
     Object.entries(obj).filter(
-      ([_, value]) => value !== undefined && value !== '' && value !== null
+      ([, value]) => value !== undefined && value !== '' && value !== null
     )
   ) as Partial<T>
 }
 
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+export function relativePath(absolute: string): string {
+  return absolute.split(process.cwd()).pop() ?? absolute
+}
+
+export function absolutePath(relative: string): string {
+  return resolve(process.cwd(), relative)
+}
+
+export function lastSegment(path: string): string {
+  return path.split('/').pop() ?? ''
 }

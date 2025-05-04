@@ -6,7 +6,14 @@
 import { existsSync } from 'fs'
 import { resolve } from 'path'
 
-import { blue, dim, print, yellow } from '@blog/utils'
+import {
+  absolutePath,
+  blue,
+  dim,
+  lastSegment,
+  print,
+  yellow,
+} from '@blog/utils'
 import * as z from '@zod/mini'
 import dotenv from 'dotenv'
 
@@ -248,18 +255,16 @@ export function transformConfig(
 }
 
 export function getJsonConfig(
-  relativePath = process.env[ConfigMap.configFile.variable] ?? 'info.json'
+  configFile = process.env[ConfigMap.configFile.variable] ?? 'info.json'
 ) {
-  const absolutePath = resolve(process.cwd(), relativePath)
+  const jsonFilePath = absolutePath(configFile)
 
   try {
-    const jsonConfig = require(absolutePath) as ConfigEncoded
-    print.info(
-      `Loaded ${blue(absolutePath.split('/')?.pop())} ${dim(absolutePath)}`
-    )
+    const jsonConfig = require(jsonFilePath) as ConfigEncoded
+    print.info(`Loaded ${blue(lastSegment(configFile))} ${dim(jsonFilePath)}`)
     return jsonConfig
   } catch {
-    print.warn(`Could not parse ${yellow(absolutePath)}, skipping.`)
+    print.warn(`Could not parse ${yellow(jsonFilePath)}, skipping.`)
     return {} as ConfigEncoded
   }
 }
@@ -284,16 +289,17 @@ export function getEnvConfig() {
 }
 
 export function getConfig(): ConfigDecoded {
-  const arg = process.argv[2]
+  const envFileFromArg = process.argv[2]?.includes('.env')
+    ? process.argv[2]
+    : `${process.argv[2]}/.env`
 
-  const relativePath = arg?.includes('.env') ? arg : `${arg}/.env`
-  const absolutePath = resolve(process.cwd(), relativePath)
+  const envFilePath = absolutePath(envFileFromArg)
 
-  if (process.argv.length < 3 || !existsSync(absolutePath)) {
-    print.warn(`Could not load ${yellow(absolutePath)}, using defaults.`)
+  if (process.argv.length < 3 || !existsSync(envFilePath)) {
+    print.warn(`Could not find ${yellow(envFilePath)}, loading from process.`)
   } else {
-    dotenv.config({ path: absolutePath })
-    print.info(`Loaded ${blue('.env')} ${dim(absolutePath)}`)
+    dotenv.config({ path: envFilePath })
+    print.info(`Loaded ${blue('.env')} ${dim(envFilePath)}`)
   }
 
   const jsonConfig = getJsonConfig()

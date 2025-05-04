@@ -5,6 +5,7 @@
 
 'use client'
 
+import { initials, lastSegment } from '@blog/utils'
 import { Menu, X } from 'lucide-react'
 import * as lucide from 'lucide-react'
 import Link from 'next/link'
@@ -12,7 +13,6 @@ import { useState } from 'react'
 
 import config from '@/data/config.json'
 import { cx } from '@/utils/cx'
-import { initials } from '@/utils/format'
 
 import { Button } from './button'
 import { InlineLink } from './inline-link'
@@ -43,7 +43,7 @@ const items: NavIconItem[] = [
   },
   {
     title: 'Sponsor',
-    href: 'https://github.com/sponsors/' + config.githubUrl.split('/').pop(),
+    href: 'https://github.com/sponsors/' + lastSegment(config.githubUrl),
     icon: 'HeartIcon',
   },
   {

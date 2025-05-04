@@ -3,6 +3,7 @@
  * @license MIT
  */
 
+import { formatDate } from '@blog/utils'
 import Link from 'next/link'
 
 import { Button } from '@/components/button'
@@ -12,7 +13,6 @@ import { Page, PageHeading, PageSection } from '@/components/page'
 import config from '@/data/config.json'
 import { AtIcon, DiscordIcon, GitHubIcon, InstagramIcon, XIcon } from '@/icons'
 import { getLatestArticles } from '@/utils/articles'
-import { formatDate } from '@/utils/format'
 import { getWeatherEmoji } from '@/utils/weather'
 
 export default async function BlogPage() {

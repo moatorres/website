@@ -1,6 +1,6 @@
 import { memoize } from './memoize.js'
 
-describe('memoize', () => {
+describe('memoize.ts', () => {
   it('returns the correct result from the original function', () => {
     const add = (a: number, b: number) => a + b
     const memoizedAdd = memoize(add)

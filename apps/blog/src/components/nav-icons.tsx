@@ -3,6 +3,7 @@
  * @license MIT
  */
 
+import { lastSegment } from '@blog/utils'
 import * as lucide from 'lucide-react'
 
 import config from '@/data/config.json'
@@ -28,7 +29,7 @@ const defaultItems: NavIconItem[] = [
   },
   {
     title: 'Sponsor',
-    href: 'https://github.com/sponsors/' + config.githubUrl.split('/').pop(),
+    href: 'https://github.com/sponsors/' + lastSegment(config.githubUrl),
     icon: 'HeartIcon',
   },
   {

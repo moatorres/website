@@ -3,12 +3,12 @@
  * @license MIT
  */
 
+import { capitalize } from '@blog/utils'
 import { Metadata } from 'next/types'
 
 import { PageHeading, PageSection } from '@/components/page'
 import { QuoteDisplay } from '@/components/quote-display'
 import config from '@/data/config.json'
-import { capitalize } from '@/utils/format'
 import {
   categories,
   Category,

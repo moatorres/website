@@ -1,7 +1,7 @@
 import * as ansi from './ansi.js'
 import * as logger from './print.js' // Adjust the path as needed
 
-describe('logger functions', () => {
+describe('print.ts', () => {
   const consoleSpies = {
     log: jest.spyOn(console, 'log').mockImplementation(() => void 0),
     info: jest.spyOn(console, 'info').mockImplementation(() => void 0),

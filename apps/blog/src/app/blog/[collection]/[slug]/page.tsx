@@ -3,6 +3,7 @@
  * @license MIT
  */
 
+import { formatDate } from '@blog/utils'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next/types'
 import React from 'react'
@@ -14,7 +15,6 @@ import { TableOfContents } from '@/components/table-of-contents'
 import collections from '@/data/collections.json'
 import config from '@/data/config.json'
 import { getArticleBySlug, getCollectionByName } from '@/utils/articles'
-import { formatDate } from '@/utils/format'
 
 type Props = {
   params: Promise<{
