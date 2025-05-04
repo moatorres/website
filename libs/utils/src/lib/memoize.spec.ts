@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { memoize } from './memoize.js'
 
 describe('memoize.ts', () => {

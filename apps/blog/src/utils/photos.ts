@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { Dirent, readFileSync } from 'fs'
 import { join } from 'path'
 

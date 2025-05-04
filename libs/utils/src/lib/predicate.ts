@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { dim, yellow } from './ansi.js'
 import * as print from './print.js'
 
