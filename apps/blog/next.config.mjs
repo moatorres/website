@@ -57,6 +57,11 @@ const nextConfig = {
     ]
   },
   webpack: (config, { dev }) => {
+    // resolve imports with extension names on dev mode (e.g. import ansi from "./ansi.js")
+    config.resolve.extensionAlias = {
+      '.js': ['.ts', '.tsx', '.js'],
+    }
+    // minify class names (does not apply to tailwindcss) (e.g. .my-class--active -> .xSrdL)
     config.module.rules.forEach((rule) => {
       if (!rule.oneOf) return
       rule.oneOf.forEach((oneOf) => {
