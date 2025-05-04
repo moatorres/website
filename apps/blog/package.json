@@ -30,10 +30,13 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
+    "image-size": "^2.0.2",
+    "ollama": "^0.5.15",
     "prettier": "^3.5.3",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
+    "sharp": "^0.34.1",
     "tailwind-merge": "^3.2.0"
   }
 }

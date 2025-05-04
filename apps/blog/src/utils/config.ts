@@ -27,6 +27,7 @@ const BaseConfig = z.object({
   instagramUrl: z.url(),
   linkedinUrl: z.url(),
   metadataDirectory: z.string().check(z.minLength(3)),
+  photosDirectory: z.string().check(z.minLength(3)),
   projectRoot: z.string().check(z.minLength(3)),
   orcidUrl: z.url(),
   title: z.string().check(z.minLength(2)),
@@ -111,6 +112,11 @@ export const ConfigMap: ConfigMap = {
   orcidUrl: {
     variable: 'NEXT_PUBLIC_ORCID_URL',
     fallback: 'https://orcid.org/',
+  },
+  photosDirectory: {
+    variable: 'APP_PHOTOS_DIRECTORY',
+    fallback: 'images/photos',
+    transform: 'absolute',
   },
   projectRoot: {
     variable: 'APP_PROJECT_ROOT',

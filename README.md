@@ -1,59 +1,50 @@
-# [`moatorres/website`](https://github.com/moatorres/website)
+# website/blog
 
-## Stack
+This is my personal website and blog. It is also a bootstrapable Next.js application that features:
 
-- **Framework** [Next.js](https://nextjs.org/)
-- **Deployment** [Vercel](https://vercel.com)
-- **Styling** [Tailwind CSS](https://tailwindcss.com)
+- [x] Optimized for SEO (sitemap, robots, JSON-LD schema)
+- [x] MDX and Markdown support
+- [x] ~1KB Syntax Highlighing with [`sugar-high`](https://www.npmjs.com/package/sugar-high)
+- [x] [RSS Feed](https://moatorres-blog.vercel.app/rss)
+- [x] [Quotes REST API](https://moatorres-blog.vercel.app/api/quotes)
+- [x] Optimized WebP Images
+- [x] Vercel Web Analytics + Speed Insights
+- [x] Nx Monorepo and PNPM Workspace with TypeScript Project References
+- [ ] Spotify Web API Integration
+- [ ] Dynamic OG images ⚠️
+- [ ] Image Exif Extraction 🚧
+- [ ] LLM-generated Image Alt Descriptions with [`llava`](https://ollama.com/library/llava) 🚧
 
-## Running Locally
+### See it live ⤵️
 
-### Prerequisites
+https://moatorres-blog.vercel.app
 
-Ensure you have **Node.js v18.17+** installed on your system.
+## Running
 
-### Steps to Run Locally
+### Prerequisites 🛠️
 
-1. Clone the repository:
+Ensure you have **Node.js 20.19.x** or above installed on your system. It is recommended, but not required, to install `make` and `ollama` for improved experience. See [here](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows) how to use `make` on Windows.
+
+**Clone**
 
 ```sh
 git clone https://github.com/moatorres/website.git
 ```
 
-2. Navigate to the project directory:
-
-```sh
-cd website
-```
-
-3. Install dependencies:
+**Install**
 
 ```sh
 pnpm install
 ```
 
-4. Bootstrap the project:
+**Run**
 
 ```sh
-make bootstrap
+pnpm dev
 ```
-
-5. Start the development server for the blog application:
-
-```sh
-pnpm exec -- nx dev blog
-```
-
-## Conventions
-
-1.  Content **MUST** live in the `CONTENT_DIR_RELATIVE_PATH` set on the [configuration file](https://github.com/moatorres/website/blob/main/apps/blog/src/utils/config.ts).
-2.  Content `metadata` inside `.mdx` files **MAY NOT** support nested objects.
-3.  Content collections **MUST** be 1-level deep relative to the content directory.
-    Syntax `<source-root>/content/<collection>/<mdx-file>`
-    E.g. `apps/blog/src/content/politics/slavery-in-latin-america.mdx`
 
 ## License
 
-This project is licensed under the MIT—see the [LICENSE](https://github.com/moatorres/website/blob/main/LICENSE) file for details. Crediting the [author](https://github.com/moatorres) is appreciated.
+This project is licensed under the MIT—see the [LICENSE](https://github.com/moatorres/website/blob/main/LICENSE) file for details.
 
 <sub>⚡️ Powered by **OSS** — `< >` with ☕️ by [**@moatorres**](https://github.com/moatorres)</sub>

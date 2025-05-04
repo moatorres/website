@@ -6,46 +6,90 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import React from 'react'
 import { createPortal } from 'react-dom'
 
-import { AspectRatio } from './aspect-ratio'
+import photos from '@/data/photos.json'
+import { cx } from '@/utils/cx'
+import { PhotoMetadata } from '@/utils/photos'
 
-export type Photo = {
-  id?: string
-  url: string
-  alt: string
+import { AspectRatio } from './aspect-ratio'
+import { Skeleton } from './skeleton'
+
+type LightboxProps = {
+  photo: PhotoMetadata | null
+  onClose: () => void
+  onNext?: () => void
+  onPrev?: () => void
 }
 
-const gallery: Photo[] = [
-  { url: '/images/wave-moa-torres.png', alt: 'Wave on sand' },
-  { url: '/images/farol-moa-torres.jpg', alt: 'Farol da Barra' },
-  { url: '/images/gloria-moa-torres.jpg', alt: 'Kid smilling' },
-  { url: '/images/bamboo-moa-torres.jpg', alt: 'Bamboo' },
-]
+export function Lightbox({ photo, onClose, onNext, onPrev }: LightboxProps) {
+  const touchStartX = React.useRef<number | null>(null)
 
-function Lightbox({
-  photo,
-  onClose,
-}: {
-  photo: Photo | null
-  onClose: () => void
-}) {
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case ' ':
+        case 'Escape':
+          e.preventDefault()
+          onClose()
+          break
+        case 'ArrowRight':
+          onNext?.()
+          break
+        case 'ArrowLeft':
+          onPrev?.()
+          break
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose, onNext, onPrev])
+
+  // touch swipe bindings
+  const handleTouchStart = React.useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }, [])
+
+  const handleTouchEnd = React.useCallback(
+    (e: React.TouchEvent) => {
+      if (touchStartX.current === null) return
+      const touchEndX = e.changedTouches[0].clientX
+      const diff = touchStartX.current - touchEndX
+
+      if (diff > 50) {
+        // swipe left
+        onNext?.()
+      } else if (diff < -50) {
+        // swipe right
+        onPrev?.()
+      }
+      touchStartX.current = null
+    },
+    [onNext, onPrev]
+  )
+
   if (!photo) return null
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center  bg-black/70 backdrop-blur-sm" // bg-black/70
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
       onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="relative max-h-screen max-w-screen-lg p-4">
         <div className="relative h-full max-h-[80vh] w-auto">
           <Image
-            src={photo.url}
+            src={photo.src}
             alt={photo.alt}
-            width={1000}
-            height={1000}
-            className="h-auto max-h-[80vh] w-auto object-contain"
+            width={photo.width}
+            height={photo.height}
+            className={cx(
+              'h-auto max-h-[80vh] w-auto object-contain',
+              photo.height <= 1080 && 'md:scale-150'
+            )}
           />
         </div>
       </div>
@@ -55,53 +99,81 @@ function Lightbox({
 }
 
 export function PhotoGallery() {
-  const [photos, setPhotos] = useState<Photo[]>([])
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
-  const [mounted, setMounted] = useState(false)
+  const [gallery, setGallery] = React.useState<PhotoMetadata[]>([])
+  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null)
+  const [mounted, setMounted] = React.useState(false)
+  const [loading, setLoading] = React.useState(true)
 
-  // Handle client-side rendering for the portal
-  useEffect(() => {
+  // handle client-side rendering for the portal
+  React.useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Load photos
-  useEffect(() => {
-    setPhotos(gallery)
+  // load photos
+  React.useEffect(() => {
+    setGallery(photos)
   }, [])
 
-  const openLightbox = (photo: Photo) => {
-    setSelectedPhoto(photo)
+  const openLightbox = (index: number) => {
+    setSelectedIndex(index)
     document.body.style.overflow = 'hidden'
   }
 
   const closeLightbox = () => {
-    setSelectedPhoto(null)
+    setSelectedIndex(null)
     document.body.style.overflow = 'auto'
   }
+
+  const showNext = () => {
+    setSelectedIndex((prev) =>
+      prev !== null && prev < gallery.length - 1 ? prev + 1 : prev
+    )
+  }
+
+  const showPrev = () => {
+    setSelectedIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : prev))
+  }
+
+  const selectedPhoto = selectedIndex !== null ? gallery[selectedIndex] : null
 
   return (
     <div className="w-full">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {photos.map((photo, index) => (
+        {gallery.map((photo, index) => (
           <AspectRatio
             key={index}
             ratio={1 / 1}
             className="cursor-pointer transition-all hover:opacity-90 justify-center"
-            onClick={() => openLightbox(photo)}
+            onClick={() => openLightbox(index)}
           >
             <div className="relative w-full h-full">
               <Image
-                src={photo.url}
+                src={photo.src}
                 alt={photo.alt}
                 fill
                 className="object-cover"
+                style={{ visibility: loading ? 'hidden' : 'visible' }}
+                onError={() => setLoading(false)}
+                onLoadingComplete={() => setLoading(false)}
+              />
+              <Skeleton
+                className={cx(
+                  'hidden object-cover h-80 w-80 bg-accent',
+                  loading && 'inline-block'
+                )}
               />
             </div>
           </AspectRatio>
         ))}
 
-        {/* Lightbox */}
-        {mounted && <Lightbox photo={selectedPhoto} onClose={closeLightbox} />}
+        {mounted && selectedPhoto && (
+          <Lightbox
+            photo={selectedPhoto}
+            onClose={closeLightbox}
+            onNext={showNext}
+            onPrev={showPrev}
+          />
+        )}
       </div>
     </div>
   )

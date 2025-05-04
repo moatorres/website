@@ -42,7 +42,7 @@ export async function generateMetadata({
     },
     openGraph: {
       description,
-      images: `${config.baseUrl}/images/wave-moa-torres.png`,
+      images: `${config.baseUrl}/images/photos/1df9b2ff-3671-440c-8142-2426bc001985.webp`,
     },
     publisher: config.author,
     referrer: 'origin-when-cross-origin',
