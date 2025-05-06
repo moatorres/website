@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { randomUUID } from 'crypto'
 import fs from 'fs/promises'
 import path from 'path'

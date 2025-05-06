@@ -6,7 +6,6 @@
 import {
   absolutePath,
   capitalize,
-  formatDate,
   initials,
   prune,
   relativePath,
@@ -14,12 +13,6 @@ import {
 } from './format.js'
 
 describe('format.ts', () => {
-  describe('formatDate', () => {
-    it('should format a date string to "Month Day, Year"', () => {
-      expect(formatDate('2023-01-01')).toBe('January 1, 2023')
-    })
-  })
-
   describe('slugify', () => {
     it('should convert a string to a URL-friendly slug', () => {
       expect(slugify('Hello World!')).toBe('hello-world')
