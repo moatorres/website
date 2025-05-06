@@ -73,5 +73,9 @@
         "passWithNoTests": true
       }
     }
+  },
+  "tui": {
+    "enabled": true,
+    "autoExit": 0
   }
 }
