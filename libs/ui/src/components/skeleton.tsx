@@ -3,7 +3,7 @@
  * @license MIT
  */
 
-import { cx } from '@/utils/cx'
+import { cx } from '../utils/cx.js'
 
 type SkeletonProps = {
   className?: string

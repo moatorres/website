@@ -5,12 +5,12 @@
 
 'use client'
 
+import { Button } from '@blog/ui'
 import { formatDate } from '@blog/utils'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useMemo } from 'react'
 
-import { Button } from '@/components/button'
 import { PageHeading, PageSection } from '@/components/page'
 import articles from '@/data/articles.json'
 

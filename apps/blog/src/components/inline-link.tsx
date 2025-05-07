@@ -3,10 +3,17 @@
  * @license MIT
  */
 
+import { cx } from '@blog/ui'
+import type { LinkProps } from 'next/link'
 import Link from 'next/link'
-import { PropsWithChildren } from 'react'
+import { ReactNode } from 'react'
 
-import { cx } from '@/utils/cx'
+type InlineLinkProps = Omit<LinkProps, 'href'> & {
+  href?: string
+  children?: ReactNode
+  className?: string
+  underline?: boolean
+}
 
 export function InlineLink({
   children,
@@ -14,11 +21,7 @@ export function InlineLink({
   href = '#',
   underline = false,
   ...props
-}: PropsWithChildren<{
-  href?: string
-  className?: string
-  underline?: boolean
-}>) {
+}: InlineLinkProps) {
   const baseClassName = cx(
     'relative inline-block text-accent-foreground',
     underline &&

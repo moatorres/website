@@ -3,15 +3,21 @@
  * @license MIT
  */
 
+import {
+  AtIcon,
+  Button,
+  DiscordIcon,
+  GitHubIcon,
+  InstagramIcon,
+  XIcon,
+} from '@blog/ui'
 import { formatDate } from '@blog/utils'
 import Link from 'next/link'
 
-import { Button } from '@/components/button'
 import { InlineLink } from '@/components/inline-link'
 import { LinksSection } from '@/components/links-section'
 import { Page, PageHeading, PageSection } from '@/components/page'
 import config from '@/data/config.json'
-import { AtIcon, DiscordIcon, GitHubIcon, InstagramIcon, XIcon } from '@/icons'
 import { getLatestArticles } from '@/utils/articles'
 import { getWeatherEmoji } from '@/utils/weather'
 

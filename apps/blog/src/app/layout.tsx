@@ -3,14 +3,15 @@
  * @license MIT
  */
 
+import { ThemeProvider } from '@blog/ui'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import LocalFont from 'next/font/local'
 
+import { SessionProvider } from '@/components/context'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
-import { ThemeProvider } from '@/components/theme'
 import config from '@/data/config.json'
 
 import './global.css'

@@ -3,11 +3,11 @@
  * @license MIT
  */
 
+import { cx } from '@blog/ui'
 import { ExternalLinkIcon } from 'lucide-react'
 import { JSX } from 'react'
 
 import config from '@/data/config.json'
-import { cx } from '@/utils/cx'
 
 import { InlineLink } from './inline-link'
 

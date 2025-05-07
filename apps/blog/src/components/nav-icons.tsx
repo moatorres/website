@@ -3,12 +3,12 @@
  * @license MIT
  */
 
+import { Button } from '@blog/ui'
 import { lastSegment } from '@blog/utils'
 import * as lucide from 'lucide-react'
 
 import config from '@/data/config.json'
 
-import { Button } from './button'
 import { InlineLink } from './inline-link'
 
 const defaultItems: NavIconItem[] = [

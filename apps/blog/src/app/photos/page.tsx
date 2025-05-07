@@ -3,12 +3,12 @@
  * @license MIT
  */
 
+import { Skeleton } from '@blog/ui'
 import React, { Suspense } from 'react'
 
 import { AspectRatio } from '@/components/aspect-ratio'
 import { PageSection } from '@/components/page'
 import { PhotoGallery } from '@/components/photos'
-import { Skeleton } from '@/components/skeleton'
 
 export default function PhotosPage() {
   return (

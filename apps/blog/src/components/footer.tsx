@@ -3,8 +3,9 @@
  * @license MIT
  */
 
+import { cx } from '@blog/ui'
+
 import config from '@/data/config.json'
-import { cx } from '@/utils/cx'
 
 import { PAGE_LAYOUT } from './page'
 
@@ -31,7 +32,7 @@ export function Footer({ className }: { className?: string }) {
             CC BY-NC-SA 4.0
           </a>
           <span className="hidden sm:flex">
-            {new Date().getFullYear()}–Present © {config.githubUrl}
+            {new Date().getFullYear()}–Present © {config.author}
           </span>
         </div>
         <nav className="flex gap-6">

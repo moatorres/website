@@ -5,16 +5,15 @@
 
 'use client'
 
+import { cx, Skeleton } from '@blog/ui'
 import Image from 'next/image'
 import React from 'react'
 import { createPortal } from 'react-dom'
 
 import photos from '@/data/photos.json'
-import { cx } from '@/utils/cx'
 import { PhotoMetadata } from '@/utils/photos'
 
 import { AspectRatio } from './aspect-ratio'
-import { Skeleton } from './skeleton'
 
 type LightboxProps = {
   photo: PhotoMetadata | null

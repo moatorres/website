@@ -5,11 +5,11 @@
 
 'use client'
 
+import { Button } from '@blog/ui'
 import { ArrowLeft, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
-import { Button } from '@/components/button'
 import { Page } from '@/components/page'
 
 type ErrorProps = {

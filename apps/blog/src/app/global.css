@@ -5,9 +5,12 @@
 
 @import '../assets/styles/sugar-high.css';
 
+@source '../../../../libs/ui/src/**/*.{js,ts,jsx,tsx,html}';
+
 @variant dark (&:where(.dark, .dark *));
 
 @theme inline {
+  --radius: 0.625rem;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
@@ -26,17 +29,28 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-accordion-down: accordion-down 0.35s ease-out;
+  --animate-accordion-up: accordion-up 0.1s ease-out;
 }
 
 @layer base {
   :root {
+    --radius: 0.625rem;
     --background: hsl(0 0% 100%);
     --foreground: hsl(240 10% 3.9%);
 
@@ -52,8 +66,14 @@
     --accent: hsl(240 4.8% 95.9%);
     --accent-foreground: hsl(240 5.9% 10%);
 
-    --destructive: hsl(0 72.22% 50.59%);
+    --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: hsl(0 0% 98%);
+
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
 
     --border: hsl(240 5.9% 90%);
     --input: hsl(240 5.9% 90%);
@@ -78,12 +98,36 @@
     --accent: hsl(222 10% 20%);
     --accent-foreground: hsl(0 0% 85%);
 
-    --destructive: hsl(0 60% 35%);
+    --destructive: oklch(0.704 0.191 22.216);
     --destructive-foreground: hsl(0 85% 90%);
+
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+
+    --popover: oklch(0.269 0 0);
+    --popover-foreground: oklch(0.985 0 0);
 
     --border: hsl(222 10% 20%);
     --input: hsl(222 10% 20%);
     --ring: hsl(222 5% 70%);
+  }
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
   }
 }
 

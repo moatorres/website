@@ -5,10 +5,10 @@
 
 'use client'
 
+import { cx } from '@blog/ui'
 import Link from 'next/link'
 import React from 'react'
 
-import { cx } from '@/utils/cx'
 import { categories, Category, getCollections } from '@/utils/quotes'
 
 export function QuotesNav({ subject }: { subject: Category }) {

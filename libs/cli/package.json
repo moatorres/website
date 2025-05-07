@@ -16,7 +16,7 @@
     }
   },
   "dependencies": {
-    "@blog/utils": "workspace:*",
+    "@blog/utils": "workspace:^",
     "@effect/cli": "^0.59.18",
     "@effect/platform-node": "^0.77.6",
     "effect": "^3.14.14",

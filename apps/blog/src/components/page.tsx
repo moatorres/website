@@ -3,7 +3,7 @@
  * @license MIT
  */
 
-import { cx } from '@/utils/cx'
+import { cx } from '@blog/ui'
 
 export const PAGE_LAYOUT = 'max-w-[70ch] print:max-w-[80ch] mx-auto'
 

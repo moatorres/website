@@ -5,14 +5,10 @@
 
 'use client'
 
+import { Button, cx, icons } from '@blog/ui'
 import { capitalize } from '@blog/utils'
 import { Share2 } from 'lucide-react'
 import React from 'react'
-
-import * as icons from '@/icons'
-import { cx } from '@/utils/cx'
-
-import { Button } from './button'
 
 type SocialShare = {
   url: string
@@ -72,7 +68,7 @@ export function ArticleFooter(className: { className?: string }) {
           {socials.map((item, idx) => {
             if (item.hidden) return null
 
-            const Icon = require('@/icons')[item.icon]
+            const Icon = icons[item.icon]
 
             return (
               <Button

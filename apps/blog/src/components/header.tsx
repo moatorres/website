@@ -5,19 +5,19 @@
 
 'use client'
 
+import { Button, cx, ThemeSwitcher } from '@blog/ui'
 import { initials, lastSegment } from '@blog/utils'
 import { Menu, X } from 'lucide-react'
 import * as lucide from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import React from 'react'
 
 import config from '@/data/config.json'
-import { cx } from '@/utils/cx'
 
-import { Button } from './button'
+import { useSession } from './context'
+import { DashboardMenu } from './dashboard-menu'
 import { InlineLink } from './inline-link'
 import { PAGE_LAYOUT } from './page'
-import { ThemeSwitcher } from './theme'
 
 type NavIconItem = {
   title: string

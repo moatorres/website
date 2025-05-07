@@ -3,6 +3,7 @@
  * @license MIT
  */
 
+import { ArticleSkeleton, Skeleton } from '@blog/ui'
 import { formatDate } from '@blog/utils'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next/types'
@@ -10,7 +11,6 @@ import React from 'react'
 import { Suspense } from 'react'
 
 import { PageSection } from '@/components/page'
-import { ArticleSkeleton, Skeleton } from '@/components/skeleton'
 import { TableOfContents } from '@/components/table-of-contents'
 import collections from '@/data/collections.json'
 import config from '@/data/config.json'

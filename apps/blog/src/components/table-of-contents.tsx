@@ -5,10 +5,9 @@
 
 'use client'
 
+import { cx } from '@blog/ui'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
-
-import { cx } from '@/utils/cx'
 
 export function TableOfContents() {
   const [isOpen, setIsOpen] = useState(false)

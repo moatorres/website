@@ -5,12 +5,11 @@
 
 'use client'
 
+import { cx, QuoteIcon } from '@blog/ui'
 import { motion } from 'framer-motion'
-import { useSearchParams } from 'next/navigation.js'
+import { useSearchParams } from 'next/navigation'
 import React from 'react'
 
-import { QuoteIcon } from '@/icons'
-import { cx } from '@/utils/cx'
 import {
   categories,
   Category,

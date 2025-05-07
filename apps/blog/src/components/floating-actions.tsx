@@ -5,10 +5,9 @@
 
 'use client'
 
+import { Button } from '@blog/ui'
 import { ArrowUp, Download, FileText } from 'lucide-react'
 import React from 'react'
-
-import { Button } from './button'
 
 export function FloatingActions() {
   return (

@@ -3,8 +3,6 @@
  * @license MIT
  */
 
-import React from 'react'
-
 import { IconProps } from './type'
 
 export function At({ className }: IconProps) {
