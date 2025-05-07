@@ -64,7 +64,8 @@ const items: NavIconItem[] = [
 ]
 
 export function Header({ className }: { className?: string }) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const { isAdmin } = useSession()
 
   return (
     <header
@@ -109,6 +110,7 @@ export function Header({ className }: { className?: string }) {
             )
           })}
           <ThemeSwitcher />
+          {isAdmin && <DashboardMenu />}
           <Button
             variant="ghost"
             size="icon"
