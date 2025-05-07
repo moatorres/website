@@ -12,6 +12,8 @@ import highlight from 'remark-sugar-high'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
 
+const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365
+
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
@@ -23,6 +25,19 @@ const nextConfig = {
   },
   experimental: {
     viewTransition: true,
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: `max-age=${ONE_YEAR_IN_SECONDS}; includeSubDomains; preload`,
+          },
+        ],
+      },
+    ]
   },
   images: {
     formats: ['image/webp'],

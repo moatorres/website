@@ -3,6 +3,7 @@
  * @license MIT
  */
 
+import { print } from '@blog/utils'
 import { Data, Effect, Schedule } from 'effect'
 
 export class WeatherAPIError extends Data.TaggedError('WeatherAPIError')<{
@@ -15,7 +16,7 @@ export class FetchError extends Data.TaggedError('FetchError')<{
 
 const TEN_MINUTES_IN_SECONDS = 10 * 60
 
-const FETCH_OPTIONS = {
+const fetchOptions = {
   method: 'GET',
   next: { revalidate: TEN_MINUTES_IN_SECONDS },
 }
@@ -25,18 +26,22 @@ function handleApiError(data: {
   current: { is_day: number; condition: { text: string }; temp_c: number }
 }) {
   if (data.error) {
-    return Effect.fail(
-      new WeatherAPIError({ cause: new Error(JSON.stringify(data.error)) })
-    )
+    return Effect.fail(new WeatherAPIError({ cause: data.error }))
   }
   return Effect.succeed(data)
 }
 
-function fetchWeather(url: string) {
+function fetchWeather(city: string) {
+  const key = process.env.WEATHER_API_KEY
+  const url = `https://api.weatherapi.com/v1/current.json?key=${key}&q=${city}`
   return Effect.tryPromise({
-    try: () => fetch(url, FETCH_OPTIONS).then(async (res) => await res.json()),
+    try: () => fetch(url, fetchOptions).then(async (res) => await res.json()),
     catch: (error) => new FetchError({ cause: error }),
-  }).pipe(Effect.flatMap(handleApiError))
+  }).pipe(
+    Effect.retry(Schedule.jittered(Schedule.exponential('1 seconds'))),
+    Effect.timeout('5 seconds'),
+    Effect.flatMap(handleApiError)
+  )
 }
 
 function getHour(timezone = 'America/Recife') {
@@ -55,34 +60,17 @@ function getHour(timezone = 'America/Recife') {
 
 export async function getWeatherEmoji(
   city = 'Recife',
-  timezone = 'America/Recife',
-  apiKey = process.env.WEATHER_API_KEY
+  timezone = 'America/Recife'
 ) {
   const currentHour = getHour(timezone)
   const fallback = currentHour >= 6 && currentHour < 18 ? '☀️' : '🌙'
-
   try {
-    const data = await Effect.gen(function* () {
-      return yield* fetchWeather(
-        `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
-      ).pipe(
-        Effect.retry(Schedule.jittered(Schedule.exponential('1 seconds'))),
-        Effect.timeout('5 seconds')
-      )
-    }).pipe(Effect.runPromise)
-
-    const isDay = Number(data.current.is_day) === 1
-
-    const emoji = getWeatherEmojiFromCondition(
-      data.current.condition.text,
-      isDay
-    )
-
-    const temperature = data.current.temp_c
-
-    return { emoji, temperature }
+    const { current } = await Effect.runPromise(fetchWeather(city))
+    const isDay = Number(current.is_day) === 1
+    const emoji = getWeatherEmojiFromCondition(current.condition.text, isDay)
+    return { emoji, temperature: current.temp_c }
   } catch (error) {
-    console.error('Error fetching weather data: ', error)
+    print.warn('Error fetching weather data: ', error)
     return { emoji: fallback, temperature: undefined }
   }
 }

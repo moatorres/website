@@ -75,7 +75,6 @@ export const getCollectionByName = memoize((collection: string) => {
     config.metadataDirectory,
     `${collection}.collection.json`
   )
-  console.log('filePath', filePath)
   const fileContent = readFileSync(filePath, 'utf-8')
   return JSON.parse(fileContent) as ArticleMetadata[]
 })
