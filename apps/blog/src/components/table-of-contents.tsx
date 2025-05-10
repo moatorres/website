@@ -5,7 +5,7 @@
 
 'use client'
 
-import { cx } from '@blog/ui'
+import { cn } from '@shadcn/ui'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -62,7 +62,7 @@ export function TableOfContents() {
             {headings.map((heading) => (
               <li
                 key={heading.id}
-                className={cx('p-0', heading.level === 3 ? 'ml-4' : '')}
+                className={cn('p-0', heading.level === 3 ? 'ml-4' : '')}
               >
                 <a
                   href={`#${heading.id}`}

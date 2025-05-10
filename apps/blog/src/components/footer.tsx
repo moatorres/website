@@ -3,11 +3,9 @@
  * @license MIT
  */
 
-import { cx } from '@blog/ui'
+import { cn } from '@shadcn/ui'
 
 import config from '@/data/config.json'
-
-import { PAGE_LAYOUT } from './page'
 
 const links = [
   { name: 'LinkedIn', url: config.linkedinUrl },
@@ -17,11 +15,7 @@ const links = [
 export function Footer({ className }: { className?: string }) {
   return (
     <footer
-      className={cx(
-        'px-4 md:px-6 py-12 text-muted-foreground',
-        PAGE_LAYOUT,
-        className
-      )}
+      className={cn('px-4 md:px-6 py-12 text-muted-foreground', className)}
     >
       <div className="flex md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex flex-col sm:flex-row gap-2 text-xs uppercase tracking-widest">

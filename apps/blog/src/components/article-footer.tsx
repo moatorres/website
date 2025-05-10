@@ -5,10 +5,12 @@
 
 'use client'
 
-import { Button, cx, icons } from '@blog/ui'
 import { capitalize } from '@blog/utils'
+import { Button, cn } from '@shadcn/ui'
 import { Share2 } from 'lucide-react'
 import React from 'react'
+
+import * as icons from '@/icons'
 
 type SocialShare = {
   url: string
@@ -55,7 +57,7 @@ export function ArticleFooter(className: { className?: string }) {
   }
 
   return (
-    <footer className={cx('mt-12 pt-8 px-4 print:hidden', className)}>
+    <footer className={cn('mt-12 pt-8 print:hidden', className)}>
       <div className="flex justify-between items-center">
         <Button
           variant="outline"

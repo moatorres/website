@@ -1,114 +1,236 @@
 [
   {
+    "id": "16c142b4-80d2-44b0-994f-b8d6bf35be66",
     "text": "Life is what happens when you're busy making other plans.",
-    "author": "John Lennon"
+    "author": "John Lennon",
+    "category": "Life"
   },
   {
-    "text": "You miss 100% of the shots you don't take.",
-    "author": "Wayne Gretzky"
+    "id": "00468d03-970b-483a-ab5a-3267e2400d123",
+    "text": "The best fighter is never angry.",
+    "author": "Lao Tzu",
+    "category": "Growth"
   },
   {
+    "id": "87fc0611-97e7-4225-b89e-a51062e5d3e4",
     "text": "Whether you think you can or you think you can't, you're right.",
-    "author": "Henry Ford"
+    "author": "Henry Ford",
+    "category": "Motivation"
   },
   {
+    "id": "f4979460-75e0-4e9c-8fb0-7bc80ac7d0a1",
     "text": "A real friend is one who walks in when the rest of the world walks out.",
-    "author": "Walter Winchell"
+    "author": "Walter Winchell",
+    "category": "Friendship"
   },
   {
-    "text": "The only true wisdom is in knowing you know nothing.",
-    "author": "Socrates"
-  },
-  {
+    "id": "fb8299db-254a-4ace-ac77-258f3a297472",
     "text": "We cannot solve problems with the kind of thinking we employed when we came up with them.",
-    "author": "Albert Einstein"
+    "author": "Albert Einstein",
+    "category": "Wisdom"
   },
   {
+    "id": "a266e7c7-630a-49d4-aff6-38ac85d2ba9f",
     "text": "When you give joy to other people, you get more joy in return.",
-    "author": "Eleanor Roosevelt"
+    "author": "Eleanor Roosevelt",
+    "category": "Life"
   },
   {
+    "id": "a6784231-999e-4bc1-acbf-1d101b05e17b",
     "text": "Your most unhappy customers are your greatest source of learning.",
-    "author": "Bill Gates"
+    "author": "Bill Gates",
+    "category": "Business"
   },
   {
+    "id": "874d9ccf-ddb0-48aa-b36a-3d0570648136",
     "text": "Creativity is intelligence having fun.",
-    "author": "Albert Einstein"
+    "author": "Albert Einstein",
+    "category": "Arts"
   },
   {
-    "text": "If you want creative workers, give them enough time to play.",
-    "author": "John Cleese"
-  },
-  {
+    "id": "4ff289d3-f104-40a6-a5f9-5a9b39995cc5",
     "text": "The purpose of our lives is to be happy.",
-    "author": "Dalai Lama"
+    "author": "Dalai Lama",
+    "category": "Life"
   },
   {
+    "id": "633273bb-39d5-48be-bbb8-315c2d3dd2b5",
     "text": "In the end, we will remember not the words of our enemies, but the silence of our friends.",
-    "author": "Martin Luther King Jr."
+    "author": "Martin Luther King Jr.",
+    "category": "Friendship"
   },
   {
-    "text": "Life is either a daring adventure or nothing at all.",
-    "author": "Helen Keller"
-  },
-  {
-    "text": "You must be the change you wish to see in the world.",
-    "author": "Mahatma Gandhi"
-  },
-  {
+    "id": "7bacce27-7113-4768-b0c5-682eb96e5a5c",
     "text": "The best revenge is massive success.",
-    "author": "Frank Sinatra"
+    "author": "Frank Sinatra",
+    "category": "Motivation"
   },
   {
+    "id": "83d3e237-1d60-4178-9f18-2de9b100fd53",
     "text": "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
-    "author": "Ralph Waldo Emerson"
+    "author": "Ralph Waldo Emerson",
+    "category": "Wisdom"
   },
   {
+    "id": "2c688d90-f9c7-4128-9adb-7d34331ee6e9",
     "text": "The only way to do great work is to love what you do.",
-    "author": "Steve Jobs"
+    "author": "Steve Jobs",
+    "category": "Business"
   },
   {
+    "id": "4f1a43dc-5277-477b-837c-dc59bea1abe3",
+    "text": "A journey of a thousand miles begins with a single step.",
     "author": "Laozi",
-    "text": "A journey of a thousand miles begins with a single step."
+    "category": "Motivation"
   },
   {
+    "id": "5494b9b2-23f1-48c6-815f-056164ebba78",
+    "text": "In the face of darkness, let your light shine brighter than ever.",
     "author": "Geōrgius Magnus",
-    "text": "In the face of darkness, let your light shine brighter than ever."
+    "category": "Inspiration"
   },
   {
+    "id": "988e17e8-cbc6-4593-a0fb-180a3919fd61",
+    "text": "The greatest battles are fought not with swords, but with love and compassion.",
     "author": "Geōrgius Magnus",
-    "text": "The greatest battles are fought not with swords, but with love and compassion."
+    "category": "Love"
   },
   {
+    "id": "f0e94379-38ff-4edf-b19d-9b79fba5c1fb",
+    "text": "Choose love over hatred, and you shall triumph over any adversary.",
     "author": "Geōrgius Magnus",
-    "text": "Choose love over hatred, and you shall triumph over any adversary."
+    "category": "Love"
   },
   {
+    "id": "ac577470-af1a-4d9d-986b-4f177cb86fe8",
+    "text": "The strongest armor is built not of steel, but of empathy and understanding.",
     "author": "Geōrgius Magnus",
-    "text": "The strongest armor is built not of steel, but of empathy and understanding."
+    "category": "Love"
   },
   {
+    "id": "ad049b68-ef59-4c58-a21f-10c04138592d",
+    "text": "It always seems impossible until it's done.",
     "author": "Nelson Mandela",
-    "text": "It always seems impossible until it's done."
+    "category": "Inspiration"
   },
   {
+    "id": "49bc9efd-a836-4871-a124-af59c91a03b2",
+    "text": "It does not matter how slowly you go as long as you do not stop.",
     "author": "Confucius",
-    "text": "It does not matter how slowly you go as long as you do not stop."
+    "category": "Motivation"
   },
   {
+    "id": "88ec9e5d-d1b7-4f3d-ab2f-237175df23f2",
+    "text": "Turn your wounds into wisdom.",
     "author": "Oprah Winfrey",
-    "text": "Turn your wounds into wisdom."
+    "category": "Growth"
   },
   {
+    "id": "9b6ff7b9-b612-415f-b9a9-4f7114815dcb",
+    "text": "I dream my painting and I paint my dream.",
     "author": "Vincent van Gogh",
-    "text": "I dream my painting and I paint my dream."
+    "category": "Arts"
   },
   {
+    "id": "babb388b-859c-4272-a435-3bd956148054",
+    "text": "That which does not kill us makes us stronger.",
     "author": "Friedrich Nietzsche",
-    "text": "That which does not kill us makes us stronger."
+    "category": "Growth"
   },
   {
+    "id": "cc14321e-40cb-4fa8-8d82-d1aec86b8403",
+    "text": "Simplicity is the ultimate sophistication.",
     "author": "Leonardo da Vinci",
-    "text": "Simplicity is the ultimate sophistication."
+    "category": "Arts"
+  },
+  {
+    "id": "ef98e61f-021a-4a2f-a3cd-0e439e1b55d6",
+    "text": "Life isn't about finding yourself, life is about creating yourself.",
+    "author": "George Bernard Shaw",
+    "category": "Life"
+  },
+  {
+    "id": "18bd5e98-2fb0-455b-be59-dd48814bac19",
+    "text": "I only achieve simplicity with enormous effort.",
+    "author": "Clarice Lispector",
+    "category": "Arts"
+  },
+  {
+    "id": "4888b44a-d929-4851-a40a-c3b96a1adb7c",
+    "text": "The privilege of a lifetime is to become who you truly are.",
+    "author": "Carl Jung",
+    "category": "Growth"
+  },
+  {
+    "id": "55cac2a9-071b-4b29-8c47-f60a67c7bab9",
+    "text": "The only journey is the one within.",
+    "author": "Rainer Maria Rilke",
+    "category": "Wisdom"
+  },
+  {
+    "id": "c6496b01-4a87-4533-8d01-64c78962bfdf",
+    "text": "Normality is a paved road: it's comfortable to walk, but no flowers grow on it.",
+    "author": "Vincent van Gogh",
+    "category": "Life"
+  },
+  {
+    "id": "fd9727c6-10cb-44f8-b2ef-776caaaba2cb",
+    "text": "The art of being wise is the art of knowing what to overlook.",
+    "author": "William James",
+    "category": "Wisdom"
+  },
+  {
+    "id": "1f1c93f8-43ae-470e-b40e-2cd7a7d55b9b",
+    "text": "Do not wait for the right moment. Create it.",
+    "author": "George Bernard Shaw",
+    "category": "Motivation"
+  },
+  {
+    "id": "af2912ad-a428-45cb-af13-2cef1f34bb9e",
+    "text": "A man is not finished when he is defeated. He is finished when he quits.",
+    "author": "Richard Nixon",
+    "category": "Motivation"
+  },
+  {
+    "id": "b92f5cd9-6291-4b77-b4ec-7813c2e86d09",
+    "text": "A loving heart is the truest wisdom.",
+    "author": "Charles Dickens",
+    "category": "Love"
+  },
+  {
+    "id": "c960bd6b-72d9-442f-ac1a-28bb6a127f86",
+    "text": "Love is the only force capable of transforming an enemy into a friend.",
+    "author": "Martin Luther King Jr.",
+    "category": "Love"
+  },
+  {
+    "id": "cf00036b-c4a6-4ebf-b66d-f27040e87b4e",
+    "text": "The wound is the place where the light enters you.",
+    "author": "Rumi",
+    "category": "Growth"
+  },
+  {
+    "id": "407cf4ae-28a9-49d1-9a5c-6eac06794b5c",
+    "text": "The quieter you become, the more you can hear.",
+    "author": "Ram Dass",
+    "category": "Wisdom"
+  },
+  {
+    "id": "ed681fad-44b0-4be9-8fb3-9c0204420528",
+    "text": "He who opens a school door, closes a prison.",
+    "author": "Victor Hugo",
+    "category": "Wisdom"
+  },
+  {
+    "id": "28cbf0e0-e9a8-4cba-a1c0-561b0a6906a0",
+    "text": "To draw, you must close your eyes and sing.",
+    "author": "Pablo Picasso",
+    "category": "Arts"
+  },
+  {
+    "id": "00468d03-970b-483a-ab5a-3267e2400dba",
+    "text": "Every act of creation is first an act of destruction.",
+    "author": "Pablo Picasso",
+    "category": "Arts"
   }
 ]

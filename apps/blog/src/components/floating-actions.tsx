@@ -5,7 +5,7 @@
 
 'use client'
 
-import { Button } from '@blog/ui'
+import { Button } from '@shadcn/ui'
 import { ArrowUp, Download, FileText } from 'lucide-react'
 import React from 'react'
 

@@ -5,10 +5,9 @@
 
 'use client'
 
-import { Button, cx, ThemeSwitcher } from '@blog/ui'
 import { initials, lastSegment } from '@blog/utils'
-import { Menu, X } from 'lucide-react'
-import * as lucide from 'lucide-react'
+import { Button, cn } from '@shadcn/ui'
+import * as LucideReact from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
@@ -17,12 +16,13 @@ import config from '@/data/config.json'
 import { useSession } from './context'
 import { DashboardMenu } from './dashboard-menu'
 import { InlineLink } from './inline-link'
-import { PAGE_LAYOUT } from './page'
+import { ModeToggle } from './mode-toggle'
+import { MobileNav } from './nav-mobile'
 
 type NavIconItem = {
   title: string
   href: string
-  icon: keyof typeof lucide
+  icon: keyof typeof LucideReact
 }
 
 const items: NavIconItem[] = [
@@ -42,14 +42,14 @@ const items: NavIconItem[] = [
     icon: 'CameraIcon',
   },
   {
-    title: 'Sponsor',
-    href: 'https://github.com/sponsors/' + lastSegment(config.githubUrl),
-    icon: 'HeartIcon',
-  },
-  {
     title: 'Blog',
     href: '/blog',
     icon: 'FileTextIcon',
+  },
+  {
+    title: 'Sponsor',
+    href: 'https://github.com/sponsors/' + lastSegment(config.githubUrl),
+    icon: 'HeartIcon',
   },
   {
     title: 'GitHub',
@@ -64,89 +64,58 @@ const items: NavIconItem[] = [
 ]
 
 export function Header({ className }: { className?: string }) {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const { isAdmin } = useSession()
 
   return (
-    <header
-      className={cx('py-6 px-4 md:px-6 print:hidden', PAGE_LAYOUT, className)}
-    >
+    <header className={cn('py-6 px-4 print:hidden', className)}>
       <div className="flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tighter uppercase">
           {initials(config.title)}
         </Link>
 
-        <nav className="hidden sm:flex items-center space-x-10">
-          {config.sections.map((section) => {
-            return (
-              <Link
-                key={section.name}
-                href={'/' + section.name.toLowerCase()}
-                className="text-sm uppercase tracking-wide hover:text-muted-foreground"
-              >
-                {section.name}
-              </Link>
-            )
-          })}
-        </nav>
+        <span className="flex items-center justify-end space-x-4">
+          <nav className="hidden md:flex items-center space-x-4">
+            {config.sections.map((section) => {
+              return (
+                <Link
+                  key={section.name}
+                  href={'/' + section.name.toLowerCase()}
+                  className="text-sm capitalize tracking-wide text-muted-foreground hover:text-foreground"
+                >
+                  {section.name}
+                </Link>
+              )
+            })}
+          </nav>
+          <div className="flex items-center space-x-4">
+            <div className="mr-2">
+              {items.map((item, index) => {
+                const Icon = LucideReact[item.icon] as React.JSX.ElementType
 
-        <div className="flex items-center">
-          {items.map((item, index) => {
-            const Icon = require('lucide-react')[item.icon]
-
-            return (
-              <Button
-                key={index}
-                title={item.title}
-                variant="soft"
-                className="h-8 w-8 px-0"
-                asChild
-              >
-                <InlineLink href={item.href}>
-                  <Icon />
-                  <span className="sr-only">{item.title}</span>
-                </InlineLink>
-              </Button>
-            )
-          })}
-          <ThemeSwitcher />
-          {isAdmin && <DashboardMenu />}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden p-0"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-            <span className="sr-only">Menu</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="hidden mt-6 border-t border-border pt-6">
-          <nav className="flex flex-col space-y-6">
-            {config.sections
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((section) => {
                 return (
-                  <Link
-                    key={section.name}
-                    href={'/' + section.name.toLowerCase()}
-                    className="text-sm uppercase tracking-wide"
+                  <Button
+                    key={index}
+                    title={item.title}
+                    aria-label={item.title}
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground px-0"
+                    asChild
                   >
-                    {section.name}
-                  </Link>
+                    <InlineLink href={item.href}>
+                      <Icon strokeWidth={1.5} />
+                      <span className="sr-only">{item.title}</span>
+                    </InlineLink>
+                  </Button>
                 )
               })}
-          </nav>
-        </div>
-      )}
+              <ModeToggle />
+            </div>
+            <MobileNav />
+            {isAdmin && <DashboardMenu />}
+          </div>
+        </span>
+      </div>
     </header>
   )
 }

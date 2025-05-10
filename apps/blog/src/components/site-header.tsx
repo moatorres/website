@@ -1,0 +1,34 @@
+import { Button, SidebarTrigger } from '@shadcn/ui'
+
+import { GitHubIcon } from '@/icons'
+
+import { DashboardMenu } from './dashboard-menu'
+import { ModeToggle } from './mode-toggle'
+import { SearchForm } from './search-form'
+import { ThemeSelector } from './theme-selector'
+
+export function SiteHeader() {
+  return (
+    <header className="flex h-(--header-height) shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+        <SidebarTrigger className="-ml-1" />
+        <div className="ml-auto flex items-center gap-2">
+          <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
+            <a
+              href="https://github.com/moatorres/website"
+              rel="noopener noreferrer"
+              target="_blank"
+              className="dark:text-foreground"
+            >
+              <GitHubIcon />
+            </a>
+          </Button>
+          <SearchForm />
+          <ThemeSelector />
+          <ModeToggle />
+          <DashboardMenu />
+        </div>
+      </div>
+    </header>
+  )
+}

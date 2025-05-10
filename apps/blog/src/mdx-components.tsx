@@ -45,7 +45,7 @@ export function useMDXComponents(): MDXComponents {
       <p className="not-prose text-sm text-muted-foreground my-1" {...props} />
     ),
     p: (props: ComponentPropsWithoutRef<'p'>) => (
-      <p className="leading-relaxed mb-8" {...props} />
+      <p className="leading-relaxed mb-8 prose-p:text-foreground" {...props} />
     ),
     ol: (props: ComponentPropsWithoutRef<'ol'>) => (
       <ol className="list-decimal pl-5 space-y-2" {...props} />
@@ -62,7 +62,9 @@ export function useMDXComponents(): MDXComponents {
     strong: (props: ComponentPropsWithoutRef<'strong'>) => (
       <strong className="font-medium" {...props} />
     ),
-    a: InlineLink,
+    a: (props: ComponentPropsWithoutRef<'a'>) => (
+      <InlineLink underline {...props} />
+    ),
     code: CodeBlock,
     Table: ({ data }: { data: { headers: string[]; rows: string[][] } }) => (
       <table>

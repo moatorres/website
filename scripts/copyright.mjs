@@ -12,13 +12,16 @@ const TEMPLATE = `/**
  * @license MIT
  */`
 
+const ignoreDirectories = [':!libs/ui/**']
 const allowedExtensions = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx'])
 const excludedFiles = new Set(['next-env.d.ts'])
 
 function main() {
   console.log('🚀 Copyright Script')
 
-  const files = execSync('git ls-files').toString().split('\n')
+  const files = execSync(`git ls-files ${ignoreDirectories.join(' ')}`, {
+    encoding: 'utf-8',
+  }).split('\n')
 
   files.forEach((file) => {
     if (excludedFiles.has(path.basename(file))) return

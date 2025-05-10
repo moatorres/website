@@ -5,15 +5,13 @@
 
 'use client'
 
-import { cx, Skeleton } from '@blog/ui'
+import { AspectRatio, cn, Skeleton } from '@shadcn/ui'
 import Image from 'next/image'
 import React from 'react'
 import { createPortal } from 'react-dom'
 
 import photos from '@/data/photos.json'
 import { PhotoMetadata } from '@/utils/photos'
-
-import { AspectRatio } from './aspect-ratio'
 
 type LightboxProps = {
   photo: PhotoMetadata | null
@@ -85,7 +83,7 @@ export function Lightbox({ photo, onClose, onNext, onPrev }: LightboxProps) {
             alt={photo.alt}
             width={photo.width}
             height={photo.height}
-            className={cx(
+            className={cn(
               'h-auto max-h-[80vh] w-auto object-contain',
               photo.height <= 1080 && 'md:scale-150'
             )}
@@ -137,7 +135,7 @@ export function PhotoGallery() {
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {gallery.map((photo, index) => (
           <AspectRatio
             key={index}
@@ -156,7 +154,7 @@ export function PhotoGallery() {
                 onLoadingComplete={() => setLoading(false)}
               />
               <Skeleton
-                className={cx(
+                className={cn(
                   'hidden object-cover h-80 w-80 bg-accent',
                   loading && 'inline-block'
                 )}

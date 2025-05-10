@@ -31,10 +31,10 @@ const compare = async (password: string, hash: string) => {
 
 const getSecretKey = (secret: string) => new TextEncoder().encode(secret)
 
-const signToken = async (userId = AUTHOR_ID) => {
+const signToken = async (id = AUTHOR_ID) => {
   const iat = Math.floor(Date.now() / 1000)
   const exp = iat + 60 * 30 // 30 minutes
-  const token = await new SignJWT({ userId })
+  const token = await new SignJWT({ id })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuer('blogx')
     .setIssuedAt(iat)
@@ -43,54 +43,54 @@ const signToken = async (userId = AUTHOR_ID) => {
   return token
 }
 
+async function getCookie(key: string): Promise<string | undefined> {
+  const cookieStore = await cookies()
+  const found = cookieStore.get(key)
+  return found?.value
+}
+
+type SessionPayload = {
+  id: string
+  iss: string
+  iat: number
+  exp: number
+}
+
 export const verifyToken = async (token: string) => {
   try {
     const { payload } = await jwtVerify(token, getSecretKey(JWT_SECRET))
-    return payload
+    return payload as SessionPayload
   } catch {
     return null
   }
 }
 
 export const isAuthenticated = async () => {
-  const kitchen = await cookies()
-  const cookie = kitchen.get(COOKIE_NAME)?.value
-
-  if (!cookie) {
-    return false
-  }
-
+  const cookie = await getCookie(COOKIE_NAME)
+  if (!cookie) return false
   const session = await verifyToken(cookie)
-
-  if (!session) {
-    return false
-  }
-
+  if (!session) return false
   return session
 }
 
 export const isAdmin = async () => {
   const session = await isAuthenticated()
   if (!session) return false
-  if (session.userId !== AUTHOR_ID) return false
+  if (session.id !== AUTHOR_ID) return false
   return true
 }
 
 export async function verifySession() {
-  const store = await cookies()
-
-  const cookie = store.get(COOKIE_NAME)?.value
-  if (!cookie) return
-
+  const cookie = await getCookie(COOKIE_NAME)
+  if (!cookie) return false
   const session = await verifyToken(cookie)
-  if (!session) return
-
+  if (!session) return false
   return session
 }
 
 export async function deleteSession(redir = false, path = '/') {
-  const kitchen = await cookies()
-  kitchen.delete(COOKIE_NAME)
+  const cookieStore = await cookies()
+  cookieStore.delete(COOKIE_NAME)
   if (!redir) return
   redirect(path)
 }

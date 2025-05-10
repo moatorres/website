@@ -1,0 +1,17 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
+export { At as AtIcon } from './at'
+export { BlueSky as BlueSkyIcon } from './bluesky'
+export { Discord as DiscordIcon } from './discord'
+export { Facebook as FacebookIcon } from './facebook'
+export { GitHub as GitHubIcon } from './github'
+export { Instagram as InstagramIcon } from './instagram'
+export { Quote as QuoteIcon } from './quote'
+export { Reddit as RedditIcon } from './reddit'
+export { Threads as ThreadsIcon } from './threads'
+export { WhatsApp as WhatsAppIcon } from './whatsapp'
+export { X as XIcon } from './x'
+export { Youtube as YoutubeIcon } from './youtube'

@@ -1,0 +1,17 @@
+import { LinksSection } from '@/components/links-section'
+import { HomeLayout } from '@/components/page-layout'
+
+import { Weather } from '../weather'
+
+Hi 👋, my name is Moa. I write ✍🏼 about open source, programming, automation, and everything in between. You can check out [my blog posts here](/blog).
+
+<LinksSection />
+<br />
+
+I interface between technical and non-technical audiences 📣, backend and frontend, infrastructure and design, policy and engineering.
+
+I’m passionate about DX, simplifying infrastructure, and balancing functional rigor with world-class aesthetics. I’m also a keen [photographer](/photos) and seasoned project manager.
+
+I’m currently working from Recife <Weather />. If you’re around, reach out to me. Let’s meet for a coffee and get some work done together.
+
+export default ({ children }) => <HomeLayout>{children}</HomeLayout>

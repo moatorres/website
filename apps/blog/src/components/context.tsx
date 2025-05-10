@@ -1,6 +1,10 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import {
+  ThemeProvider as NextThemesProvider,
+  ThemeProviderProps,
+} from 'next-themes'
+import React from 'react'
 
 import { isAdmin } from '@/utils/auth'
 
@@ -10,7 +14,7 @@ type Session = {
   setSession?: (s: Session) => void
 }
 
-const SessionContext = createContext<Session>({
+const SessionContext = React.createContext<Session>({
   loggedIn: false,
   isAdmin: false,
   setSession: (s: Session) => void 0,
@@ -26,9 +30,9 @@ export const SessionProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const [session, setSession] = useState<Session>(defaultState)
+  const [session, setSession] = React.useState<Session>(defaultState)
 
-  useEffect(() => {
+  React.useEffect(() => {
     ;(async () => {
       const res = await isAdmin()
       setSession(res ? { isAdmin: true, loggedIn: true } : defaultState)
@@ -42,4 +46,8 @@ export const SessionProvider = ({
   )
 }
 
-export const useSession = () => useContext(SessionContext)
+export const useSession = () => React.useContext(SessionContext)
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+}

@@ -4,7 +4,6 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-  ArticleSkeleton,
   Button,
   Card,
   CardContent,
@@ -13,11 +12,12 @@ import {
   CardHeader,
   CardTitle,
   Input,
-} from '@blog/ui'
+} from '@shadcn/ui'
 import { AlertCircleIcon, ArrowRightIcon, LoaderCircleIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
+import { ArticleSkeleton } from '@/components/skeleton'
 import { signin, verifySession } from '@/utils/auth'
 
 export default function LoginPage() {
@@ -29,16 +29,14 @@ export default function LoginPage() {
     success: false,
   })
 
-  // React.useEffect(() => {
-  //   if (pending) setLoading(true)
-  //   if (state.error) setLoading(false)
-  // }, [pending, state.error])
+  React.useEffect(() => {
+    if (pending) setLoading(true)
+    if (state.error) setLoading(false)
+  }, [pending, state.error])
 
   React.useEffect(() => {
-    setLoading(true)
     verifySession().then((session) => {
       if (session) router.push('/dashboard')
-      else setLoading(false)
     })
   }, [router])
 

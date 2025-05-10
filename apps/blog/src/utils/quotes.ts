@@ -12,8 +12,10 @@ import config from '@/data/config.json'
 export { categories }
 
 export type Quote = {
-  author: string
+  id: string
   text: string
+  author: string
+  category: string
 }
 
 export type Category = keyof typeof categories | 'random'

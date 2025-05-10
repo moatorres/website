@@ -3,23 +3,32 @@
  * @license MIT
  */
 
-import { ThemeProvider } from '@blog/ui'
+import { cn, Toaster } from '@shadcn/ui'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
-import LocalFont from 'next/font/local'
+import { cookies } from 'next/headers'
 
-import { SessionProvider } from '@/components/context'
-import { Footer } from '@/components/footer'
-import { Header } from '@/components/header'
+import { ActiveThemeProvider } from '@/components/active-theme'
+import { SessionProvider, ThemeProvider } from '@/components/context'
 import config from '@/data/config.json'
 
 import './global.css'
+
+import { fontVariables, VisualSans } from './fonts'
+
+const META_THEME_COLORS = {
+  light: '#ffffff',
+  dark: 'oklch(0.205 0.008 275)',
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(config.baseUrl),
   alternates: {
     canonical: '/',
+    types: {
+      'application/rss+xml': config.baseUrl + '/rss',
+    },
   },
   title: {
     default: config.title,
@@ -47,47 +56,50 @@ export const metadata: Metadata = {
   },
 }
 
-export const VisualSans = LocalFont({
-  src: [
-    {
-      path: '../assets/fonts/visual-sans-regular.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../assets/fonts/visual-sans-medium.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../assets/fonts/visual-sans-semibold.woff2',
-      weight: '600',
-      style: 'normal',
-    },
-    {
-      path: '../assets/fonts/visual-sans-semibold-text.woff2',
-      weight: '600',
-      style: 'normal',
-    },
-  ],
-})
+export default async function RootLayout({
+  children,
+}: React.PropsWithChildren) {
+  const activeTheme = await cookies().then((store) => store.get('theme')?.value)
+  const isScaled = activeTheme?.endsWith('-scaled')
 
-export default function RootLayout({ children }: React.PropsWithChildren) {
   return (
-    <html lang="en">
-      <body className={VisualSans.className}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (localStorage.theme === 'dark' || ((!('theme' in localStorage) || localStorage.theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.querySelector('meta[name="theme-color"]').setAttribute('content', '${META_THEME_COLORS.dark}')
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body
+        className={cn(
+          'overscroll-none font-sans antialiased',
+          activeTheme ? `theme-${activeTheme}` : '',
+          isScaled ? 'theme-scaled' : '',
+          fontVariables,
+          VisualSans.className
+        )}
+      >
         <SessionProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
+            enableColorScheme
           >
-            <Header />
-            {children}
-            <Footer />
-            <Analytics />
-            <SpeedInsights />
+            <ActiveThemeProvider initialTheme={activeTheme}>
+              {children}
+              <Toaster />
+              <Analytics />
+              <SpeedInsights />
+            </ActiveThemeProvider>
           </ThemeProvider>
         </SessionProvider>
       </body>

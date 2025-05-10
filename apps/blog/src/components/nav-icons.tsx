@@ -3,8 +3,8 @@
  * @license MIT
  */
 
-import { Button } from '@blog/ui'
 import { lastSegment } from '@blog/utils'
+import { Button } from '@shadcn/ui'
 import * as lucide from 'lucide-react'
 
 import config from '@/data/config.json'
@@ -69,7 +69,7 @@ export function NavIcons({ items = defaultItems }: NavIconsProps) {
           <Button
             key={index}
             title={item.title}
-            variant="soft"
+            variant="ghost"
             className="h-8 w-8 px-0"
             asChild
           >

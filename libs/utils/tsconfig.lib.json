@@ -9,7 +9,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
-    "types": ["node"]
+    "types": ["node", "vite/client"]
   },
   "include": ["src/**/*.ts"],
   "references": [],
