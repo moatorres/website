@@ -1,4 +1,4 @@
-# @blog/ui
+# @shadcn/ui
 
 A collection of UI components used in the [`blog`](https://github.com/moatorres/website/tree/main/apps/blog) application.
 
@@ -7,7 +7,7 @@ A collection of UI components used in the [`blog`](https://github.com/moatorres/
 You might need to run `pnpm exec nx sync` after installing this package in another project to enable auto-completion and auto-imports.
 
 ```tsx
-import { Button } from '@blog/ui'
+import { Button } from '@shadcn/ui'
 
 const App = () => <Button>Click Me</Button>
 ```
@@ -17,7 +17,7 @@ const App = () => <Button>Click Me</Button>
 **Install**
 
 ```sh
-pnpm add @blog/ui --filter <project-name> --workspace
+pnpm add @shadcn/ui --filter <project-name> --workspace
 ```
 
 **Build**

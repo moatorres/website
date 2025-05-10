@@ -3,16 +3,16 @@
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
 import * as React from 'react'
 
-import { cx } from '../utils/cx.js'
+import { cn } from '../lib/utils'
 
-export function Avatar({
+function Avatar({
   className,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Root>) {
   return (
     <AvatarPrimitive.Root
       data-slot="avatar"
-      className={cx(
+      className={cn(
         'relative flex size-8 shrink-0 overflow-hidden rounded-full',
         className
       )}
@@ -21,27 +21,27 @@ export function Avatar({
   )
 }
 
-export function AvatarImage({
+function AvatarImage({
   className,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
-      className={cx('aspect-square size-full object-cover', className)}
+      className={cn('aspect-square size-full', className)}
       {...props}
     />
   )
 }
 
-export function AvatarFallback({
+function AvatarFallback({
   className,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
   return (
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
-      className={cx(
+      className={cn(
         'bg-muted flex size-full items-center justify-center rounded-full',
         className
       )}
@@ -49,3 +49,5 @@ export function AvatarFallback({
     />
   )
 }
+
+export { Avatar, AvatarFallback, AvatarImage }

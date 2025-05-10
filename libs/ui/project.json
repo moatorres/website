@@ -5,7 +5,7 @@
   "projectType": "library",
   "tags": [],
   "targets": {
-    "build": {
+    "buildx": {
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
