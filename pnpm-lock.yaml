@@ -211,6 +211,9 @@ importers:
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
@@ -272,9 +275,6 @@ importers:
       '@zod/mini':
         specifier: 4.0.0-beta.20250430T185432
         version: 4.0.0-beta.20250430T185432
-      class-variance-authority:
-        specifier: ^0.7.1
-        version: 0.7.1
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
