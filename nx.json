@@ -24,7 +24,8 @@
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/.eslintrc.json",
-      "!{projectRoot}/eslint.config.mjs"
+      "!{projectRoot}/eslint.config.mjs",
+      "!{projectRoot}/vite.config.[jt]s"
     ],
     "sharedGlobals": []
   },
@@ -113,8 +114,16 @@
       "inputs": ["production", "^production"]
     }
   },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheDirectory": ".nx/cache",
+        "parallel": 3
+      }
+    }
+  },
   "tui": {
-    "enabled": false,
     "autoExit": 0
   }
 }

@@ -14,7 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: metadata.updatedAt,
   }))
 
-  const staticPages = ['', '/about', '/blog', '/quotes'].map((page) => ({
+  const staticPages = ['', '/blog', '/photos', '/quotes'].map((page) => ({
     url: `${config.baseUrl}/${page}`,
     lastModified: new Date().toISOString(),
   }))

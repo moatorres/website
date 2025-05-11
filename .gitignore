@@ -56,3 +56,5 @@ vitest.config.*.timestamp*
 # Dev
 apps/blog/src/data
 .env
+.vercel
+.env*.local

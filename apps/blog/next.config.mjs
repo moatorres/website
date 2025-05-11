@@ -8,7 +8,7 @@ import { composePlugins, withNx } from '@nx/next'
 
 import createMDX from '@next/mdx'
 import remarkGfm from 'remark-gfm'
-import highlight from 'remark-sugar-high'
+import remarkSugarHigh from 'remark-sugar-high'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
 
@@ -19,6 +19,7 @@ const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365
  **/
 const nextConfig = {
   cleanDistDir: true,
+  devIndicators: false,
   env: {
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_TELEMETRY_DISABLED: process.env.NEXT_TELEMETRY_DISABLED,
@@ -112,7 +113,7 @@ const nextConfig = {
 const withMdx = createMDX({
   extension: /\.(md|mdx)?$/,
   options: {
-    remarkPlugins: [remarkGfm, highlight],
+    remarkPlugins: [remarkGfm, remarkSugarHigh],
     rehypePlugins: [
       rehypeSlug,
       [

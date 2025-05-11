@@ -1,6 +1,6 @@
 {
   "author": "Moa Torres",
-  "baseUrl": "https://moatorres-blog.vercel.app",
+  "baseUrl": "https://moatorres.co",
   "contentDirectory": "apps/blog/src/content",
   "contentRoute": "blog",
   "description": "Leading Through Complexity—At the Intersection of Culture, Science & Technology",
