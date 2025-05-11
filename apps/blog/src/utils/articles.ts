@@ -8,6 +8,7 @@ import { join } from 'path'
 
 import { memoize } from '@blog/utils'
 
+import articles from '@/data/articles.json'
 import config from '@/data/config.json'
 
 export type ContentMetadata = {
@@ -39,16 +40,12 @@ export type ArticleMetadata = ContentMetadata & {
  * Retrieves and parses the list of article metadata from a JSON file.
  * @throws {Error} If the file cannot be read or the content is not valid JSON.
  */
-export const getArticles = memoize(function getArticles() {
-  const filePath = join(config.metadataDirectory, 'articles.json')
-  const fileContent = readFileSync(filePath, 'utf-8')
-  return JSON.parse(fileContent) as ArticleMetadata[]
-})
+export const getArticles = memoize(() => articles)
 
 /**
  * Returns the three latest articles sorted by date in descending order.
  */
-export const getLatestArticles = memoize(function getLatestArticles() {
+export const getLatestArticles = memoize(() => {
   return getArticles()
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3)
@@ -58,7 +55,7 @@ export const getLatestArticles = memoize(function getLatestArticles() {
  * Retrieves a single article by its slug.
  * @throws {Error} If no article is found for the provided slug.
  */
-export const getArticleBySlug = memoize(function getArticle(slug: string) {
+export const getArticleBySlug = memoize((slug: string) => {
   const article = getArticles().find((article) => article.slug === slug)
   if (!article) {
     throw new Error(`Article not found: ${slug}`)

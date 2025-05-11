@@ -7,8 +7,8 @@ This is my personal website and blog. It is also a _bootstrappable_ Next.js appl
 - [x] Optimized for SEO (sitemap, robots, JSON-LD schema)
 - [x] MDX and Markdown support
 - [x] ~1KB Syntax Highlighting with [`sugar-high`](https://www.npmjs.com/package/sugar-high)
-- [x] [RSS Feed](https://moatorres-blog.vercel.app/rss)
-- [x] [Quotes REST API](https://moatorres-blog.vercel.app/api/quotes)
+- [x] [RSS Feed](https://moatorres.co/rss)
+- [x] [Quotes REST API](https://moatorres.co/api/quotes)
 - [x] Optimized WebP Images
 - [x] Vercel Web Analytics + Speed Insights
 - [x] Nx Monorepo and PNPM Workspace with TypeScript Project References
@@ -21,7 +21,7 @@ Follow me for straight-talking insights on growth, no-nonsense tips, and the occ
 
 ### See it live ⤵️
 
-#### https://moatorres-blog.vercel.app
+#### https://moatorres.co
 
 ## Running
 
