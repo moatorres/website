@@ -68,10 +68,7 @@ export function Header({ className }: { className?: string }) {
 
   return (
     <header
-      className={cn(
-        'py-6 px-4 md:px-8 text-muted-foreground print:hidden',
-        className
-      )}
+      className={cn('py-6 px-8 text-muted-foreground print:hidden', className)}
     >
       <div className="flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tighter uppercase">

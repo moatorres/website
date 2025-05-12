@@ -29,9 +29,7 @@ export function PageSection({
   className,
 }: React.PropsWithChildren<{ className?: string }>) {
   return (
-    <section className={cn('flex-1 px-4 md:px-6 py-2 md:py-12', className)}>
-      {children}
-    </section>
+    <section className={cn('flex-1 px-8 py-12', className)}>{children}</section>
   )
 }
 
@@ -40,7 +38,7 @@ export function PageHeading({
   className,
 }: React.PropsWithChildren<{ className?: string }>) {
   return (
-    <h1 className={cn('text-3xl md:text-4xl font-medium mb-6', className)}>
+    <h1 className={cn('text-4xl md:text-4xl font-medium mb-6', className)}>
       {children}
     </h1>
   )

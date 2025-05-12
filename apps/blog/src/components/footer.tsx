@@ -15,10 +15,7 @@ const links = [
 export function Footer({ className }: { className?: string }) {
   return (
     <footer
-      className={cn(
-        'py-6 px-4 md:px-8 text-muted-foreground print:hidden',
-        className
-      )}
+      className={cn('py-6 px-8 text-muted-foreground print:hidden', className)}
     >
       <div className="flex md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex flex-col sm:flex-row gap-2 text-xs uppercase tracking-widest">
