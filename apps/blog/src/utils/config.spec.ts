@@ -6,16 +6,13 @@
 import path from 'path'
 
 import {
-  ConfigDecoded,
-  ConfigMap,
   getDefaultConfig,
   getEnvConfig,
   getJsonConfig,
-  isNonEmpty,
   resolveConfig,
   transformConfig,
-  transforms,
 } from './config'
+import { ConfigDecoded, ConfigMap, transforms } from './config-schema'
 
 describe('config.ts', () => {
   const before = process.env
@@ -46,96 +43,6 @@ describe('config.ts', () => {
       const variables = Object.values(ConfigMap).map((v) => v.variable)
       const uniqueVariables = new Set(variables)
       expect(uniqueVariables.size).toBe(variables.length)
-    })
-  })
-
-  describe('isNonEmpty', () => {
-    it('should return true for non-empty strings', () => {
-      expect(isNonEmpty('test')).toBe(true)
-    })
-
-    it('should return false for empty strings', () => {
-      expect(isNonEmpty('')).toBe(false)
-    })
-
-    it('should return false for null', () => {
-      expect(isNonEmpty(null)).toBe(false)
-    })
-
-    it('should return false for undefined', () => {
-      expect(isNonEmpty(undefined)).toBe(false)
-    })
-
-    it('should return true for non-empty arrays', () => {
-      expect(isNonEmpty([1, 2, 3])).toBe(true)
-    })
-
-    it('should return false for empty arrays', () => {
-      expect(isNonEmpty([])).toBe(false)
-    })
-
-    it('should return true for non-empty objects', () => {
-      expect(isNonEmpty({ key: 'value' })).toBe(true)
-    })
-
-    it('should return false for empty objects', () => {
-      expect(isNonEmpty({})).toBe(false)
-    })
-
-    it('should return true for objects with non-empty values', () => {
-      expect(isNonEmpty({ key: 'value', empty: '' })).toBe(true)
-    })
-
-    it('should return false for objects with all empty values', () => {
-      expect(isNonEmpty({ key: '', empty: '' })).toBe(false)
-    })
-
-    it('should return true for objects with non-empty nested values', () => {
-      expect(isNonEmpty({ key: { nested: 'value' } })).toBe(true)
-    })
-
-    it('should return false for objects with all empty nested values', () => {
-      expect(isNonEmpty({ key: { nested: '' } })).toBe(false)
-    })
-
-    it('should return true for objects with non-empty arrays', () => {
-      expect(isNonEmpty({ key: [1, 2, 3] })).toBe(true)
-    })
-
-    it('should return false for objects with empty arrays', () => {
-      expect(isNonEmpty({ key: [] })).toBe(false)
-    })
-
-    it('should return true for objects with non-empty strings in arrays', () => {
-      expect(isNonEmpty({ key: ['value', ''] })).toBe(true)
-    })
-
-    it('should return false for objects with all empty strings in arrays', () => {
-      expect(isNonEmpty({ key: ['', ''] })).toBe(false)
-    })
-
-    it('should return true for objects with non-empty nested objects', () => {
-      expect(isNonEmpty({ key: { nested: { inner: 'value' } } })).toBe(true)
-    })
-
-    it('should return false for objects with all empty nested objects', () => {
-      expect(isNonEmpty({ key: { nested: { inner: '' } } })).toBe(false)
-    })
-
-    it('should return true for objects with non-empty values in arrays', () => {
-      expect(isNonEmpty({ key: [{ nested: 'value' }] })).toBe(true)
-    })
-
-    it('should return false for objects with all empty values in arrays', () => {
-      expect(isNonEmpty({ key: [{ nested: '' }] })).toBe(false)
-    })
-
-    it('should return true for objects with non-empty values in nested arrays', () => {
-      expect(isNonEmpty({ key: [{ nested: { inner: 'value' } }] })).toBe(true)
-    })
-
-    it('should return false for objects with all empty values in nested arrays', () => {
-      expect(isNonEmpty({ key: [{ nested: { inner: '' } }] })).toBe(false)
     })
   })
 
