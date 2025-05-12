@@ -11,7 +11,7 @@ import React from 'react'
 
 export function FloatingActions() {
   return (
-    <div className="hidden md:flex fixed bottom-8 right-8 flex-col gap-3">
+    <div className="hidden md:flex fixed bottom-8 right-8 flex-col gap-3 z-10">
       <Button
         variant="outline"
         size="icon"

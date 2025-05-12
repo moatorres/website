@@ -155,7 +155,7 @@ export function PhotoGallery() {
               />
               <Skeleton
                 className={cn(
-                  'hidden object-cover h-80 w-80 bg-accent',
+                  'hidden object-cover h-full w-full bg-accent',
                   loading && 'inline-block'
                 )}
               />

@@ -31,7 +31,7 @@ export function HomeLayout({ children }: { children: React.ReactNode }) {
             </InlineLink>
           </Button>
         </div>
-        <div className="space-y-3 space-x-3">
+        <div className="space-y-3 space-x-3 pt-3">
           <p>Inactive on</p>
           <Button asChild variant="ghost" size="sm">
             <InlineLink className="text-inherit">

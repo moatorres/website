@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ViewTransition>
       <Header />
-      <div vaul-drawer-wrapper="">{children}</div>
+      {children}
       <Footer />
     </ViewTransition>
   )

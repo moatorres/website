@@ -14,7 +14,7 @@ export function Page({
   return (
     <main
       className={cn(
-        'min-h-screen w-full mx-auto bg-background text-foreground flex flex-col',
+        'flex flex-col min-h-[79.25vh] w-full mx-auto',
         PAGE_LAYOUT,
         className
       )}

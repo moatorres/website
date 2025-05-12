@@ -67,9 +67,7 @@ export function Header({ className }: { className?: string }) {
   const { isAdmin } = useSession()
 
   return (
-    <header
-      className={cn('py-6 px-8 text-muted-foreground print:hidden', className)}
-    >
+    <header className={cn('py-6 px-8 print:hidden', className)}>
       <div className="flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tighter uppercase">
           {initials(config.title)}
