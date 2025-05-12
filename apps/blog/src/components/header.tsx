@@ -67,14 +67,19 @@ export function Header({ className }: { className?: string }) {
   const { isAdmin } = useSession()
 
   return (
-    <header className={cn('py-6 px-4 print:hidden', className)}>
+    <header
+      className={cn(
+        'py-6 px-4 md:px-8 text-muted-foreground print:hidden',
+        className
+      )}
+    >
       <div className="flex items-center justify-between">
         <Link href="/" className="text-xl font-bold tracking-tighter uppercase">
           {initials(config.title)}
         </Link>
 
         <span className="flex items-center justify-end space-x-4">
-          <nav className="hidden md:flex items-center space-x-4">
+          <nav className="flex items-center space-x-4">
             {config.sections.map((section) => {
               return (
                 <Link
@@ -99,7 +104,7 @@ export function Header({ className }: { className?: string }) {
                     aria-label={item.title}
                     variant="ghost"
                     size="icon"
-                    className="text-muted-foreground px-0"
+                    className="hidden md:inline-flex text-muted-foreground px-0"
                     asChild
                   >
                     <InlineLink href={item.href}>

@@ -29,7 +29,7 @@ export function PageSection({
   className,
 }: React.PropsWithChildren<{ className?: string }>) {
   return (
-    <section className={cn('flex-1 px-4 md:px-6 py-6 md:py-12', className)}>
+    <section className={cn('flex-1 px-4 md:px-6 py-2 md:py-12', className)}>
       {children}
     </section>
   )
