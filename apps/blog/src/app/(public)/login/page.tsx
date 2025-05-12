@@ -18,7 +18,8 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 
 import { ArticleSkeleton } from '@/components/skeleton'
-import { signin, verifySession } from '@/utils/auth'
+import { verifySession } from '@/utils/auth'
+import { signin } from '@/utils/signin'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -68,7 +69,8 @@ export default function LoginPage() {
                   <AlertCircleIcon />
                   <AlertTitle>Something went wrong!</AlertTitle>
                   <AlertDescription>
-                    Your password is too short. Please try in again.
+                    {/* Your password is too short. Please try in again. */}
+                    {state.error}
                   </AlertDescription>
                 </Alert>
               )}
