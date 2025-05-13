@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 'use client'
 
 import { Button, cn, Drawer, DrawerContent, DrawerTrigger } from '@shadcn/ui'

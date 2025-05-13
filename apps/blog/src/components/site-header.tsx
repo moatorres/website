@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { Button, SidebarTrigger } from '@shadcn/ui'
 
 import { GitHubIcon } from '@/components/icons'

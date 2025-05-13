@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { Badge } from '@shadcn/ui'
 import { BanIcon, CheckCircle2Icon, CheckIcon, LoaderIcon } from 'lucide-react'
 

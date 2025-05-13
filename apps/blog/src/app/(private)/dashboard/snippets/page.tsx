@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { Metadata } from 'next'
 
 import { PageHeading } from '@/components/page'

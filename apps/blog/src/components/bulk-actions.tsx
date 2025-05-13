@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { buttonVariants } from '@shadcn/ui'
 import { VariantProps } from 'class-variance-authority'
 import * as LucideReact from 'lucide-react'

@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { useTheme } from 'next-themes'
 import * as React from 'react'
 

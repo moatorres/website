@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { formatDate } from '@blog/utils'
 import React from 'react'
 

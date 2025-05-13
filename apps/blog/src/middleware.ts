@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 'use server'
 
 import { type NextRequest, NextResponse } from 'next/server'

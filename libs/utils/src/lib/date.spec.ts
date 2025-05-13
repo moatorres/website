@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) 2025 Moa Torres
+ * @license MIT
+ */
+
 import { formatDate, formatDistanceToNow } from './date.js'
 
 describe('format.ts', () => {
