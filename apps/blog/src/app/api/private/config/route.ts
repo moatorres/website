@@ -1,7 +1,7 @@
 import { getAll } from '@vercel/edge-config'
 import { NextResponse } from 'next/server'
 
-import { verifySession } from '@/utils/auth'
+import { verifySession } from '@/lib/session'
 import { MetaConfigEncoded } from '@/utils/config-schema'
 
 const VERCEL_API_KEY = String(process.env.VERCEL_API_KEY)

@@ -11,7 +11,7 @@ import React from 'react'
 import { createPortal } from 'react-dom'
 
 import photos from '@/data/photos.json'
-import { PhotoMetadata } from '@/utils/photos'
+import { PhotoMetadata } from '@/lib/photos'
 
 type LightboxProps = {
   photo: PhotoMetadata | null

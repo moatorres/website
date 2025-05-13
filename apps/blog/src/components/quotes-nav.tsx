@@ -9,7 +9,7 @@ import { cn } from '@shadcn/ui'
 import Link from 'next/link'
 import React from 'react'
 
-import { categories, Category, getCollections } from '@/utils/quotes'
+import { categories, Category, getCollections } from '@/lib/quotes'
 
 export function QuotesNav({ subject }: { subject: Category }) {
   const collections = getCollections()

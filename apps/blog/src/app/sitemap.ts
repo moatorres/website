@@ -6,7 +6,7 @@
 import type { MetadataRoute } from 'next'
 
 import config from '@/data/config.json'
-import { getArticles } from '@/utils/articles'
+import { getArticles } from '@/lib/articles'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articles = getArticles().map((metadata) => ({

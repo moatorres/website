@@ -1,6 +1,6 @@
 import { Button, SidebarTrigger } from '@shadcn/ui'
 
-import { GitHubIcon } from '@/icons'
+import { GitHubIcon } from '@/components/icons'
 
 import { DashboardMenu } from './dashboard-menu'
 import { ModeToggle } from './mode-toggle'

@@ -5,7 +5,7 @@
 
 import { NextResponse } from 'next/server'
 
-import { Category, getRandomQuote } from '@/utils/quotes'
+import { Category, getRandomQuote } from '@/lib/quotes'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)

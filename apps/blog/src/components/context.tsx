@@ -6,7 +6,7 @@ import {
 } from 'next-themes'
 import React from 'react'
 
-import { isAdmin } from '@/utils/auth'
+import { isAdmin } from '@/lib/session'
 
 type Session = {
   loggedIn: boolean

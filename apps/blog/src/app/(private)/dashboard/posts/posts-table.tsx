@@ -10,7 +10,7 @@ import {
   EntityTable,
 } from '@/components/entity-table'
 import { InlineLink } from '@/components/inline-link'
-import { ArticleMetadata } from '@/utils/articles'
+import { ArticleMetadata } from '@/lib/articles'
 
 export function PostsTable({ data }: { data: ArticleMetadata[] }) {
   const [articles] = React.useState(data)

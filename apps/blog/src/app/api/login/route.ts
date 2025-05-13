@@ -3,7 +3,7 @@
 import * as z from '@zod/mini'
 import { NextResponse } from 'next/server'
 
-import { checkPassword, signToken } from '@/utils/auth'
+import { checkPassword, signToken } from '@/lib/session'
 
 import 'server-only'
 

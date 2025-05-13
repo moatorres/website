@@ -25,7 +25,7 @@ import {
 } from 'lucide-react'
 
 import { InlineLink } from '@/components/inline-link'
-import { deleteSession } from '@/utils/auth.js'
+import { deleteSession } from '@/lib/session'
 
 export function NavUser({
   user,

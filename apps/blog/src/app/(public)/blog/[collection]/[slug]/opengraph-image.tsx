@@ -8,7 +8,7 @@ import { join } from 'path'
 
 import { ImageResponse } from 'next/og'
 
-import { getArticleBySlug } from '@/utils/articles'
+import { getArticleBySlug } from '@/lib/articles'
 
 export const alt = 'Moa Torres'
 

@@ -18,13 +18,12 @@ import { useRouter } from 'next/navigation'
 import React from 'react'
 
 import { ArticleSkeleton } from '@/components/skeleton'
-import { verifySession } from '@/utils/auth'
-import { signin } from '@/utils/signin'
+import { signIn, verifySession } from '@/lib/session'
 
 export default function LoginPage() {
   const router = useRouter()
   const [loading, setLoading] = React.useState(false)
-  const [state, action, pending] = React.useActionState(signin, {
+  const [state, action, pending] = React.useActionState(signIn, {
     data: { password: '' },
     error: null,
     success: false,

@@ -12,9 +12,10 @@ import { green, print, red, relativePath, slugify, yellow } from '@blog/utils'
 import { imageSize } from 'image-size'
 import { ISizeCalculationResult } from 'image-size/types/interface'
 
-import { ArticleMetadata } from './articles'
+import { ArticleMetadata } from '@/lib/articles'
+import { PhotoMetadata } from '@/lib/photos'
+
 import { getConfig } from './config'
-import { PhotoMetadata } from './photos'
 
 const config = getConfig()
 

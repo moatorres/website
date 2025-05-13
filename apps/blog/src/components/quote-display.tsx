@@ -10,14 +10,14 @@ import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import React from 'react'
 
-import { QuoteIcon } from '@/icons'
+import { QuoteIcon } from '@/components/icons'
 import {
   categories,
   Category,
   getCollections,
   getRandomQuote,
   Quote,
-} from '@/utils/quotes'
+} from '@/lib/quotes'
 
 export type QuoteDisplayProps = {
   quote?: Quote

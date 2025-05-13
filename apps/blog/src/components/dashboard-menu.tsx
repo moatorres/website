@@ -26,7 +26,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 import config from '@/data/config.json'
-import { deleteSession } from '@/utils/auth'
+import { deleteSession } from '@/lib/session'
 
 import { useSession } from './context'
 import { InlineLink } from './inline-link'

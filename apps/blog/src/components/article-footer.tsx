@@ -10,7 +10,7 @@ import { Button, cn } from '@shadcn/ui'
 import { Share2 } from 'lucide-react'
 import React from 'react'
 
-import * as icons from '@/icons'
+import * as icons from '@/components/icons'
 
 type SocialShare = {
   url: string

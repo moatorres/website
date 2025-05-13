@@ -15,7 +15,7 @@ import {
   Category,
   getCategoryDescription,
   getRandomQuote,
-} from '@/utils/quotes'
+} from '@/lib/quotes'
 
 type Props = {
   searchParams: Promise<{ subject: Category }>

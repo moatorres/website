@@ -1,7 +1,7 @@
 import { formatDate } from '@blog/utils'
 import React from 'react'
 
-import { getLatestArticles } from '@/utils/articles'
+import { getLatestArticles } from '@/lib/articles'
 
 import { InlineLink } from './inline-link'
 

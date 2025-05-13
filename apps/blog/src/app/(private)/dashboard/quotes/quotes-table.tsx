@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import { BulkAction } from '@/components/bulk-actions'
 import { EntityTable } from '@/components/entity-table'
-import { Quote } from '@/utils/quotes'
+import { Quote } from '@/lib/quotes'
 
 export function QuotesTable({ data }: { data: Quote[] }) {
   const [quotes] = React.useState(data)

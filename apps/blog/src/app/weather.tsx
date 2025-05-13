@@ -1,4 +1,4 @@
-import { getWeatherEmoji } from '@/utils/weather'
+import { getWeatherEmoji } from '@/lib/weather'
 
 export async function Weather() {
   const { emoji, temperature } = await getWeatherEmoji()

@@ -58,24 +58,7 @@ function getHour(timezone = 'America/Recife') {
   return parseInt(hour, 10)
 }
 
-export async function getWeatherEmoji(
-  city = 'Recife',
-  timezone = 'America/Recife'
-) {
-  const currentHour = getHour(timezone)
-  const fallback = currentHour >= 6 && currentHour < 18 ? '☀️' : '🌙'
-  try {
-    const { current } = await Effect.runPromise(fetchWeather(city))
-    const isDay = Number(current.is_day) === 1
-    const emoji = getWeatherEmojiFromCondition(current.condition.text, isDay)
-    return { emoji, temperature: current.temp_c }
-  } catch (error) {
-    print.warn('Error fetching weather data: ', error)
-    return { emoji: fallback, temperature: undefined }
-  }
-}
-
-export function getWeatherEmojiFromCondition(
+function getWeatherEmojiFromCondition(
   weatherCondition: string,
   isDay: boolean
 ) {
@@ -101,4 +84,21 @@ export function getWeatherEmojiFromCondition(
   }
 
   return fallback
+}
+
+export async function getWeatherEmoji(
+  city = 'Recife',
+  timezone = 'America/Recife'
+) {
+  const currentHour = getHour(timezone)
+  const fallback = currentHour >= 6 && currentHour < 18 ? '☀️' : '🌙'
+  try {
+    const { current } = await Effect.runPromise(fetchWeather(city))
+    const isDay = Number(current.is_day) === 1
+    const emoji = getWeatherEmojiFromCondition(current.condition.text, isDay)
+    return { emoji, temperature: current.temp_c }
+  } catch (error) {
+    print.warn('Error fetching weather data: ', error)
+    return { emoji: fallback, temperature: undefined }
+  }
 }

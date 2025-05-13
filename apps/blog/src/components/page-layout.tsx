@@ -1,10 +1,15 @@
 import { Button } from '@shadcn/ui'
 import React from 'react'
 
+import {
+  DiscordIcon,
+  GitHubIcon,
+  InstagramIcon,
+  XIcon,
+} from '@/components/icons'
 import { InlineLink } from '@/components/inline-link'
 import { Page, PageHeading, PageSection } from '@/components/page'
 import config from '@/data/config.json'
-import { DiscordIcon, GitHubIcon, InstagramIcon, XIcon } from '@/icons'
 
 export function HomeLayout({ children }: { children: React.ReactNode }) {
   return (

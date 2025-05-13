@@ -14,7 +14,7 @@ import { ArticleSkeleton } from '@/components/skeleton'
 import { TableOfContents } from '@/components/table-of-contents'
 import collections from '@/data/collections.json'
 import config from '@/data/config.json'
-import { getArticleBySlug, getCollectionByName } from '@/utils/articles'
+import { getArticleBySlug, getCollectionByName } from '@/lib/articles'
 
 type Props = {
   params: Promise<{
