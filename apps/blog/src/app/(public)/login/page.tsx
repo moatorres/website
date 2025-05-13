@@ -13,11 +13,15 @@ import {
   CardTitle,
   Input,
 } from '@shadcn/ui'
-import { AlertCircleIcon, ArrowRightIcon, LoaderCircleIcon } from 'lucide-react'
+import {
+  AlertCircleIcon,
+  ArrowRightIcon,
+  Loader2Icon,
+  LoaderCircleIcon,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-import { ArticleSkeleton } from '@/components/skeleton'
 import { signIn, verifySession } from '@/lib/session'
 
 export default function LoginPage() {
@@ -42,12 +46,18 @@ export default function LoginPage() {
 
   React.useEffect(() => {
     if (state.success) {
-      window.location.href = '/dashboard'
+      router.push('/dashboard')
     }
   }, [state.success, router])
 
   if (loading) {
-    return <ArticleSkeleton className="w-full" />
+    return (
+      <Loader2Icon
+        strokeWidth={1.625}
+        size={32}
+        className="animate-spin text-muted-foreground mx-auto"
+      />
+    )
   }
 
   return (
@@ -67,10 +77,7 @@ export default function LoginPage() {
                 <Alert variant="destructive" className="border-destructive">
                   <AlertCircleIcon />
                   <AlertTitle>Something went wrong!</AlertTitle>
-                  <AlertDescription>
-                    {/* Your password is too short. Please try in again. */}
-                    {state.error}
-                  </AlertDescription>
+                  <AlertDescription>{state.error}</AlertDescription>
                 </Alert>
               )}
               <Input
