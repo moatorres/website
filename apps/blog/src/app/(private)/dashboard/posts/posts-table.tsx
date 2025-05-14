@@ -62,7 +62,10 @@ export function PostsTable({ data }: { data: ArticleMetadata[] }) {
 
   const renderTitle = React.useCallback(
     (item: ArticleMetadata) => (
-      <InlineLink bold href={item.href}>
+      <InlineLink
+        href={item.href}
+        className="hover:text-primary transition-colors duration-150"
+      >
         {item.title}
       </InlineLink>
     ),
@@ -100,7 +103,7 @@ export function PostsTable({ data }: { data: ArticleMetadata[] }) {
     <EntityTable
       entityName="Posts"
       data={articles}
-      columns={['title', 'collection', 'author', 'filePath']}
+      columns={['title', 'collection', 'author']}
       selectOptions="category"
       bulkActions={bulkActions}
       renderRowConfig={renderRowConfig}

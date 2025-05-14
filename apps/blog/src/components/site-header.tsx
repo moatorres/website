@@ -10,7 +10,6 @@ import { GitHubIcon } from '@/components/icons'
 import { DashboardMenu } from './dashboard-menu'
 import { ModeToggle } from './mode-toggle'
 import { SearchForm } from './search-form'
-import { ThemeSelector } from './theme-selector'
 
 export function SiteHeader() {
   return (
@@ -29,7 +28,6 @@ export function SiteHeader() {
             </a>
           </Button>
           <SearchForm />
-          <ThemeSelector />
           <ModeToggle />
           <DashboardMenu />
         </div>

@@ -10,7 +10,7 @@ import React from 'react'
 import { toast } from 'sonner'
 
 import { BulkAction } from '@/components/bulk-actions'
-import { EntityTable } from '@/components/entity-table'
+import { createRenderConfig, EntityTable } from '@/components/entity-table'
 import { Quote } from '@/lib/quotes'
 
 export function QuotesTable({ data }: { data: Quote[] }) {
@@ -62,16 +62,25 @@ export function QuotesTable({ data }: { data: Quote[] }) {
     ),
     []
   )
+  const renderCategory = React.useCallback(
+    ({ category }: Quote) => <Badge>{category}</Badge>,
+    []
+  )
 
   return (
-    <EntityTable
+    <EntityTable<Quote>
       entityName="Quotes"
       data={quotes}
       selectOptions="category"
+      columns={['text', 'author', 'category']}
       bulkActions={bulkActions}
       renderRowConfig={React.useMemo(
-        () => [{ key: 'id', render: renderId }],
-        [renderId]
+        () =>
+          createRenderConfig<Quote>({
+            id: renderId,
+            category: renderCategory,
+          }),
+        [renderId, renderCategory]
       )}
     />
   )

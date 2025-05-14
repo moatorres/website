@@ -7,14 +7,9 @@
 
 import { Button, cn, Drawer, DrawerContent, DrawerTrigger } from '@shadcn/ui'
 import {
-  BookmarkIcon,
   CameraIcon,
-  CodeIcon,
   FileTextIcon,
-  GitCompareArrowsIcon,
-  LogInIcon,
   MenuIcon,
-  MicIcon,
   QuoteIcon,
   XIcon,
 } from 'lucide-react'
@@ -28,12 +23,8 @@ import { useMetaColor } from './use-meta-color'
 const links = {
   public: [
     { href: '/blog', title: 'blog', icon: FileTextIcon },
-    // { href: '/bookmarks', title: 'bookmarks', icon: BookmarkIcon },
     { href: '/photos', title: 'photos', icon: CameraIcon },
-    // { href: '/projects', title: 'projects', icon: GitCompareArrowsIcon },
     { href: '/quotes', title: 'quotes', icon: QuoteIcon },
-    // { href: '/snippets', title: 'snippets', icon: CodeIcon },
-    // { href: '/talks', title: 'talks', icon: MicIcon },
   ],
   private: [
     {

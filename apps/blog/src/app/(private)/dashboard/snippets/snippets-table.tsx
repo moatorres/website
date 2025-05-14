@@ -80,9 +80,10 @@ export function SnippetsTable({ data }: { data: Snippet[] }) {
   )
 
   return (
-    <EntityTable
+    <EntityTable<Snippet>
       entityName="Snippets"
       data={quotes}
+      columns={['title', 'language', 'published']}
       selectOptions="language"
       bulkActions={bulkActions}
       renderRowConfig={renderRowConfig}
