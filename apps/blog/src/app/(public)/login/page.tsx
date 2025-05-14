@@ -27,10 +27,12 @@ import {
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
+import { useNonce } from '@/components/context/nonce-context'
 import { signIn, verifySession } from '@/lib/session'
 
 export default function LoginPage() {
   const router = useRouter()
+  const nonce = useNonce()
   const [loading, setLoading] = React.useState(false)
   const [state, action, pending] = React.useActionState(signIn, {
     data: { password: '' },
@@ -90,6 +92,12 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 disabled={state.success}
+              />
+              <input
+                id="nonce"
+                name="nonce"
+                type="hidden"
+                value={nonce ?? ''}
               />
               <Button
                 type="submit"

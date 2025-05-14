@@ -14,6 +14,8 @@ import { redirect } from 'next/navigation'
 
 import 'server-only'
 
+import { verifyNonce } from './nonce'
+
 // ------------------------------------------------------------------
 // Constants
 // ------------------------------------------------------------------
@@ -152,6 +154,12 @@ async function signIn(
   entry.count++
   entry.lastAttempt = now
   attempts.set(ip, entry)
+
+  const nonce = formData.get('nonce')?.toString() ?? ''
+
+  const isValidNonce = await verifyNonce(nonce)
+
+  if (!isValidNonce) return { ...state, error: 'Non-sense. Refresh your page.' }
 
   const password = formData.get('password')?.toString() ?? ''
 

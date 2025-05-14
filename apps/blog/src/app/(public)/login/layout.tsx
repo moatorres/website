@@ -5,14 +5,24 @@
 
 import { unstable_ViewTransition as ViewTransition } from 'react'
 
+import { NonceProvider } from '@/components/context/nonce-context'
 import { Page, PageSection } from '@/components/page'
+import { generateNonce } from '@/lib/nonce'
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const nonce = await generateNonce()
+
   return (
     <ViewTransition>
-      <Page>
-        <PageSection className="flex items-center">{children}</PageSection>
-      </Page>
+      <NonceProvider nonce={nonce}>
+        <Page className="min-h-[79.25vh]">
+          <PageSection className="flex items-center">{children}</PageSection>
+        </Page>
+      </NonceProvider>
     </ViewTransition>
   )
 }

@@ -13,7 +13,7 @@
   "orcidUrl": "https://orcid.org/0009-0006-2281-1690",
   "photosDirectory": "apps/blog/public/images/photos",
   "projectRoot": "apps/blog",
-  "sections": "blog,projects,talks",
+  "sections": "blog",
   "title": "Moa Torres",
   "twitterUrl": "https://twitter.com/moatorres"
 }

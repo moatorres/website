@@ -26,16 +26,21 @@ type NavIconItem = {
 }
 
 const items: NavIconItem[] = [
-  {
-    title: 'Bookmarks',
-    href: '/bookmarks',
-    icon: 'BookmarkIcon',
-  },
+  // {
+  //   title: 'Bookmarks',
+  //   href: '/bookmarks',
+  //   icon: 'BookmarkIcon',
+  // },
   {
     title: 'Quotes',
     href: '/quotes',
     icon: 'QuoteIcon',
   },
+  // {
+  //   title: 'Snippets',
+  //   href: '/snippets',
+  //   icon: 'CodeIcon',
+  // },
   {
     title: 'Photos',
     href: '/photos',
@@ -86,6 +91,14 @@ export function Header({ className }: { className?: string }) {
                 </Link>
               )
             })}
+            {!isAdmin && (
+              <Link
+                href="/login"
+                className="text-sm capitalize tracking-wide text-muted-foreground hover:text-foreground"
+              >
+                Login
+              </Link>
+            )}
           </nav>
           <div className="flex items-center space-x-4">
             <div className="mr-2">

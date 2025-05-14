@@ -28,13 +28,12 @@ import { useMetaColor } from './use-meta-color'
 const links = {
   public: [
     { href: '/blog', title: 'blog', icon: FileTextIcon },
-    { href: '/bookmarks', title: 'bookmarks', icon: BookmarkIcon },
-    { href: '/login', title: 'login', icon: LogInIcon },
+    // { href: '/bookmarks', title: 'bookmarks', icon: BookmarkIcon },
     { href: '/photos', title: 'photos', icon: CameraIcon },
-    { href: '/projects', title: 'projects', icon: GitCompareArrowsIcon },
+    // { href: '/projects', title: 'projects', icon: GitCompareArrowsIcon },
     { href: '/quotes', title: 'quotes', icon: QuoteIcon },
-    { href: '/snippets', title: 'snippets', icon: CodeIcon },
-    { href: '/talks', title: 'talks', icon: MicIcon },
+    // { href: '/snippets', title: 'snippets', icon: CodeIcon },
+    // { href: '/talks', title: 'talks', icon: MicIcon },
   ],
   private: [
     {

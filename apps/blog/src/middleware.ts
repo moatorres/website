@@ -7,7 +7,7 @@
 
 import { type NextRequest, NextResponse } from 'next/server'
 
-import { verifyToken } from './lib/session'
+import { verifySession } from './lib/session'
 
 export async function middleware(req: NextRequest) {
   const protectedRoutes = ['/about', '/dashboard']
@@ -18,15 +18,9 @@ export async function middleware(req: NextRequest) {
 
   if (!isProtectedRoute) return NextResponse.next()
 
-  const token = req.cookies.get('session')?.value
+  const session = await verifySession()
 
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', req.url))
-  }
-
-  const isValidToken = await verifyToken(token)
-
-  if (!isValidToken) {
+  if (!session) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
