@@ -6,8 +6,6 @@ import Link, { LinkProps } from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-import { deleteSession } from '@/lib/session'
-
 import { useMetaColor } from './hooks/use-meta-color'
 import { Box } from './box'
 import { useSession } from './context'
@@ -74,16 +72,10 @@ export function MobileNav() {
   const [open, setOpen] = React.useState(false)
   const { setMetaColor, metaColor } = useMetaColor()
   const { isAdmin } = useSession()
-  const router = useRouter()
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open)
     setMetaColor(open ? '#09090b' : metaColor)
-  }
-
-  const signOut = async () => {
-    await deleteSession()
-    router.push('/')
   }
 
   return (
