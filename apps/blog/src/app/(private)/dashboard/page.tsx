@@ -28,6 +28,8 @@ import { AnalyticsDatePicker } from '@/components/analytics-date-picker'
 import { ChartRevenue } from '@/components/chart-revenue'
 import { ChartVisitors } from '@/components/chart-visitors'
 
+import './theme.css'
+
 const sectionCards = [
   {
     title: 'Total snippets',

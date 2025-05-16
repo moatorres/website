@@ -22,6 +22,10 @@ const META_THEME_COLORS = {
   dark: 'oklch(0.205 0.008 275)',
 }
 
+const ogImageUrl = `${config.baseUrl}/og?title=${encodeURIComponent(
+  config.title
+)}&description=${encodeURIComponent(config.description)}&frame=0`
+
 export const metadata: Metadata = {
   metadataBase: new URL(config.baseUrl),
   alternates: {
@@ -35,6 +39,7 @@ export const metadata: Metadata = {
     template: `%s | ${config.title}`,
   },
   description: config.description,
+  keywords: ['web development', 'engineering', config.author.toLowerCase()],
   openGraph: {
     title: config.title,
     description: config.description,
@@ -42,6 +47,21 @@ export const metadata: Metadata = {
     siteName: config.title,
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: ogImageUrl,
+        width: 1200,
+        height: 630,
+        alt: `${config.title} – Open Graph`,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: config.title,
+    description: config.description,
+    creator: '@moatorres',
+    images: [ogImageUrl],
   },
   robots: {
     index: true,
@@ -54,6 +74,20 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  referrer: 'origin-when-cross-origin',
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+  authors: [
+    {
+      name: config.author,
+      url: config.baseUrl,
+    },
+  ],
+  creator: config.author,
+  publisher: config.author,
 }
 
 export default async function RootLayout({

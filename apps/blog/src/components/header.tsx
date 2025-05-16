@@ -6,7 +6,7 @@
 'use client'
 
 import { initials, lastSegment } from '@blog/utils'
-import { Button, cn } from '@shadcn/ui'
+import { Button, cn, useIsMobile } from '@shadcn/ui'
 import * as LucideReact from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
@@ -20,56 +20,75 @@ import { ModeToggle } from './mode-toggle'
 import { MobileNav } from './nav-mobile'
 
 type NavIconItem = {
-  title: string
-  href: string
   icon: keyof typeof LucideReact
+  href: string
+  title: string
+  hidden?: boolean
+  mobile?: boolean
 }
 
 const items: NavIconItem[] = [
-  // {
-  //   title: 'Bookmarks',
-  //   href: '/bookmarks',
-  //   icon: 'BookmarkIcon',
-  // },
+  {
+    title: 'Bookmarks',
+    href: '/bookmarks',
+    icon: 'BookmarkIcon',
+    mobile: false,
+    hidden: true,
+  },
   {
     title: 'Quotes',
     href: '/quotes',
     icon: 'QuoteIcon',
+    mobile: false,
+    hidden: false,
   },
-  // {
-  //   title: 'Snippets',
-  //   href: '/snippets',
-  //   icon: 'CodeIcon',
-  // },
+  {
+    title: 'Snippets',
+    href: '/snippets',
+    icon: 'CodeIcon',
+    mobile: false,
+    hidden: true,
+  },
   {
     title: 'Photos',
     href: '/photos',
     icon: 'CameraIcon',
+    mobile: true,
+    hidden: false,
   },
   {
     title: 'Blog',
     href: '/blog',
     icon: 'FileTextIcon',
+    mobile: true,
+    hidden: false,
   },
   {
     title: 'Sponsor',
     href: 'https://github.com/sponsors/' + lastSegment(config.githubUrl),
     icon: 'HeartIcon',
+    mobile: false,
+    hidden: false,
   },
   {
     title: 'GitHub',
     href: config.githubUrl,
     icon: 'GithubIcon',
+    mobile: true,
+    hidden: false,
   },
   {
     title: 'RSS',
     href: '/rss',
     icon: 'RssIcon',
+    mobile: false,
+    hidden: false,
   },
 ]
 
 export function Header({ className }: { className?: string }) {
   const { isAdmin } = useSession()
+  const isMobile = useIsMobile()
 
   return (
     <header className={cn('py-6 px-8 print:hidden', className)}>
@@ -80,18 +99,19 @@ export function Header({ className }: { className?: string }) {
 
         <span className="flex items-center justify-end space-x-4">
           <nav className="flex items-center space-x-4">
-            {config.sections.map((section) => {
-              return (
-                <Link
-                  key={section.name}
-                  href={'/' + section.name.toLowerCase()}
-                  className="text-sm capitalize tracking-wide text-muted-foreground hover:text-foreground"
-                >
-                  {section.name}
-                </Link>
-              )
-            })}
-            {!isAdmin && (
+            {!isMobile &&
+              config.sections.map((section) => {
+                return (
+                  <Link
+                    key={section.name}
+                    href={'/' + section.name.toLowerCase()}
+                    className="text-sm capitalize tracking-wide text-muted-foreground hover:text-foreground"
+                  >
+                    {section.name}
+                  </Link>
+                )
+              })}
+            {!isAdmin && !isMobile && (
               <Link
                 href="/login"
                 className="text-sm capitalize tracking-wide text-muted-foreground hover:text-foreground"
@@ -112,11 +132,15 @@ export function Header({ className }: { className?: string }) {
                     aria-label={item.title}
                     variant="ghost"
                     size="icon"
-                    className="hidden md:inline-flex text-muted-foreground px-0"
+                    className={cn(
+                      'hidden text-muted-foreground px-0',
+                      !item.hidden &&
+                        (item.mobile ? 'inline-flex' : 'hidden md:inline-flex')
+                    )}
                     asChild
                   >
                     <InlineLink href={item.href}>
-                      <Icon strokeWidth={1.5} />
+                      <Icon strokeWidth={1.625} />
                       <span className="sr-only">{item.title}</span>
                     </InlineLink>
                   </Button>

@@ -13,8 +13,9 @@ const VERCEL_API_KEY = String(process.env.VERCEL_API_KEY)
 const VERCEL_EDGE_CONFIG_ID = String(process.env.EDGE_CONFIG_ID)
 
 export async function GET(req: Request) {
-  const allowed = await verifySession(req)
-  if (!allowed) {
+  const authorized = await verifySession(req)
+
+  if (!authorized) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
@@ -34,9 +35,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const allowed = await verifySession()
+  const authorized = await verifySession()
 
-  if (!allowed) {
+  if (!authorized) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 

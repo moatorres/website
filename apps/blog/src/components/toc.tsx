@@ -12,41 +12,49 @@ import {
   AccordionTrigger,
   cn,
 } from '@shadcn/ui'
-import { useEffect, useState } from 'react'
+import * as React from 'react'
 
 export function Toc() {
-  const [headings, setHeadings] = useState<
+  const [headings, setHeadings] = React.useState<
     { id: string; text: string; level: number }[]
   >([])
 
-  useEffect(() => {
-    const article = document.querySelector('article')
+  React.useEffect(() => {
+    let attempts = 0
+    const maxAttempts = 10
+    const delay = 200 // ms between checks
+    const checkForHeadings = () => {
+      const article = document.querySelector('article')
+      if (!article) return
 
-    if (!article) return
-
-    const headingElements = article.querySelectorAll('h2, h3')
-    const headingsData = Array.from(headingElements).map((heading) => {
-      return {
-        id: heading.id,
-        text: heading.textContent || '',
-        level: heading.tagName === 'H2' ? 2 : 3,
+      const headingElements = article.querySelectorAll('h2, h3')
+      if (headingElements.length > 0) {
+        const headingsData = Array.from(headingElements).map((heading) => ({
+          id: heading.id,
+          text: heading.textContent || '',
+          level: heading.tagName === 'H2' ? 2 : 3,
+        }))
+        setHeadings(headingsData)
+      } else if (attempts < maxAttempts) {
+        attempts++
+        setTimeout(checkForHeadings, delay)
       }
-    })
+    }
 
-    setHeadings(headingsData)
+    checkForHeadings()
   }, [])
 
   if (headings.length === 0) return null
 
   return (
-    <div className="mb-8 border-b border-border pb-6 print:hidden">
+    <div className="mb-8 border-b border-border print:hidden">
       <Accordion type="single" collapsible>
         <AccordionItem value="contents">
-          <AccordionTrigger>
-            <span className="text-xs uppercase tracking-widest">Contents</span>
+          <AccordionTrigger className="text-xs uppercase decoration-transparent tracking-widest font-normal text-muted-foreground">
+            Table of Contents
           </AccordionTrigger>
           <AccordionContent>
-            <nav className="mt-4">
+            <nav>
               <ul className="space-y-2 list-none ps-0">
                 {headings.map((heading) => (
                   <li
@@ -55,7 +63,7 @@ export function Toc() {
                   >
                     <a
                       href={`#${heading.id}`}
-                      className="text-sm font-normal text-gray-500 dark:text-gray-400 hover:text-gray-300 no-underline"
+                      className="text-sm font-normal text-muted-foreground hover:text-muted-foreground/80 no-underline"
                     >
                       {heading.text}
                     </a>

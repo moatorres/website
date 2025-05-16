@@ -66,7 +66,7 @@ export function TableOfContents() {
               >
                 <a
                   href={`#${heading.id}`}
-                  className="text-sm font-normal text-gray-500 dark:text-gray-400 hover:text-gray-300 no-underline"
+                  className="text-sm font-normal text-muted-foreground hover:text-muted-foreground/80 no-underline"
                 >
                   {heading.text}
                 </a>

@@ -31,23 +31,47 @@ export async function generateMetadata({
   searchParams,
 }: Props): Promise<Metadata> {
   const { subject } = await searchParams
-  const description = getCategoryDescription(subject)
-  const title = !subject ? 'Quotes' : `${capitalize(subject)} Quotes`
+  const title = subject ? `${capitalize(subject)} Quotes` : 'Quotes'
+  const description =
+    getCategoryDescription(subject) ??
+    'Explore a curated collection of thought-provoking, inspiring, and timeless quotes.'
+  const ogImageUrl = `/og?title=${encodeURIComponent(
+    title
+  )}&description=${encodeURIComponent(description)}`
+  const url = `${config.baseUrl}/quotes${subject ? `?subject=${subject}` : ''}`
 
   return {
-    description: description,
-    formatDetection: {
-      address: false,
-      email: false,
-      telephone: false,
+    title,
+    description,
+    keywords: subject ? ['quotes', subject] : ['quotes', 'inspiration'],
+    authors: [{ name: config.author, url: config.baseUrl }],
+    alternates: {
+      canonical: url,
     },
     openGraph: {
+      title,
       description,
-      images: `${config.baseUrl}/images/photos/1df9b2ff-3671-440c-8142-2426bc001985.webp`,
+      url: url,
+      type: 'website',
+      locale: 'en_US',
+      images: [
+        {
+          url: ogImageUrl,
+          alt: `${title} – Open Graph image`,
+        },
+      ],
     },
-    publisher: config.author,
-    referrer: 'origin-when-cross-origin',
-    title,
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+      creator: '@moatorres',
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
   }
 }
 

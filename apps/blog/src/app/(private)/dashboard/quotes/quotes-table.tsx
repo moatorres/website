@@ -68,7 +68,7 @@ export function QuotesTable({ data }: { data: Quote[] }) {
   )
 
   return (
-    <EntityTable<Quote>
+    <EntityTable
       entityName="Quotes"
       data={quotes}
       selectOptions="category"

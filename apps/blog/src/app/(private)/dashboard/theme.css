@@ -22,7 +22,7 @@
   }
 }
 
-.theme-default,
+.default,
 .theme-default-scaled {
   --primary: var(--color-zinc-900);
   --primary-foreground: var(--color-neutral-50);

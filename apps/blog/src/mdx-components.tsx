@@ -11,39 +11,6 @@ import { InlineLink } from './components/inline-link'
 
 export function useMDXComponents(): MDXComponents {
   return {
-    h1: (props: ComponentPropsWithoutRef<'h1'>) => (
-      <h1
-        className="not-prose text-3xl md:text-5xl font-bold tracking-tight leading-tight mb-6 text-[var(--tw-prose-headings)]"
-        {...props}
-      />
-    ),
-    h2: (props: ComponentPropsWithoutRef<'h2'>) => (
-      <h2
-        className="not-prose text-2xl font-bold mt-12 mb-4 not-prose text-[var(--tw-prose-headings)]"
-        {...props}
-      />
-    ),
-    h3: (props: ComponentPropsWithoutRef<'h3'>) => (
-      <h3
-        className="not-prose font-semibold mt-8 mb-3 text-[var(--tw-prose-headings)]"
-        {...props}
-      />
-    ),
-    h4: (props: ComponentPropsWithoutRef<'h4'>) => (
-      <h4
-        className="not-prose font-semibold mt-6 mb-3 text-[var(--tw-prose-headings)]"
-        {...props}
-      />
-    ),
-    h5: (props: ComponentPropsWithoutRef<'h5'>) => (
-      <div
-        className="not-prose text-xs uppercase tracking-widest text-muted-foreground my-1"
-        {...props}
-      />
-    ),
-    h6: (props: ComponentPropsWithoutRef<'h6'>) => (
-      <p className="not-prose text-sm text-muted-foreground my-1" {...props} />
-    ),
     p: (props: ComponentPropsWithoutRef<'p'>) => (
       <p className="leading-relaxed mb-8 prose-p:text-foreground" {...props} />
     ),
@@ -88,7 +55,7 @@ export function useMDXComponents(): MDXComponents {
     ),
     blockquote: (props: ComponentPropsWithoutRef<'blockquote'>) => (
       <blockquote
-        className="ml-[0.075em] border-l-3 border-gray-300 pl-4 text-gray-600 dark:border-zinc-600 dark:text-zinc-300 tracking-wide"
+        className="border-l-3 border-muted-foreground font-normal pl-4 ml-[0.075em]"
         {...props}
       />
     ),

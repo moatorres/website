@@ -11,7 +11,7 @@ import React from 'react'
 import { Suspense } from 'react'
 
 import { ArticleSkeleton } from '@/components/skeleton'
-import { TableOfContents } from '@/components/table-of-contents'
+import { Toc } from '@/components/toc'
 import collections from '@/data/collections.json'
 import config from '@/data/config.json'
 import { getArticleBySlug, getCollectionByName } from '@/lib/articles'
@@ -49,25 +49,38 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const { date, href, summary: description, title } = getArticleBySlug(slug)
+  const article = getArticleBySlug(slug)
+  const ogImageUrl = `/og?title=${encodeURIComponent(
+    article.title
+  )}&description=${encodeURIComponent(article.summary)}`
 
   return {
-    authors: [{ name: config.author, url: config.githubUrl }],
-    description,
-    openGraph: {
-      description,
-      publishedTime: new Date(date).toISOString(),
-      title,
-      type: 'article',
-      url: config.baseUrl + href,
+    title: article.title,
+    description: article.summary,
+    keywords: [article.collection, article.category],
+    authors: [{ name: config.author, url: config.baseUrl }],
+    alternates: {
+      canonical: config.baseUrl.concat(article.href),
     },
-    publisher: config.author,
-    referrer: 'origin-when-cross-origin',
-    title,
+    openGraph: {
+      title: article.title,
+      description: article.summary,
+      publishedTime: new Date(article.date).toISOString(),
+      type: 'article',
+      url: config.baseUrl.concat(article.href),
+      locale: 'en_US',
+      images: [{ url: ogImageUrl }],
+    },
     twitter: {
       card: 'summary_large_image',
-      description,
-      title,
+      title: article.title,
+      description: article.summary,
+      images: [{ url: ogImageUrl }],
+      creator: '@moatorres',
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   }
 }
@@ -92,10 +105,10 @@ export default async function BlogArticle({ params }: Props) {
             datePublished: date,
             dateModified: updatedAt,
             description: summary,
-            url: `${config.baseUrl + href}`,
+            url: config.baseUrl.concat(href),
             author: {
               '@type': 'Person',
-              name: 'Moa Torres',
+              name: config.author,
             },
           }),
         }}
@@ -104,20 +117,15 @@ export default async function BlogArticle({ params }: Props) {
       <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
         {category}
       </p>
-
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight mb-6 text-[var(--tw-prose-headings)]">
         {title}
       </h1>
-
-      <p className="flex justify-between mb-12 text-muted">{summary}</p>
-
-      <h6 className="flex justify-between text-sm text-muted-foreground mb-12">
-        {formatDate(date)}{' '}
-        {/* <span className="text-xs">Updated on {formatDate(updatedAt)}</span> */}
-      </h6>
-
+      <p className="flex justify-between -mt-4 mb-10 text-muted">{summary}</p>
+      <p className="flex justify-between text-sm text-muted-foreground mb-6">
+        {formatDate(date)}
+      </p>
       <Suspense fallback={<Skeleton className="h-14" />}>
-        <TableOfContents />
+        <Toc />
       </Suspense>
       <Suspense fallback={<ArticleSkeleton />}>
         <MdxContent />

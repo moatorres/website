@@ -8,7 +8,7 @@
 import { capitalize } from '@blog/utils'
 import { Button, cn } from '@shadcn/ui'
 import { Share2 } from 'lucide-react'
-import React from 'react'
+import * as React from 'react'
 
 import * as icons from '@/components/icons'
 

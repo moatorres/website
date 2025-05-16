@@ -5,13 +5,7 @@
 
 'use client'
 
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
+import * as React from 'react'
 
 const DEFAULT_THEME = 'default'
 
@@ -27,20 +21,22 @@ type ThemeContextType = {
   setActiveTheme: (theme: string) => void
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+const ThemeContext = React.createContext<ThemeContextType | undefined>(
+  undefined
+)
 
 export function ActiveThemeProvider({
   children,
   initialTheme,
 }: {
-  children: ReactNode
+  children: React.ReactNode
   initialTheme?: string
 }) {
-  const [activeTheme, setActiveTheme] = useState<string>(
-    () => initialTheme || DEFAULT_THEME
+  const [activeTheme, setActiveTheme] = React.useState<string>(
+    () => initialTheme ?? DEFAULT_THEME
   )
 
-  useEffect(() => {
+  React.useEffect(() => {
     setThemeCookie(activeTheme)
 
     Array.from(document.body.classList)
@@ -62,7 +58,7 @@ export function ActiveThemeProvider({
 }
 
 export function useThemeConfig() {
-  const context = useContext(ThemeContext)
+  const context = React.useContext(ThemeContext)
   if (context === undefined) {
     throw new Error('useThemeConfig must be used within an ActiveThemeProvider')
   }
