@@ -9,11 +9,7 @@ import { NonceProvider } from '@/components/context/nonce-context'
 import { Page, PageSection } from '@/components/page'
 import { generateNonce } from '@/lib/nonce'
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default async function Layout({ children }: React.PropsWithChildren) {
   const nonce = await generateNonce()
 
   return (
