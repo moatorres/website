@@ -54,11 +54,7 @@ export async function POST(req: NextRequest) {
   console.log('[DEBUG] process.cwd():', process.cwd())
   console.log('[DEBUG] __dirname:', __dirname)
 
-  const productionPath = resolve(
-    process.cwd(), // must be /var/task
-    'snippets',
-    `${parsed.data.name}.js`
-  )
+  const productionPath = `/var/task/snippets/${parsed.data.name}.js`
 
   console.log('[DEBUG] Resolved productionPath:', productionPath)
 
