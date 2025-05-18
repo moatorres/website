@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/execute.ts": {
+      "includeFiles": [".vercel/output/functions/api/execute.func/snippets/**"]
+    }
+  }
+}
