@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   console.log('cwd at route', process.cwd())
   console.log('route dirname', __dirname)
-  console.log(execSync('ls -la'))
+  console.log(execSync('ls -la').toString())
 
   const productionPath = resolve(
     __dirname,
