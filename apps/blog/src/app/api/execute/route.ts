@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   const filePath = resolve(
     __dirname,
-    `../../../../.next/snippets/${parsed.data.name}.js`
+    `../../../../snippets/${parsed.data.name}.js`
   )
 
   const stream = new ReadableStream({
