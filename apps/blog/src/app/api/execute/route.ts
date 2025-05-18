@@ -51,12 +51,20 @@ export async function POST(req: NextRequest) {
 
   const __dirname = dirname(fileURLToPath(import.meta.url))
 
-  const filePath = resolve(
+  const productionPath = resolve(
     __dirname,
-    process.env.NODE_ENV === 'production'
-      ? `./snippets/${parsed.data.name}.js`
-      : `../../../../node_modules/.bundle/${parsed.data.name}.js`
+    'snippets',
+    `${parsed.data.name}.js`
   )
+
+  const developmentPath = resolve(
+    __dirname,
+    '../../../../node_modules/.bundle',
+    `${parsed.data.name}.js`
+  )
+
+  const filePath =
+    process.env.NODE_ENV === 'production' ? productionPath : developmentPath
 
   const stream = new ReadableStream({
     start(controller) {
