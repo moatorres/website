@@ -9,6 +9,7 @@
     "dev": "nx run blog:dev",
     "format": "nx format --all",
     "lint": "nx run-many -t lint",
+    "postbuild": "node scripts/postbuild.mjs",
     "test": "nx run-many -t test"
   },
   "dependencies": {
