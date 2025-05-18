@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   console.log(execSync('ls -la').toString())
 
   const productionPath = resolve(
-    __dirname,
+    process.cwd(),
     'snippets',
     `${parsed.data.name}.js`
   )
