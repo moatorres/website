@@ -51,15 +51,16 @@ export async function POST(req: NextRequest) {
 
   const __dirname = dirname(fileURLToPath(import.meta.url))
 
-  console.log('cwd at route', process.cwd())
-  console.log('route dirname', __dirname)
-  console.log(execSync('ls -la').toString())
+  console.log('[DEBUG] process.cwd():', process.cwd())
+  console.log('[DEBUG] __dirname:', __dirname)
 
   const productionPath = resolve(
-    process.cwd(),
+    process.cwd(), // must be /var/task
     'snippets',
     `${parsed.data.name}.js`
   )
+
+  console.log('[DEBUG] Resolved productionPath:', productionPath)
 
   const developmentPath = resolve(
     __dirname,
@@ -67,8 +68,18 @@ export async function POST(req: NextRequest) {
     `${parsed.data.name}.js`
   )
 
+  console.log('[DEBUG] Resolved developmentPath:', developmentPath)
+
   const filePath =
     process.env.NODE_ENV === 'production' ? productionPath : developmentPath
+
+  console.log('[DEBUG] Final filePath:', filePath)
+
+  console.log('[DEBUG] process.cwd():', process.cwd())
+  console.log(
+    '[DEBUG] ls -la of cwd:\n',
+    execSync('ls -la', { cwd: process.cwd() }).toString()
+  )
 
   const stream = new ReadableStream({
     start(controller) {
