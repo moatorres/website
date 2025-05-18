@@ -1,7 +1,8 @@
 'use server'
 
 import { execFile } from 'child_process'
-import { resolve } from 'path'
+import { dirname, resolve } from 'path'
+import { fileURLToPath } from 'url'
 
 import * as z from '@zod/mini'
 import { NextRequest, NextResponse } from 'next/server'
@@ -48,9 +49,11 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  const __dirname = dirname(fileURLToPath(import.meta.url))
+
   const filePath = resolve(
-    process.cwd(),
-    `node_modules/.bundle/${parsed.data.name}.js`
+    __dirname,
+    `../../../../node_modules/.bundle/${parsed.data.name}.js`
   )
 
   const stream = new ReadableStream({
