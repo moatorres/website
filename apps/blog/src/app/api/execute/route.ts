@@ -1,6 +1,6 @@
 'use server'
 
-import { execFile, execSync } from 'child_process'
+import { execFile } from 'child_process'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
