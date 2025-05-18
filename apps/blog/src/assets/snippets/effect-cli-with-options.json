@@ -1,0 +1,5 @@
+{
+  "title": "Effect CLI with Options",
+  "description": "A practical example using `@effect/cli` to build a typed, composable CLI with default values and optional parameters.",
+  "language": "TypeScript"
+}

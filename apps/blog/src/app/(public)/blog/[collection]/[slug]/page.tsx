@@ -52,11 +52,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticleBySlug(slug)
   const ogImageUrl = `/og?title=${encodeURIComponent(
     article.title
-  )}&description=${encodeURIComponent(article.summary)}`
+  )}&description=${encodeURIComponent(article.description)}`
 
   return {
     title: article.title,
-    description: article.summary,
+    description: article.description,
     keywords: [article.collection, article.category],
     authors: [{ name: config.author, url: config.baseUrl }],
     alternates: {
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     openGraph: {
       title: article.title,
-      description: article.summary,
+      description: article.description,
       publishedTime: new Date(article.date).toISOString(),
       type: 'article',
       url: config.baseUrl.concat(article.href),
@@ -74,7 +74,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: article.title,
-      description: article.summary,
+      description: article.description,
       images: [{ url: ogImageUrl }],
       creator: '@moatorres',
     },
@@ -87,7 +87,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogArticle({ params }: Props) {
   const { collection, slug } = await params
-  const { category, date, summary, title, href, updatedAt } =
+  const { category, date, description, title, href, updatedAt } =
     getArticleBySlug(slug)
 
   const MdxContent = await getContent(collection, slug)
@@ -104,7 +104,7 @@ export default async function BlogArticle({ params }: Props) {
             headline: title,
             datePublished: date,
             dateModified: updatedAt,
-            description: summary,
+            description: description,
             url: config.baseUrl.concat(href),
             author: {
               '@type': 'Person',
@@ -120,7 +120,9 @@ export default async function BlogArticle({ params }: Props) {
       <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight mb-6 text-[var(--tw-prose-headings)]">
         {title}
       </h1>
-      <p className="flex justify-between -mt-4 mb-10 text-muted">{summary}</p>
+      <p className="flex justify-between -mt-4 mb-10 text-muted">
+        {description}
+      </p>
       <p className="flex justify-between text-sm text-muted-foreground mb-6">
         {formatDate(date)}
       </p>

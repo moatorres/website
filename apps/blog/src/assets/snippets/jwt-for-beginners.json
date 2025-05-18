@@ -1,0 +1,5 @@
+{
+  "title": "JWT for Beginners",
+  "description": "A simple TypeScript example demonstrating password hashing with `bcryptjs` and JWT token signing and verification using `jose`.",
+  "language": "TypeScript"
+}

@@ -19,7 +19,7 @@ export async function GET() {
         `<item>
           <title>${post.title}</title>
           <link>${config.baseUrl + post.href}</link>
-          <description>${post.summary || ''}</description>
+          <description>${post.description || ''}</description>
           <pubDate>${new Date(post.date).toUTCString()}</pubDate>
         </item>`
     )

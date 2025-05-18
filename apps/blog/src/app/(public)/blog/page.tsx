@@ -96,7 +96,7 @@ export default function BlogPage() {
                     </h2>
                   </Link>
                   <p className="text-sm text-muted-foreground mb-4">
-                    {article.summary}
+                    {article.description}
                   </p>
                 </div>
               </div>

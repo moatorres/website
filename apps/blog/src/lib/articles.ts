@@ -15,7 +15,8 @@ export type ContentMetadata = {
   author: string
   category: string
   date: string
-  summary: string
+  description: string
+  tags?: string[]
   title: string
 }
 

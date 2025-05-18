@@ -11,7 +11,7 @@ import 'server-only'
 const NONCE_HEADER = String('nonce')
 
 const Body = z.object({
-  name: z.string().check(z.minLength(2), z.maxLength(32)),
+  name: z.string().check(z.minLength(2), z.maxLength(48)),
 })
 
 export async function POST(req: NextRequest) {
@@ -52,7 +52,9 @@ export async function POST(req: NextRequest) {
 
   const stream = new ReadableStream({
     start(controller) {
-      const child = execFile('node', [filePath])
+      const child = execFile('node', [filePath], {
+        env: { ...process.env, FORCE_COLOR: '0' },
+      })
 
       child.stdout?.on('data', (chunk) => {
         controller.enqueue(new TextEncoder().encode(chunk))

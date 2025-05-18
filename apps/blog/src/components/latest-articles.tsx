@@ -36,7 +36,7 @@ export function LatestArticles() {
                 </h2>
               </InlineLink>
               <p className="text-sm text-muted-foreground mb-4">
-                {article.summary}
+                {article.description}
               </p>
             </div>
           </div>

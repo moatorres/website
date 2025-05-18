@@ -50,7 +50,7 @@ export async function extractArticleMetadata(
     category: content.metadata.category,
     date: content.metadata.date,
     title: content.metadata.title,
-    summary: content.metadata.summary,
+    description: content.metadata.description,
     fileName,
     filePath: filepath,
     collection,
