@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
   const filePath = resolve(
     process.cwd(),
-    `.next/snippets/${parsed.data.name}.js`
+    `node_modules/.bundle/${parsed.data.name}.js`
   )
 
   const stream = new ReadableStream({
