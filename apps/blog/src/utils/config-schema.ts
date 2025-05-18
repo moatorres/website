@@ -53,6 +53,7 @@ const BuildConfig = z.object({
   contentRoute: z.string().check(z.minLength(1)),
   metadataDirectory: z.string().check(z.minLength(3)),
   photosDirectory: z.string().check(z.minLength(3)),
+  snippetsDirectory: z.string().check(z.minLength(3)),
   projectRoot: z.string().check(z.minLength(3)),
 })
 export type BuildConfig = z.infer<typeof BuildConfig>
@@ -158,6 +159,11 @@ export const ConfigMap: ConfigMap = {
     variable: 'APP_SECTIONS',
     fallback: 'blog',
     transform: 'sections',
+  },
+  snippetsDirectory: {
+    variable: 'APP_SNIPPETS_DIRECTORY',
+    fallback: 'src/assets/snippets',
+    transform: 'absolute',
   },
   title: {
     variable: 'APP_TITLE',

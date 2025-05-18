@@ -8,20 +8,13 @@
 import React from 'react'
 import { toast } from 'sonner'
 
-import { LanguageBadge, PublishBadge1 } from '@/components/badges'
+import { LanguageBadge } from '@/components/badges'
 import { BulkAction } from '@/components/bulk-actions'
 import { createRenderConfig, EntityTable } from '@/components/entity-table'
-
-export type Snippet = {
-  id: string
-  title: string
-  language: 'go' | 'typescript'
-  published: boolean
-  createdAt: string
-}
+import { Snippet } from '@/lib/snippets'
 
 export function SnippetsTable({ data }: { data: Snippet[] }) {
-  const [quotes] = React.useState(data)
+  const [snippets] = React.useState(data)
 
   const handleLog = React.useCallback((selected: Snippet[]) => {
     return toast(
@@ -65,25 +58,20 @@ export function SnippetsTable({ data }: { data: Snippet[] }) {
     ({ language }: Snippet) => <LanguageBadge language={language} />,
     []
   )
-  const renderPublished = React.useCallback(
-    ({ published }: Snippet) => <PublishBadge1 published={published} />,
-    []
-  )
 
   const renderRowConfig = React.useMemo(
     () =>
       createRenderConfig<Snippet>({
         language: renderLanguage,
-        published: renderPublished,
       }),
-    [renderLanguage, renderPublished]
+    [renderLanguage]
   )
 
   return (
     <EntityTable
       entityName="Snippets"
-      data={quotes}
-      columns={['title', 'language', 'published']}
+      data={snippets}
+      columns={['title', 'language', 'createdAt']}
       selectOptions="language"
       bulkActions={bulkActions}
       renderRowConfig={renderRowConfig}

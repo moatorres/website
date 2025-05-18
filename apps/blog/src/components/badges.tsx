@@ -36,7 +36,7 @@ export const PublishBadge2 = ({ published }: { published?: boolean }) => {
 }
 
 // TODO: Add language-specific icons (e.g. TS, Go, etc.)
-export function LanguageBadge(props: { language: 'go' | 'typescript' }) {
+export function LanguageBadge(props: { language: string }) {
   if (props.language.toLowerCase().includes('go')) {
     return (
       <Badge

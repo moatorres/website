@@ -43,6 +43,11 @@ const links: LinkGroup[] = [
         title: 'quotes',
         private: false,
       },
+      {
+        href: '/snippets',
+        title: 'snippets',
+        private: false,
+      },
     ],
   },
   {

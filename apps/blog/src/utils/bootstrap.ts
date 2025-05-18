@@ -16,6 +16,7 @@ import { ArticleMetadata } from '@/lib/articles'
 import { PhotoMetadata } from '@/lib/photos'
 
 import { getConfig } from './config'
+import { extractSnippetMetadata } from './snippets'
 
 const config = getConfig()
 
@@ -111,6 +112,7 @@ async function main() {
   const requiredDiretories = [
     { label: 'Content directory', path: config.contentDirectory },
     { label: 'Photos directory', path: config.photosDirectory },
+    { label: 'Snippets directory', path: config.snippetsDirectory },
   ]
 
   for (const directory of requiredDiretories) {
@@ -162,6 +164,10 @@ async function main() {
     .map(extractPhotoMetadata)
 
   await write('photos.json', photos)
+
+  const snippets = await extractSnippetMetadata(config.snippetsDirectory)
+
+  await write('snippets.json', snippets)
 
   print.info(
     `Files written to ${green(relativePath(config.metadataDirectory))}`
