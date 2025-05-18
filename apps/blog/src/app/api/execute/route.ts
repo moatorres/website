@@ -51,11 +51,7 @@ export async function POST(req: NextRequest) {
 
   const __dirname = dirname(fileURLToPath(import.meta.url))
 
-  const productionPath = resolve(
-    process.cwd(), // /var/task/apps/blog
-    'src/app/api/execute/snippets',
-    `${parsed.data.name}.js`
-  )
+  const productionPath = resolve('./public/snippets', `${parsed.data.name}.js`)
 
   const developmentPath = resolve(
     __dirname,
