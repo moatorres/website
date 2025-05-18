@@ -4,8 +4,6 @@
   "private": true,
   "description": "A blog built with Next.js and MDX.",
   "dependencies": {
-    "@blog/utils": "workspace:^",
-    "@shadcn/ui": "workspace:^",
     "@vercel/analytics": "^1.5.0",
     "@vercel/edge-config": "^1.4.0",
     "@vercel/speed-insights": "^1.2.0",
@@ -29,6 +27,8 @@
     "unfurl.js": "^6.4.0"
   },
   "devDependencies": {
+    "@blog/utils": "workspace:*",
+    "@shadcn/ui": "workspace:*",
     "@effect/cli": "^0.59.18",
     "@effect/platform-node": "^0.77.6",
     "@mdx-js/loader": "^3.1.0",
