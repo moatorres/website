@@ -15,6 +15,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  useIsMobile,
 } from '@shadcn/ui'
 import { Code } from 'codice'
 import { formatDistanceToNow } from 'date-fns'
@@ -30,6 +31,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
+import { ButtonGroup } from '@/components/button-group'
 import { useNonce } from '@/components/context/nonce-context'
 import { Flex } from '@/components/flex'
 import { InlineLink } from '@/components/inline-link'
@@ -49,6 +51,7 @@ export default function SnippetList() {
   )
   const router = useRouter()
   const nonce = useNonce()
+  const isMobile = useIsMobile()
 
   React.useEffect(() => {
     const loadSnippets = async () => {
@@ -199,26 +202,29 @@ export default function SnippetList() {
                     <TabsTrigger value="execute">Execute</TabsTrigger>
                   </TabsList>
                   <Flex className="flex-row gap-2 align-middle">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleCopySnippet}
-                    >
-                      {copied ? (
-                        <CheckIcon strokeWidth={1.625} />
-                      ) : (
-                        <CopyIcon strokeWidth={1.625} />
-                      )}
-                      {copied ? 'Copied' : 'Copy'}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleViewSnippet(selectedSnippet.slug)}
-                    >
-                      <ArrowUpRightFromSquareIcon strokeWidth={1.625} />
-                      Open
-                    </Button>
+                    <ButtonGroup>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleCopySnippet}
+                      >
+                        {copied ? (
+                          <CheckIcon strokeWidth={1.625} />
+                        ) : (
+                          <CopyIcon strokeWidth={1.625} />
+                        )}
+
+                        {copied ? !isMobile && 'Copied' : !isMobile && 'Copy'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleViewSnippet(selectedSnippet.slug)}
+                      >
+                        <ArrowUpRightFromSquareIcon strokeWidth={1.625} />
+                        {!isMobile && 'Open'}
+                      </Button>
+                    </ButtonGroup>
                   </Flex>
                 </Flex>
 
