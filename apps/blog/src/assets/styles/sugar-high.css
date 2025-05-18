@@ -5,18 +5,18 @@
  */
 @layer base {
   :root {
-    --sh-identifier: #ffffff;
-    --sh-keyword: #b0b0b0;
-    --sh-string: #9d9d9d;
-    --sh-class: #bcbcbc;
-    --sh-property: #7f7e7e;
-    --sh-entity: #797878;
-    --sh-jsxliterals: #606060;
-    --sh-sign: #989898;
-    --sh-comment: #717171;
+    --sh-identifier: var(--color-zinc-600);
+    --sh-keyword: var(--color-cyan-600);
+    --sh-string: var(--color-zinc-500);
+    --sh-class: var(--color-green-600);
+    --sh-property: var(--color-orange-500);
+    --sh-entity: var(--color-green-600);
+    --sh-jsxliterals: var(--color-blue-500);
+    --sh-sign: var(--color-zinc-500);
+    --sh-comment: var(--color-zinc-400);
 
     /* Line Highlight  */
-    --sh-highlight: #2c3848;
+    --sh-highlight: var(--color-zinc-200);
   }
 
   .dark {
@@ -32,6 +32,16 @@
 
     /* Line Highlight */
     --sh-highlight: #222329;
+  }
+
+  .sh-lang--sh {
+    --sh-identifier: var(--color-zinc-600);
+    --sh-keyword: var(--color-zinc-600);
+    --sh-string: var(--color-zinc-600);
+    --sh-class: var(--color-zinc-600);
+    --sh-property: var(--color-zinc-600);
+    --sh-sign: var(--color-zinc-600);
+    --sh-comment: var(--color-zinc-600);
   }
 
   .dark .sh-lang--sh {
