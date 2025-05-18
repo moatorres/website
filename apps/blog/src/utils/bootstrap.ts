@@ -49,6 +49,7 @@ export async function extractArticleMetadata(
     author: config.author,
     category: content.metadata.category,
     date: content.metadata.date,
+    tags: content.metadata.tags,
     title: content.metadata.title,
     description: content.metadata.description,
     fileName,

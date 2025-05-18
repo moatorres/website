@@ -87,10 +87,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogArticle({ params }: Props) {
   const { collection, slug } = await params
-  const { category, date, description, title, href, updatedAt } =
+  const { category, date, description, tags, title, href, updatedAt } =
     getArticleBySlug(slug)
 
   const MdxContent = await getContent(collection, slug)
+  const fullUrl = config.baseUrl.concat(href)
+  const ogImageUrl = `${config.baseUrl}/og?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`
 
   return (
     <React.Fragment>
@@ -101,15 +103,32 @@ export default async function BlogArticle({ params }: Props) {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': fullUrl,
+            },
             headline: title,
-            datePublished: date,
-            dateModified: updatedAt,
             description: description,
-            url: config.baseUrl.concat(href),
+            image: [ogImageUrl],
             author: {
               '@type': 'Person',
               name: config.author,
+              url: config.baseUrl,
             },
+            publisher: {
+              '@type': 'Organization',
+              name: config.author,
+              logo: {
+                '@type': 'ImageObject',
+                url: `${config.baseUrl}/favicon/android-chrome-512x512.png`,
+              },
+            },
+            datePublished: date,
+            dateModified: updatedAt ?? date,
+            url: fullUrl,
+            keywords: [collection, category, ...tags].join(', '),
+            articleSection: category,
+            inLanguage: 'en',
           }),
         }}
       />

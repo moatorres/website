@@ -22,20 +22,72 @@ import {
   PlayIcon,
 } from 'lucide-react'
 import Link from 'next/link'
+import { Metadata } from 'next/types'
 import React from 'react'
 
 import { useNonce } from '@/components/context/nonce-context'
 import { Flex } from '@/components/flex'
 import { Page, PageHeading, PageSection } from '@/components/page'
+import config from '@/data/config.json'
+import snippets from '@/data/snippets.json'
 import { getSnippetBySlug, Snippet } from '@/lib/snippets'
 
 const NONCE_HEADER = String('nonce')
 
-export default function SnippetPage({
+type Props = {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateStaticParams() {
+  return snippets.map((file) => ({
+    slug: file.slug,
+  }))
+}
+
+export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
-}) {
+  params: { slug: string }
+}): Promise<Metadata> {
+  const snippet = getSnippetBySlug(params.slug)
+
+  const title = `${snippet.title} | Snippet by ${config.author}`
+  const description = snippet.description
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/snippets/${snippet.slug}`
+
+  const ogImageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/og?title=${encodeURIComponent(snippet.title)}&description=${encodeURIComponent(snippet.description)}`
+
+  return {
+    title,
+    description,
+    keywords: [snippet.language, 'code snippet', snippet.title.toLowerCase()],
+    authors: [{ name: config.author, url: config.baseUrl }],
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'article',
+      locale: 'en_US',
+      images: [{ url: ogImageUrl }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [{ url: ogImageUrl }],
+      creator: '@moatorres',
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  }
+}
+
+export default function SnippetPage({ params }: Props) {
   const [snippet, setSnippet] = React.useState<Snippet | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [copied, setCopied] = React.useState(false)
@@ -127,92 +179,122 @@ export default function SnippetPage({
   }
 
   return (
-    <Page>
-      <PageSection>
-        <PageHeading>{snippet.title}</PageHeading>
+    <>
+      {snippet && (
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareSourceCode',
+              name: snippet.title,
+              description: snippet.description,
+              programmingLanguage: snippet.language,
+              codeSampleType: 'full (compiled)',
+              url: `${config.baseUrl}/snippets/${snippet.slug}`,
+              author: {
+                '@type': 'Person',
+                name: 'Moa Torres',
+                url: config.baseUrl,
+              },
+              dateCreated: new Date(snippet.createdAt).toISOString(),
+            }),
+          }}
+        />
+      )}
 
-        <Tabs defaultValue="code">
-          {snippet && (
-            <div className="px-0 space-y-4">
-              {snippet.description && (
-                <p className="text-muted-foreground">{snippet.description}</p>
-              )}
-              <div className="flex items-center gap-2">
-                <Badge>{snippet.language}</Badge>
-                <span className="text-sm text-muted-foreground">
-                  Created{' '}
-                  {formatDistanceToNow(new Date(snippet.createdAt), {
-                    addSuffix: true,
-                  })}
-                </span>
-              </div>
-              <Flex className="flex-row justify-between">
-                <TabsList>
-                  <TabsTrigger value="code">Code</TabsTrigger>
-                  <TabsTrigger value="execute">Execute</TabsTrigger>
-                </TabsList>
-                <Flex className="flex-row gap-2 align-middle">
-                  <Button size="sm" variant="outline" onClick={handleCopyCode}>
-                    {copied ? (
-                      <CheckIcon strokeWidth={1.625} />
-                    ) : (
-                      <CopyIcon strokeWidth={1.625} />
-                    )}
-                    {copied ? 'Copied' : 'Copy'}
-                  </Button>
-                </Flex>
-              </Flex>
+      <Page>
+        <PageSection>
+          <PageHeading>{snippet.title}</PageHeading>
 
-              <TabsContent value="code">
-                <ScrollArea className="h-[64vh] sm:h-[70vh] rounded-md no-scrollbar">
-                  <Code
-                    controls
-                    title={snippet.title}
-                    className="text-xs bg-(--color-zinc-100)/80 dark:bg-(--color-zinc-950) w-[90ch] md:w-fit"
-                  >
-                    {snippet.code}
-                  </Code>
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              </TabsContent>
-
-              <TabsContent value="execute">
-                <div className="space-y-4">
-                  <Button
-                    onClick={handleExecute}
-                    size="sm"
-                    disabled={isRunning}
-                  >
-                    {isRunning ? (
-                      <Loader2Icon
-                        strokeWidth={1.625}
-                        className="animate-spin"
-                      />
-                    ) : (
-                      <PlayIcon strokeWidth={1.625} />
-                    )}
-                    {isRunning ? 'Running' : 'Run Snippet'}
-                  </Button>
-
-                  <ScrollArea className="h-[64vh] rounded-md bg-muted p-4 text-sm font-mono whitespace-pre-wrap">
-                    <Code>{output.map((line) => line).join('\n')}</Code>
-                    <ScrollBar orientation="vertical" />
-                  </ScrollArea>
+          <Tabs defaultValue="code">
+            {snippet && (
+              <div className="px-0 space-y-4">
+                {snippet.description && (
+                  <p className="text-muted-foreground">{snippet.description}</p>
+                )}
+                <div className="flex items-center gap-2">
+                  <Badge>{snippet.language}</Badge>
+                  <span className="text-sm text-muted-foreground">
+                    Created{' '}
+                    {formatDistanceToNow(new Date(snippet.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
                 </div>
-              </TabsContent>
-            </div>
-          )}
-        </Tabs>
+                <Flex className="flex-row justify-between">
+                  <TabsList>
+                    <TabsTrigger value="code">Code</TabsTrigger>
+                    <TabsTrigger value="execute">Execute</TabsTrigger>
+                  </TabsList>
+                  <Flex className="flex-row gap-2 align-middle">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCopyCode}
+                    >
+                      {copied ? (
+                        <CheckIcon strokeWidth={1.625} />
+                      ) : (
+                        <CopyIcon strokeWidth={1.625} />
+                      )}
+                      {copied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </Flex>
+                </Flex>
 
-        <div className="mt-4">
-          <Link href="/snippets">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4" />
-              Back to snippets
-            </Button>
-          </Link>
-        </div>
-      </PageSection>
-    </Page>
+                <TabsContent value="code">
+                  <ScrollArea className="h-[64vh] sm:h-[70vh] rounded-md no-scrollbar">
+                    <Code
+                      controls
+                      title={snippet.title}
+                      className="text-xs bg-(--color-zinc-100)/80 dark:bg-(--color-zinc-950) w-[90ch] md:w-fit"
+                    >
+                      {snippet.code}
+                    </Code>
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="execute">
+                  <div className="space-y-4">
+                    <Button
+                      onClick={handleExecute}
+                      size="sm"
+                      disabled={isRunning}
+                    >
+                      {isRunning ? (
+                        <Loader2Icon
+                          strokeWidth={1.625}
+                          className="animate-spin"
+                        />
+                      ) : (
+                        <PlayIcon strokeWidth={1.625} />
+                      )}
+                      {isRunning ? 'Running' : 'Run Snippet'}
+                    </Button>
+
+                    <ScrollArea className="h-[64vh] rounded-md bg-muted p-4 text-sm font-mono whitespace-pre-wrap">
+                      <Code>{output.map((line) => line).join('\n')}</Code>
+                      <ScrollBar orientation="vertical" />
+                    </ScrollArea>
+                  </div>
+                </TabsContent>
+              </div>
+            )}
+          </Tabs>
+
+          <div className="mt-4">
+            <Link href="/snippets">
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="h-4 w-4" />
+                Back to snippets
+              </Button>
+            </Link>
+          </div>
+        </PageSection>
+      </Page>
+    </>
   )
 }
