@@ -10,7 +10,6 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 const SNIPPET_SRC_DIR = join(__dirname, '../assets/snippets')
 const SNIPPET_OUT_DIR = join(__dirname, '../../public/_snippets')
-// const SNIPPET_OUT_DIR = join(__dirname, '../../node_modules/.bundle')
 
 export async function extractSnippetMetadata(
   snippetsDirectory = SNIPPET_SRC_DIR

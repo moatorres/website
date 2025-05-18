@@ -60,3 +60,4 @@ vitest.config.*.timestamp*
 
 # Blog
 apps/blog/src/data
+apps/blog/public/_*
