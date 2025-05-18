@@ -1,6 +1,6 @@
 'use server'
 
-import { execFile } from 'child_process'
+import { execFile, execSync } from 'child_process'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -50,6 +50,10 @@ export async function POST(req: NextRequest) {
   }
 
   const __dirname = dirname(fileURLToPath(import.meta.url))
+
+  console.log('cwd at route', process.cwd())
+  console.log('route dirname', __dirname)
+  console.log(execSync('ls -la'))
 
   const productionPath = resolve(
     __dirname,
