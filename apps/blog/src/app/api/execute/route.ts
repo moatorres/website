@@ -53,7 +53,9 @@ export async function POST(req: NextRequest) {
 
   const filePath = resolve(
     __dirname,
-    `../../../../snippets/${parsed.data.name}.js`
+    process.env.NODE_ENV === 'production'
+      ? `./snippets/${parsed.data.name}.js`
+      : `../../../../node_modules/.bundle/${parsed.data.name}.js`
   )
 
   const stream = new ReadableStream({
