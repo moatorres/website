@@ -1,7 +1,7 @@
 import { cp } from 'fs/promises'
 import { join } from 'path'
 
-const src = join(process.cwd(), 'apps/blog/node_modules/.bundle')
+const src = join(process.cwd(), 'apps/blog/public/_snippets')
 
 const prodDst = join(process.cwd(), 'apps/blog/src/app/api/execute/snippets')
 const devDst = join(process.cwd(), 'apps/blog/.next/snippets')
