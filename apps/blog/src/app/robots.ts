@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import type { MetadataRoute } from 'next'
 
 import config from '@/data/config.json'

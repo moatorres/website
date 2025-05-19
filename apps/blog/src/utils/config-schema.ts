@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { resolve } from 'path'
 
 import * as z from '@zod/mini'

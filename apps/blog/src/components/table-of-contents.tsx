@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 'use client'
 
 import { cn } from '@shadcn/ui'

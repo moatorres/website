@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { print } from '@blog/utils'
 import { Data, Effect, Schedule } from 'effect'
 

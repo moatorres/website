@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 /// <reference types='vitest' />
 import * as path from 'path'
 

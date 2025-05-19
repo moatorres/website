@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 

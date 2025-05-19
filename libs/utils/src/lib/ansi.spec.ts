@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import * as ansi from './ansi.js'
 
 describe('ansi.ts', () => {

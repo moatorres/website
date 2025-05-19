@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 export * from './lib/ansi.js'
 export * as ansi from './lib/ansi.js'
 export * from './lib/date.js'

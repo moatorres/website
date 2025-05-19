@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { cn } from '@shadcn/ui'
 import type { LinkProps } from 'next/link'
 import Link from 'next/link'

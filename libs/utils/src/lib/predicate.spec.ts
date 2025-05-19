@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { isEmpty, isNonEmpty } from './predicates.js'
 
 describe('predicate.ts', () => {

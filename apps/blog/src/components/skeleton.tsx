@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { cn } from '@shadcn/ui'
 
 type SkeletonProps = React.ComponentProps<'div'>

@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { Label, SidebarInput } from '@shadcn/ui'
 import { Search } from 'lucide-react'
 

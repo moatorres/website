@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import * as ansi from './ansi.js'
 import * as logger from './print.js' // Adjust the path as needed
 

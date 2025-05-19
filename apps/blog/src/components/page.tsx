@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { cn } from '@shadcn/ui'
 
 export const PAGE_LAYOUT = 'max-w-[70ch] print:max-w-[80ch]'

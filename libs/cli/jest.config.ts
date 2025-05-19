@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { readFileSync } from 'fs'
 
 // Reading the SWC compilation config for the spec files

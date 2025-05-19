@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { AspectRatio, Skeleton } from '@shadcn/ui'
 import React from 'react'
 

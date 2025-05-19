@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { SidebarInset, SidebarProvider } from '@shadcn/ui'
 import { cookies } from 'next/headers'
 import React from 'react'

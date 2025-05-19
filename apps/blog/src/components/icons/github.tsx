@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { IconProps } from './type'
 
 export function GitHub({ className }: IconProps) {

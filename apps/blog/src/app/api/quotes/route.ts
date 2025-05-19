@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { NextResponse } from 'next/server'
 
 import { Category, getRandomQuote } from '@/lib/quotes'

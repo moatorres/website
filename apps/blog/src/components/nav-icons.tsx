@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { lastSegment } from '@blog/utils'
 import { Button } from '@shadcn/ui'
 import * as lucide from 'lucide-react'

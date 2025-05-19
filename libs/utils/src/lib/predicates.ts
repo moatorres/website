@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 export function isNonEmpty(value: unknown): boolean {
   if (typeof value === 'string') {
     return value.trim() !== ''

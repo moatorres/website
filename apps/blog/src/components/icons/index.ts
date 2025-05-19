@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 export { At as AtIcon } from './at'
 export { BlueSky as BlueSkyIcon } from './bluesky'
 export { Discord as DiscordIcon } from './discord'

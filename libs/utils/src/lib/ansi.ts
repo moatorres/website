@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 export function green(...str: unknown[]): string {
   return `\x1b[1;32m${str.join(' ')}\x1b[0m`
 }

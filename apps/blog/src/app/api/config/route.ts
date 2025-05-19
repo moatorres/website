@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { getAll } from '@vercel/edge-config'
 import { NextResponse } from 'next/server'
 

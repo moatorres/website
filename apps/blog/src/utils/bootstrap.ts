@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { randomUUID } from 'crypto'
 import { Dirent, existsSync, readFileSync } from 'fs'
 import { mkdir, readdir, stat, writeFile } from 'fs/promises'

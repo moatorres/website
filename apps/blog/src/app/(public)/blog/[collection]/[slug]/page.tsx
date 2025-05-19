@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { formatDate } from '@blog/utils'
 import { Skeleton } from '@shadcn/ui'
 import { notFound } from 'next/navigation'

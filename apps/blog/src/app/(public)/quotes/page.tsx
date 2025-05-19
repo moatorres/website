@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { capitalize } from '@blog/utils'
 import { Metadata } from 'next/types'
 import React from 'react'

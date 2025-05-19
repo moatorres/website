@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { blue, dim, gray, green, purple, red, yellow } from './ansi.js'
 
 export function warn(...args: unknown[]): void {
