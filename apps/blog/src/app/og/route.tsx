@@ -47,7 +47,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const title = searchParams.get('title')
   const description = searchParams.get('description')
-  const frame = searchParams.get('frame') === '0' ? false : true
+  const frame = searchParams.get('frame') === '1' ? true : false
 
   const [fonts] = await Promise.all([loadAssets()])
 
@@ -101,7 +101,7 @@ export async function GET(request: Request) {
             {title}
           </div>
           <div
-            tw="text-[40px] leading-[1.5] flex-grow-1 text-zinc-500"
+            tw="text-[40px] leading-[1.5] flex-grow-1 text-zinc-300"
             style={{
               textWrap: 'balance',
               fontWeight: 400,

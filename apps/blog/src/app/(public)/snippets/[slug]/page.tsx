@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const snippet = getSnippetBySlug(slug)
 
-  const title = `${snippet.title} | Snippet by ${config.author}`
+  const title = `${snippet.title} | Snippets`
   const description = snippet.description
   const url = `${config.baseUrl}/snippets/${snippet.slug}`
 
