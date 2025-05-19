@@ -1,5 +1,3 @@
-'use client'
-
 import { slugify } from '@blog/utils'
 import {
   Badge,
@@ -44,18 +42,15 @@ export async function generateStaticParams() {
   }))
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string }
-}): Promise<Metadata> {
-  const snippet = getSnippetBySlug(params.slug)
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const snippet = getSnippetBySlug(slug)
 
   const title = `${snippet.title} | Snippet by ${config.author}`
   const description = snippet.description
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/snippets/${snippet.slug}`
+  const url = `${config.baseUrl}/snippets/${snippet.slug}`
 
-  const ogImageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/og?title=${encodeURIComponent(snippet.title)}&description=${encodeURIComponent(snippet.description)}`
+  const ogImageUrl = `${config.baseUrl}/og?title=${encodeURIComponent(snippet.title)}&description=${encodeURIComponent(snippet.description)}`
 
   return {
     title,
