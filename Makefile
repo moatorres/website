@@ -40,7 +40,6 @@ sync:
 .PHONY: tidy
 tidy:
 	@pnpm lint --fix
-	@node scripts/copyright.mjs
 	@pnpm format
 
 .PHONY: update

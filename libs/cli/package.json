@@ -18,8 +18,9 @@
   "dependencies": {
     "@blog/utils": "workspace:^",
     "@effect/cli": "^0.59.18",
+    "@effect/platform": "^0.82.3",
     "@effect/platform-node": "^0.77.6",
-    "effect": "^3.14.14",
+    "effect": "^3.15.2",
     "tslib": "^2.8.1"
   }
 }

@@ -4,6 +4,16 @@
   "sourceRoot": "libs/cli/src",
   "projectType": "library",
   "tags": [],
-  "// targets": "to see all targets run: nx show project cli --web",
-  "targets": {}
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--no-warnings"
+        },
+        "cwd": "{workspaceRoot}",
+        "command": "tsx libs/cli/src/lib/cli.ts"
+      }
+    }
+  }
 }
