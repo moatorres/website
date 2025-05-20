@@ -1,6 +1,6 @@
 'use client'
 
-import { slugify } from '@blog/utils'
+import { slugify, stripAnsiCodes } from '@blog/utils'
 import {
   Badge,
   Button,
@@ -35,7 +35,7 @@ import { ButtonGroup } from '@/components/button-group'
 import { useNonce } from '@/components/context/nonce-context'
 import { Flex } from '@/components/flex'
 import { InlineLink } from '@/components/inline-link'
-import { getSnippetBySlug, getSnippets, Snippet } from '@/lib/snippets'
+import { getLatestSnippets, getSnippetBySlug, Snippet } from '@/lib/snippets'
 
 const NONCE_HEADER = String('nonce')
 
@@ -55,7 +55,7 @@ export default function SnippetList() {
 
   React.useEffect(() => {
     const loadSnippets = async () => {
-      const snippets = getSnippets()
+      const snippets = getLatestSnippets()
       setSnippets(snippets)
       setLoading(false)
     }
@@ -149,19 +149,23 @@ export default function SnippetList() {
             onClick={() => handleOpenSnippet(snippet.slug)}
             className="text-left p-0"
           >
-            <div className="flex flex-row items-center gap-4 justify-between w-full">
+            <div className="flex flex-row items-center gap-4 justify-between w-full hover:text-muted-foreground">
               <Flex>
-                <p className="text-1xl">{snippet.title}</p>
-                <p className="text-muted-foreground line-clamp-2 mb-4">
+                <h2 className="text-xl mb-1 transition-colors">
+                  {snippet.title}
+                </h2>
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
                   {snippet.description}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(snippet.createdAt), {
                     addSuffix: true,
                   })}
                 </p>
               </Flex>
-              <Badge className="capitalize">{snippet.language}</Badge>
+              <Badge variant="outline" className="capitalize">
+                {snippet.language}
+              </Badge>
             </div>
           </InlineLink>
         ))}
@@ -188,7 +192,9 @@ export default function SnippetList() {
                   </p>
                 )}
                 <div className="flex items-center gap-2">
-                  <Badge>{selectedSnippet.language}</Badge>
+                  <Badge className="capitalize">
+                    {selectedSnippet.language}
+                  </Badge>
                   <span className="text-sm text-muted-foreground">
                     Created{' '}
                     {formatDistanceToNow(new Date(selectedSnippet.createdAt), {
@@ -237,6 +243,7 @@ export default function SnippetList() {
                     >
                       {selectedSnippet.code}
                     </Code>
+
                     <ScrollBar orientation="horizontal" />
                   </ScrollArea>
                 </TabsContent>
@@ -260,7 +267,9 @@ export default function SnippetList() {
                     </Button>
 
                     <ScrollArea className="h-[64vh] rounded-md bg-muted p-4 text-sm font-mono whitespace-pre-wrap">
-                      <Code>{output.map((line) => line).join('\n')}</Code>
+                      <Code>
+                        {output.map((line) => stripAnsiCodes(line)).join('\n')}
+                      </Code>
                       <ScrollBar orientation="vertical" />
                     </ScrollArea>
                   </div>

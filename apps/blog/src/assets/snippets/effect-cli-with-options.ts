@@ -1,81 +1,47 @@
-import { join } from 'path'
-
 import { Command, Options } from '@effect/cli'
 import { NodeContext, NodeRuntime } from '@effect/platform-node'
-import { Console, Effect, Option, pipe } from 'effect'
+import { Console, Effect } from 'effect'
 
-const file = Options.text('file').pipe(
-  Options.withAlias('f'),
-  Options.withDefault('./config.json'),
-  Options.withDescription('Path to the configuration file')
+const skip = Options.boolean('skip').pipe(
+  Options.withAlias('s'),
+  Options.withDescription('Skip prompts and use defaults')
 )
 
-const content = Options.text('content').pipe(
-  Options.optional, // this makes it an Option
+const config = Options.text('config').pipe(
   Options.withAlias('c'),
-  Options.withDefault(Option.some('src/content')),
-  Options.withDescription('Path to the content directory')
+  Options.withDefault('default.json'),
+  Options.withDescription('Path to the JSON configuration file')
 )
 
-const blogx = Command.make('blogx', { file, content }, (o) => {
-  // these will be printed
-  console.log('Config', `"${o.file}"`)
+let count = 1
 
-  // this will not be printed
-  Console.log('Add .pipe(NodeRuntime.runMain) to print this.')
-
-  // example using pipe
-  pipe(
-    Effect.succeed(o.content),
-    Effect.map((content) => {
-      if (Option.isNone(content)) {
-        return console.warn('No content directory, skipping.')
-      }
-      return console.log(`${join(process.cwd(), content.toString())}`)
-    }),
-    Effect.catchAll((e) => {
-      console.error('Error:', e)
-      return Effect.succeed(0)
-    })
-  )
-
-  // example using option match
-  Option.match(o.content, {
-    onNone: () =>
-      Effect.succeed(console.warn('No content directory, skipping.')),
-    onSome: (dir) => Effect.succeed(console.log(`${join(process.cwd(), dir)}`)),
-  }).pipe(NodeRuntime.runMain)
-
-  // example using generator
+const init = Command.make('init', { skip, config }, ({ skip, config }) =>
   Effect.gen(function* () {
-    yield* Effect.succeed(
-      Option.isNone(o.content)
-        ? console.log('Content OK ✅')
-        : console.warn('Content FAIL ❌')
-    )
+    yield* Console.log('run:', count++)
+    yield* Console.log('-c', config)
+    yield* Console.log('--skip', skip, '\n')
+  })
+)
 
-    // throws 💥
-    // yield* Effect.fail(new Error('Effect.fail works like a throw here'))
-
-    // this would not be executed
-    yield* Console.log('I would never run if the previous effect had failed')
-  }).pipe(NodeRuntime.runMain)
-
-  // this would never execute
-  console.error("The previous failure would bubble up, I'd never be printed")
-
-  // we could exit with a failure
-  return Effect.exit(Effect.succeed(0))
+const cli = Command.run(init, {
+  name: 'my-cli',
+  version: '1.0.0',
 })
 
-// cli program
-const cli = Command.run(blogx, {
-  name: 'blogx cli',
-  version: 'v0.0.1',
-})
+// tsx cli.ts --skip
+cli(['', '', '--skip']).pipe(
+  Effect.provide(NodeContext.layer),
+  NodeRuntime.runMain
+)
 
-// tsx effect-cli.ts -f src/info.json -c src/content
-export default cli(process.argv).pipe(
+// tsx cli.ts -c my-config.json
+cli(['', '', '-c', 'my-config.json']).pipe(
+  Effect.provide(NodeContext.layer),
+  NodeRuntime.runMain
+)
+
+// tsx cli.ts --help
+cli(['', '', '--help']).pipe(
   Effect.provide(NodeContext.layer),
   NodeRuntime.runMain
 )

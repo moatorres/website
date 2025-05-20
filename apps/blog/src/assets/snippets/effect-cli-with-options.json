@@ -1,5 +1,6 @@
 {
+  "date": "2025-05-19",
   "title": "Effect CLI with Options",
-  "description": "A practical example using `@effect/cli` to build a typed, composable CLI with default values and optional parameters.",
-  "language": "TypeScript"
+  "description": "Build a typed CLI with aliases, defaults, and flags using `@effect/cli`.",
+  "language": "typescript"
 }

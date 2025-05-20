@@ -2,9 +2,15 @@ import { memoize } from '@blog/utils'
 
 import snippets from '@/data/snippets.json'
 
+export type Snippet = (typeof snippets)[number]
+
 export const getSnippets = memoize(() => snippets)
 
-export type Snippet = (typeof snippets)[number]
+export const getLatestSnippets = memoize(() => {
+  return getSnippets().sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  )
+})
 
 export function getSnippetById(id: string) {
   const snippet = getSnippets().find((snippet) => snippet.id === id)

@@ -1,6 +1,6 @@
 'use client'
 
-import { slugify } from '@blog/utils'
+import { slugify, stripAnsiCodes } from '@blog/utils'
 import {
   Badge,
   Button,
@@ -127,7 +127,7 @@ export function SnippetView({ data }: { data: Snippet }) {
             <p className="text-muted-foreground">{snippet.description}</p>
           )}
           <div className="flex items-center gap-2">
-            <Badge>{snippet.language}</Badge>
+            <Badge className="capitalize">{snippet.language}</Badge>
             <span className="text-sm text-muted-foreground">
               Created{' '}
               {formatDistanceToNow(new Date(snippet.createdAt), {
@@ -177,7 +177,9 @@ export function SnippetView({ data }: { data: Snippet }) {
               </Button>
 
               <ScrollArea className="h-[64vh] rounded-md bg-muted p-4 text-sm font-mono whitespace-pre-wrap">
-                <Code>{output.map((line) => line).join('\n')}</Code>
+                <Code>
+                  {output.map((line) => stripAnsiCodes(line)).join('\n')}
+                </Code>
                 <ScrollBar orientation="vertical" />
               </ScrollArea>
             </div>
