@@ -39,13 +39,6 @@ export default function BlogPage() {
     <Page>
       <PageSection>
         <PageHeading>Blog</PageHeading>
-        <div className="max-w-2xl">
-          <p className="hidden leading-relaxed text-muted-foreground">
-            No noise, just ideas—sorted to make browsing easier. Whether
-            you&apos;re curious about tech, leadership, or critical thinking,
-            everything here is organized by category.
-          </p>
-        </div>
 
         {/* Categories */}
         <div className="mb-8">

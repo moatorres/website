@@ -45,3 +45,10 @@ export function absolutePath(relative: string): string {
 export function lastSegment(path: string): string {
   return path.split('/').pop() ?? ''
 }
+
+export function stripAnsiCodes(input: string): string {
+  const ESC = '\u001b'
+  const pattern = `[${ESC}\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]`
+  const ansiRegex = new RegExp(pattern, 'g')
+  return input.replace(ansiRegex, '')
+}

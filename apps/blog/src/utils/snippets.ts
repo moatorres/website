@@ -43,12 +43,14 @@ export async function extractSnippetMetadata(
 
       return {
         id: randomUUID(),
+        date: metadata.date,
         slug: name,
         href: `/snippets/${name}`,
         filepath: output,
         ...metadata.default,
         code: await readFile(input, 'utf-8'),
         createdAt: new Date(stats.ctime).toISOString(),
+        updatedAt: new Date(stats.mtime).toISOString(),
       }
     })
   )

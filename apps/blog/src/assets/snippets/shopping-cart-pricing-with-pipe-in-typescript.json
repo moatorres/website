@@ -1,0 +1,6 @@
+{
+  "date": "2025-05-20",
+  "title": "Shopping Cart Pricing with `pipe` in TypeScript",
+  "description": "Calculate taxes, discounts, and totals in a cart using Effect's `pipe` for clean, composable logic.",
+  "language": "typescript"
+}

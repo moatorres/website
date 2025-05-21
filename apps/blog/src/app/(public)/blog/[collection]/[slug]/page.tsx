@@ -45,9 +45,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const article = getArticleBySlug(slug)
-  const ogImageUrl = `/og?title=${encodeURIComponent(
-    article.title
-  )}&description=${encodeURIComponent(article.description)}`
+  const ogImageUrl = `${config.baseUrl}/og?title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description)}`
 
   return {
     title: article.title,
