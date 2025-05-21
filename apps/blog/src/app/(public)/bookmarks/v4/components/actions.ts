@@ -70,6 +70,6 @@ function getFaviconUrl(url: string): string {
     const parsedUrl = new URL(url)
     return `${parsedUrl.origin}/favicon.ico`
   } catch {
-    return null
+    return ''
   }
 }
