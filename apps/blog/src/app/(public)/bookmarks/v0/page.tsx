@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2025 Moa Torres
- * @license MIT
- */
-
 import { Button } from '@shadcn/ui'
 import Link from 'next/link'
 import React from 'react'
@@ -16,7 +11,6 @@ export default function BookmarksPage() {
     <Page>
       <PageSection>
         <PageHeading>Bookmarks</PageHeading>
-
         {/* Bookmarks */}
         <div className="grid md:grid-cols-[3fr_1fr] gap-6 md:gap-12">
           <div>
@@ -27,7 +21,6 @@ export default function BookmarksPage() {
             </Link>
             <p className="text-sm text-muted-foreground">Using Deferred</p>
           </div>
-
           <div className="space-y-1">
             <Button asChild variant="ghost">
               <InlineLink
