@@ -6,7 +6,7 @@ import React from 'react'
 
 import { categories, Category, getCollections } from '@/lib/quotes'
 
-export function QuotesNav({ subject }: { subject: Category }) {
+export function QuotesNav({ category }: { category: Category }) {
   const collections = getCollections()
 
   return (
@@ -22,10 +22,10 @@ export function QuotesNav({ subject }: { subject: Category }) {
         {Object.keys(categories).map((key) => (
           <Link
             key={key}
-            href={`/quotes?subject=${key}`}
+            href={`/quotes?category=${key}`}
             scroll={false}
             className={`snap-start tracking-wider text-sm lowercase ${
-              key === subject
+              key === category
                 ? 'text-foreground'
                 : 'text-muted-foreground hover:text-foreground'
             }`}

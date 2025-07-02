@@ -16,15 +16,15 @@ import {
 
 export type QuoteDisplayProps = {
   quote?: Quote
-  subject?: Category
+  category?: Category
 }
 
 export function QuoteDisplay(props: QuoteDisplayProps) {
-  const [subject, setSubject] = React.useState<Category>(
-    props.subject ?? 'random'
+  const [category, setCategory] = React.useState<Category>(
+    props.category ?? 'random'
   )
   const [quote, setQuote] = React.useState(
-    props.quote ?? getRandomQuote(subject)
+    props.quote ?? getRandomQuote(category)
   )
   const searchParams = useSearchParams()
   const collections = getCollections()
@@ -39,8 +39,8 @@ export function QuoteDisplay(props: QuoteDisplayProps) {
     [searchParams]
   )
 
-  const updateSearchParams = (subject: Category) => {
-    const newQueryString = createQueryString('subject', subject)
+  const updateSearchParams = (category: Category) => {
+    const newQueryString = createQueryString('category', category)
     const url = new URL(window.location.href)
     url.search = newQueryString
     window.history.replaceState(null, '', url.toString())
@@ -64,10 +64,10 @@ export function QuoteDisplay(props: QuoteDisplayProps) {
               onClick={() => {
                 setQuote(getRandomQuote(key as Category))
                 updateSearchParams(key as Category)
-                setSubject(key as Category)
+                setCategory(key as Category)
               }}
               className={`snap-start tracking-wider text-sm lowercase cursor-pointer transition-all ease-linear duration-300 ${
-                key === subject
+                key === category
                   ? 'text-foreground'
                   : 'text-muted-foreground hover:text-foreground'
               }`}

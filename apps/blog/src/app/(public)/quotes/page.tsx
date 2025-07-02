@@ -13,32 +13,32 @@ import {
 } from '@/lib/quotes'
 
 type Props = {
-  searchParams: Promise<{ subject: Category }>
+  searchParams: Promise<{ category: Category }>
 }
 
 export async function generateStaticParams() {
   return Object.keys(categories).map((key) => ({
-    subject: key,
+    category: key,
   }))
 }
 
 export async function generateMetadata({
   searchParams,
 }: Props): Promise<Metadata> {
-  const { subject } = await searchParams
-  const title = subject ? `${capitalize(subject)} Quotes` : 'Quotes'
+  const { category } = await searchParams
+  const title = category ? `${capitalize(category)} Quotes` : 'Quotes'
   const description =
-    getCategoryDescription(subject) ??
+    getCategoryDescription(category) ??
     'Explore a curated collection of thought-provoking, inspiring, and timeless quotes.'
   const ogImageUrl = `/og?title=${encodeURIComponent(
     title
   )}&description=${encodeURIComponent(description)}`
-  const url = `${config.baseUrl}/quotes${subject ? `?subject=${subject}` : ''}`
+  const url = `${config.baseUrl}/quotes${category ? `?category=${category}` : ''}`
 
   return {
     title,
     description,
-    keywords: subject ? ['quotes', subject] : ['quotes', 'inspiration'],
+    keywords: category ? ['quotes', category] : ['quotes', 'inspiration'],
     authors: [{ name: config.author, url: config.baseUrl }],
     alternates: {
       canonical: url,
@@ -73,12 +73,12 @@ export async function generateMetadata({
 export default async function QuotesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ subject: Category }>
+  searchParams: Promise<{ category: Category }>
 }) {
-  const { subject } = await searchParams
-  const quote = getRandomQuote(subject)
+  const { category } = await searchParams
+  const quote = getRandomQuote(category)
   const url = new URL(
-    `${config.baseUrl}/quotes` + `${subject ? `?subject=${subject}` : ''}`
+    `${config.baseUrl}/quotes` + `${category ? `?category=${category}` : ''}`
   )
 
   return (
@@ -90,7 +90,7 @@ export default async function QuotesPage({
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'Quotation',
-            about: subject ?? 'General',
+            about: category ?? 'General',
             description: quote.text,
             url: url.toString(),
             author: {
@@ -103,7 +103,7 @@ export default async function QuotesPage({
 
       <PageSection>
         <PageHeading>Quotes</PageHeading>
-        <QuoteDisplay subject={subject} quote={quote} />
+        <QuoteDisplay category={category} quote={quote} />
       </PageSection>
     </Page>
   )

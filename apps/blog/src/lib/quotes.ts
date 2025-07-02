@@ -59,15 +59,15 @@ export function getRandomQuote(category: Category): Quote {
   return randomQuote
 }
 
-export async function fetchQuoteBySubject(subject?: Category) {
+export async function fetchQuoteByCategory(category?: Category) {
   const response = await fetch(
-    `${config.baseUrl}/api/quotes?subject=${subject}`
+    `${config.baseUrl}/api/quotes?category=${category}`
   )
   const quote = (await response.json()) as Quote
   return { quote }
 }
 
-export const getCategoryDescription = memoize((subject: Category) => {
+export const getCategoryDescription = memoize((category: Category) => {
   const descriptions = new Map<Category, string>([
     ['business', 'Quotes about work, leadership, and business topics.'],
     ['creativity', 'Quotes about art, ideas, and creative thinking.'],
@@ -78,5 +78,5 @@ export const getCategoryDescription = memoize((subject: Category) => {
     ['wisdom', 'Quotes that express general knowledge or life principles.'],
   ])
 
-  return descriptions.get(subject)
+  return descriptions.get(category)
 })
