@@ -17,6 +17,6 @@ export default [
   ...baseConfig,
   ...nx.configs['flat/react-typescript'],
   {
-    ignores: ['.next/**/*', './src/data/**/*', './public/_*'],
+    ignores: ['.next/**/*', './src/data/**/*', './public/_*', 'next-env.d.ts'],
   },
 ]

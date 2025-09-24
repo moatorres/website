@@ -35,23 +35,6 @@ const nextConfig = {
       },
     ]
   },
-  images: {
-    formats: ['image/webp'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'github.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-    ],
-  },
   nx: {
     svgr: false,
   },
@@ -72,35 +55,6 @@ const nextConfig = {
     config.resolve.extensionAlias = {
       '.js': ['.ts', '.tsx', '.js'],
     }
-    // minify class names (does not apply to tailwindcss) (e.g. .my-class--active -> .xSrdL)
-    config.module.rules.forEach((rule) => {
-      if (!rule.oneOf) return
-      rule.oneOf.forEach((oneOf) => {
-        if (
-          oneOf.test &&
-          oneOf.test.toString().includes('\\.module\\.(css|scss|sass)$') &&
-          oneOf.use
-        ) {
-          oneOf.use.forEach((loader) => {
-            if (
-              loader.loader &&
-              loader.loader.includes('css-loader') &&
-              !loader.loader.includes('postcss-loader')
-            ) {
-              loader.options = {
-                ...loader.options,
-                modules: {
-                  ...loader.options.modules,
-                  localIdentName: dev
-                    ? '[name]__[local]__[hash:base64:5]'
-                    : '[hash:base64:8]',
-                },
-              }
-            }
-          })
-        }
-      })
-    })
     return config
   },
 }
