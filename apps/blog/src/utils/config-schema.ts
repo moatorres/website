@@ -157,7 +157,7 @@ export const ConfigMap: ConfigMap = {
   },
   snippetsDirectory: {
     variable: 'APP_SNIPPETS_DIRECTORY',
-    fallback: 'src/assets/snippets',
+    fallback: 'src/content/snippets',
     transform: 'absolute',
   },
   title: {

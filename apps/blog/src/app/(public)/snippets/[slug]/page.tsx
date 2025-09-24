@@ -93,9 +93,7 @@ export default async function SnippetPage({ params }: Props) {
       <Page>
         <PageSection>
           <PageHeading>{snippet.title}</PageHeading>
-
           <SnippetView data={snippet} />
-
           <div className="mt-4">
             <Link href="/snippets">
               <Button variant="ghost" size="sm">

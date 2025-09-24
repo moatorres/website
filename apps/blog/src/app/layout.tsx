@@ -3,9 +3,10 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
+import { unstable_ViewTransition as ViewTransition } from 'react'
 
-import { ActiveThemeProvider } from '@/components/active-theme'
-import { SessionProvider, ThemeProvider } from '@/components/context'
+import { SessionProvider, ThemeProvider } from '@/components/context/session'
+import { ActiveThemeProvider } from '@/components/context/theme'
 import config from '@/data/config.json'
 
 import './global.css'
@@ -106,32 +107,34 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body
-        className={cn(
-          'overscroll-none font-sans antialiased',
-          activeTheme ? `theme-${activeTheme}` : '',
-          isScaled ? 'theme-scaled' : '',
-          fontVariables,
-          VisualSans.className
-        )}
-      >
-        <SessionProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            enableColorScheme
-          >
-            <ActiveThemeProvider initialTheme={activeTheme}>
-              {children}
-              <Toaster />
-              <Analytics />
-              <SpeedInsights />
-            </ActiveThemeProvider>
-          </ThemeProvider>
-        </SessionProvider>
-      </body>
+      <ViewTransition>
+        <body
+          className={cn(
+            'overscroll-none font-sans antialiased',
+            activeTheme ? `theme-${activeTheme}` : '',
+            isScaled ? 'theme-scaled' : '',
+            fontVariables,
+            VisualSans.className
+          )}
+        >
+          <SessionProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              enableColorScheme
+            >
+              <ActiveThemeProvider initialTheme={activeTheme}>
+                {children}
+                <Toaster />
+                <Analytics />
+                <SpeedInsights />
+              </ActiveThemeProvider>
+            </ThemeProvider>
+          </SessionProvider>
+        </body>
+      </ViewTransition>
     </html>
   )
 }

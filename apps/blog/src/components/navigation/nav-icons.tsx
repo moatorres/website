@@ -2,9 +2,8 @@ import { lastSegment } from '@blog/utils'
 import { Button } from '@shadcn/ui'
 import * as lucide from 'lucide-react'
 
+import { InlineLink } from '@/components/ui/inline-link'
 import config from '@/data/config.json'
-
-import { InlineLink } from './inline-link'
 
 const defaultItems: NavIconItem[] = [
   {

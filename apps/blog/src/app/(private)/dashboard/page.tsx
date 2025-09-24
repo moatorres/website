@@ -19,9 +19,9 @@ import {
 } from 'lucide-react'
 import { Metadata } from 'next'
 
-import { AnalyticsDatePicker } from '@/components/analytics-date-picker'
-import { ChartRevenue } from '@/components/chart-revenue'
-import { ChartVisitors } from '@/components/chart-visitors'
+import { AnalyticsDatePicker } from '@/components/dashboard/analytics-date-picker'
+import { ChartRevenue } from '@/components/dashboard/chart-revenue'
+import { ChartVisitors } from '@/components/dashboard/chart-visitors'
 
 import './theme.css'
 

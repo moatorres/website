@@ -23,9 +23,12 @@ import {
   LogOutIcon,
   UserCircle2Icon,
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-import { InlineLink } from '@/components/inline-link'
+import { InlineLink } from '@/components/ui/inline-link'
 import { deleteSession } from '@/lib/session'
+
+import { useSession } from '../context/session'
 
 export function NavUser({
   user,
@@ -37,6 +40,8 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const { setSession } = useSession()
+  const router = useRouter()
 
   return (
     <SidebarMenu>
@@ -97,7 +102,14 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <InlineLink href="/" onClick={async () => await deleteSession()}>
+              <InlineLink
+                href="/"
+                onClick={async () => {
+                  await deleteSession()
+                  setSession?.({ isAdmin: false, loggedIn: false })
+                  router.push('/')
+                }}
+              >
                 <LogOutIcon />
                 Log out
               </InlineLink>

@@ -20,11 +20,11 @@ export type QuoteDisplayProps = {
 }
 
 export function QuoteDisplay(props: QuoteDisplayProps) {
-  const [category, setCategory] = React.useState<Category>(
+  const [currentCategory, setCurrentCategory] = React.useState<Category>(
     props.category ?? 'random'
   )
   const [quote, setQuote] = React.useState(
-    props.quote ?? getRandomQuote(category)
+    props.quote ?? getRandomQuote(currentCategory)
   )
   const searchParams = useSearchParams()
   const collections = getCollections()
@@ -58,24 +58,24 @@ export function QuoteDisplay(props: QuoteDisplayProps) {
             'no-scrollbar scroll-area'
           )}
         >
-          {Object.keys(categories).map((key) => (
+          {Object.keys(categories).map((category) => (
             <button
-              key={key}
+              key={category}
               onClick={() => {
-                setQuote(getRandomQuote(key as Category))
-                updateSearchParams(key as Category)
-                setCategory(key as Category)
+                setQuote(getRandomQuote(category as Category))
+                updateSearchParams(category as Category)
+                setCurrentCategory(category as Category)
               }}
               className={`snap-start tracking-wider text-sm lowercase cursor-pointer transition-all ease-linear duration-300 ${
-                key === category
+                category === currentCategory
                   ? 'text-foreground'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <span className="inline-flex items-center gap-1">
-                {key}{' '}
+                {category}{' '}
                 <sup className="text-xs hidden sm:inline relative -top-0.5">
-                  {collections[key]?.size ?? 0}
+                  {collections[category]?.size ?? 0}
                 </sup>
               </span>
             </button>

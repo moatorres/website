@@ -46,7 +46,7 @@ import { VariantProps } from 'class-variance-authority'
 import * as LucideReact from 'lucide-react'
 import React from 'react'
 
-import { ButtonGroup } from './button-group'
+import { ButtonGroup } from '@/components/ui/button-group'
 
 type TabOption = {
   value: string

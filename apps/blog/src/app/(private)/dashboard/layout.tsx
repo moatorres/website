@@ -2,8 +2,8 @@ import { SidebarInset, SidebarProvider } from '@shadcn/ui'
 import { cookies } from 'next/headers'
 import React from 'react'
 
-import { AppSidebar } from '@/components/app-sidebar'
-import { SiteHeader } from '@/components/site-header'
+import { SiteHeader } from '@/components/dashboard/site-header'
+import { AppSidebar } from '@/components/layout/app-sidebar'
 
 import './theme.css'
 

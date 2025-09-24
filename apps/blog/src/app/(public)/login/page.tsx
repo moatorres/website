@@ -22,7 +22,7 @@ import {
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-import { useNonce } from '@/components/context/nonce-context'
+import { useNonce } from '@/components/context/nonce'
 import { signIn, verifySession } from '@/lib/session'
 
 export default function LoginPage() {

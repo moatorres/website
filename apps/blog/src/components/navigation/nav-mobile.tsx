@@ -6,10 +6,10 @@ import Link, { LinkProps } from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-import { useMetaColor } from './hooks/use-meta-color'
-import { Box } from './box'
-import { useSession } from './context'
-import { Flex } from './flex'
+import { useSession } from '@/components/context/session'
+import { useMetaColor } from '@/components/hooks/use-meta-color'
+import { Box } from '@/components/ui/box'
+import { Flex } from '@/components/ui/flex'
 
 type Link = {
   title: string

@@ -2,9 +2,8 @@ import { cn } from '@shadcn/ui'
 import { ExternalLinkIcon } from 'lucide-react'
 import React from 'react'
 
+import { InlineLink } from '@/components/ui/inline-link'
 import config from '@/data/config.json'
-
-import { InlineLink } from './inline-link'
 
 type LinkItem = {
   label: string

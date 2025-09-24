@@ -3,9 +3,12 @@
 import React from 'react'
 import { toast } from 'sonner'
 
-import { LanguageBadge } from '@/components/badges'
-import { BulkAction } from '@/components/bulk-actions'
-import { createRenderConfig, EntityTable } from '@/components/entity-table'
+import { BulkAction } from '@/components/dashboard/bulk-actions'
+import {
+  createRenderConfig,
+  EntityTable,
+} from '@/components/dashboard/entity-table'
+import { LanguageBadge } from '@/components/ui/badges'
 import { Snippet } from '@/lib/snippets'
 
 export function SnippetsTable({ data }: { data: Snippet[] }) {

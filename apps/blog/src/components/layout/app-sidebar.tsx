@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 import * as React from 'react'
 
-import { InlineLink } from '@/components/inline-link'
+import { InlineLink } from '@/components/ui/inline-link'
 
 import { NavDocuments } from './nav-documents'
 import { NavMain } from './nav-main'

@@ -25,11 +25,10 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
+import { useSession } from '@/components/context/session'
+import { InlineLink } from '@/components/ui/inline-link'
 import config from '@/data/config.json'
 import { deleteSession } from '@/lib/session'
-
-import { useSession } from './context'
-import { InlineLink } from './inline-link'
 
 export function DashboardMenu() {
   const { setSession } = useSession()

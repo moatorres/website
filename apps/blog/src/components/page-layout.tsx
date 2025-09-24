@@ -7,8 +7,8 @@ import {
   InstagramIcon,
   XIcon,
 } from '@/components/icons'
-import { InlineLink } from '@/components/inline-link'
 import { Page, PageHeading, PageSection } from '@/components/page'
+import { InlineLink } from '@/components/ui/inline-link'
 import config from '@/data/config.json'
 
 export function HomeLayout({ children }: { children: React.ReactNode }) {

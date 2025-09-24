@@ -1,6 +1,6 @@
 import { unstable_ViewTransition as ViewTransition } from 'react'
 
-import { NonceProvider } from '@/components/context/nonce-context'
+import { NonceProvider } from '@/components/context/nonce'
 import { generateNonce } from '@/lib/nonce'
 
 export default async function Layout({

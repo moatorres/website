@@ -8,8 +8,8 @@ import {
   BulkAction,
   createRenderConfig,
   EntityTable,
-} from '@/components/entity-table'
-import { InlineLink } from '@/components/inline-link'
+} from '@/components/dashboard/entity-table'
+import { InlineLink } from '@/components/ui/inline-link'
 import { ArticleMetadata } from '@/lib/articles'
 
 export function PostsTable({ data }: { data: ArticleMetadata[] }) {

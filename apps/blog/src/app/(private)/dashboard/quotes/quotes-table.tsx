@@ -4,8 +4,11 @@ import { Badge } from '@shadcn/ui'
 import React from 'react'
 import { toast } from 'sonner'
 
-import { BulkAction } from '@/components/bulk-actions'
-import { createRenderConfig, EntityTable } from '@/components/entity-table'
+import { BulkAction } from '@/components/dashboard/bulk-actions'
+import {
+  createRenderConfig,
+  EntityTable,
+} from '@/components/dashboard/entity-table'
 import { Quote } from '@/lib/quotes'
 
 export function QuotesTable({ data }: { data: Quote[] }) {

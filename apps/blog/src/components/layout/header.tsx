@@ -6,13 +6,12 @@ import * as LucideReact from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
+import { useSession } from '@/components/context/session'
+import { DashboardMenu } from '@/components/dashboard/dashboard-menu'
+import { ModeToggle } from '@/components/dashboard/mode-toggle'
+import { MobileNav } from '@/components/navigation/nav-mobile'
+import { InlineLink } from '@/components/ui/inline-link'
 import config from '@/data/config.json'
-
-import { useSession } from './context'
-import { DashboardMenu } from './dashboard-menu'
-import { InlineLink } from './inline-link'
-import { ModeToggle } from './mode-toggle'
-import { MobileNav } from './nav-mobile'
 
 type NavIconItem = {
   icon: keyof typeof LucideReact

@@ -31,10 +31,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-import { ButtonGroup } from '@/components/button-group'
-import { useNonce } from '@/components/context/nonce-context'
-import { Flex } from '@/components/flex'
-import { InlineLink } from '@/components/inline-link'
+import { useNonce } from '@/components/context/nonce'
+import { ButtonGroup } from '@/components/ui/button-group'
+import { Flex } from '@/components/ui/flex'
+import { InlineLink } from '@/components/ui/inline-link'
 import { getLatestSnippets, getSnippetBySlug, Snippet } from '@/lib/snippets'
 
 const NONCE_HEADER = String('nonce')
@@ -172,7 +172,7 @@ export default function SnippetList() {
       </div>
 
       <Drawer open={open} onOpenChange={setOpen} direction="right">
-        <DrawerContent className="min-w-[80vw] lg:min-w-[60vw] p-2 md:p-4">
+        <DrawerContent className="min-w-[80vw] lg:min-w-[60vw] p-2 md:p-4 backdrop-blur-lg bg-white/80 dark:bg-zinc-900/60 border border-border shadow-xl">
           <DrawerHeader>
             <DrawerTitle className="text-3xl">
               {selectedSnippet?.title}
@@ -239,7 +239,7 @@ export default function SnippetList() {
                     <Code
                       controls
                       title={selectedSnippet.title}
-                      className="text-xs md:text-sm bg-(--color-zinc-100)/80 dark:bg-(--color-zinc-950) w-[90ch] md:w-fit"
+                      className="text-xs md:text-sm bg-(--color-zinc-100)/80 dark:bg-(--color-zinc-950)/80 w-[90ch] md:w-fit"
                     >
                       {selectedSnippet.code}
                     </Code>

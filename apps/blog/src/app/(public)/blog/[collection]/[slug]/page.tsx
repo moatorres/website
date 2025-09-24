@@ -5,8 +5,8 @@ import { Metadata } from 'next/types'
 import React from 'react'
 import { Suspense } from 'react'
 
-import { ArticleSkeleton } from '@/components/skeleton'
 import { Toc } from '@/components/toc'
+import { ArticleSkeleton } from '@/components/ui/skeleton'
 import collections from '@/data/collections.json'
 import config from '@/data/config.json'
 import { getArticleBySlug, getCollectionByName } from '@/lib/articles'
@@ -21,7 +21,7 @@ type Props = {
 async function getContent(collection: string, slug: string) {
   try {
     const { fileName } = getArticleBySlug(slug)
-    return React.lazy(() => import(`@/content/${collection}/${fileName}`))
+    return React.lazy(() => import(`@/content/blog/${collection}/${fileName}`))
   } catch {
     throw notFound()
   }

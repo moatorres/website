@@ -1,9 +1,8 @@
 import { formatDate } from '@blog/utils'
 import React from 'react'
 
+import { InlineLink } from '@/components/ui/inline-link'
 import { getLatestArticles } from '@/lib/articles'
-
-import { InlineLink } from './inline-link'
 
 export function LatestArticles() {
   const articles = getLatestArticles()

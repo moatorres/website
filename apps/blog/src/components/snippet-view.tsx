@@ -23,9 +23,9 @@ import {
 import Link from 'next/link'
 import React from 'react'
 
-import { useNonce } from '@/components/context/nonce-context'
-import { Flex } from '@/components/flex'
-import { Skeleton } from '@/components/skeleton'
+import { useNonce } from '@/components/context/nonce'
+import { Flex } from '@/components/ui/flex'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Snippet } from '@/lib/snippets'
 
 const NONCE_HEADER = String('nonce')

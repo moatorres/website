@@ -1,8 +1,8 @@
 import type { MDXComponents } from 'mdx/types'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { CodeBlock } from './components/code-block'
-import { InlineLink } from './components/inline-link'
+import { CodeBlock } from './components/ui/code-block'
+import { InlineLink } from './components/ui/inline-link'
 
 export function useMDXComponents(): MDXComponents {
   return {

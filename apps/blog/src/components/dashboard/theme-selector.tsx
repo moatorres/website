@@ -13,7 +13,7 @@ import {
 } from '@shadcn/ui'
 import React from 'react'
 
-import { useThemeConfig } from '@/components/active-theme'
+import { useThemeConfig } from '@/components/context/theme'
 
 const themeGroups = [
   {
