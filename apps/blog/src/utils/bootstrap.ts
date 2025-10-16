@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 import { Dirent, existsSync, readFileSync } from 'fs'
 import { mkdir, readdir, stat, writeFile } from 'fs/promises'
-import { join } from 'path'
+import { dirname, join, relative } from 'path'
 
 import { green, print, red, relativePath, slugify, yellow } from '@blog/utils'
 import { imageSize } from 'image-size'
@@ -31,16 +31,22 @@ export function getReadTime(filepath: string, wordsPerMinute = 200) {
 export async function extractArticleMetadata(
   filepath: string,
   fileName: string,
-  collection: string
+  collection: string,
+  collectionDirectory: string
 ): Promise<ArticleMetadata> {
   const slug = slugify(fileName.replace(/\.mdx$/, ''))
+  const relativePath = relative(collectionDirectory, filepath)
+  const relativeDir = dirname(relativePath)
+  const fullSlug =
+    relativeDir === '.' ? slug : join(relativeDir, slug).replace(/\\/g, '/')
+
   const content = await import(filepath)
   const stats = await stat(filepath)
 
   return {
     id: randomUUID(),
     slug,
-    href: `/${config.contentRoute}/${collection}/${slug}`,
+    href: `/${collection}/${fullSlug}`,
     author: config.author,
     category: content.metadata.category,
     date: content.metadata.date,
@@ -104,6 +110,18 @@ async function write(filename: string, content: object) {
   await writeFile(filePath, contentJson)
 }
 
+async function* walk(dir: string): AsyncGenerator<string, void, unknown> {
+  const entries: Dirent[] = await readdir(dir, { withFileTypes: true })
+  for (const entry of entries) {
+    const fullPath: string = join(dir, entry.name)
+    if (entry.isDirectory()) {
+      yield* walk(fullPath)
+    } else {
+      yield fullPath
+    }
+  }
+}
+
 async function main() {
   const requiredDiretories = [
     { label: 'Content directory', path: config.contentDirectory },
@@ -131,22 +149,20 @@ async function main() {
 
   for (const collection of collections) {
     const collectionDirectory = join(config.contentDirectory, collection)
-    const collectionFiles = await readdir(collectionDirectory, {
-      withFileTypes: true,
-    })
 
-    const mdxFiles = collectionFiles.filter((dirent) =>
-      dirent.name.endsWith('.mdx')
-    )
-
-    for await (const file of mdxFiles) {
-      const filepath = join(collectionDirectory, file.name)
-      metadata.push(
-        await extractArticleMetadata(filepath, file.name, collection)
-      )
+    for await (const filepath of walk(collectionDirectory)) {
+      if (filepath.endsWith('.mdx')) {
+        const filename: string = filepath.split('/').pop() ?? ''
+        metadata.push(
+          await extractArticleMetadata(
+            filepath,
+            filename,
+            collection,
+            collectionDirectory
+          )
+        )
+      }
     }
-
-    await write(`${collection}.collection.json`, metadata)
   }
 
   await write('articles.json', metadata)

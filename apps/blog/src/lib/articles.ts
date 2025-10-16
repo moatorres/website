@@ -64,10 +64,7 @@ export const getArticleBySlug = memoize((slug: string) => {
  * @throws {Error} If the collection file cannot be read or the content is not valid JSON.
  */
 export const getCollectionByName = memoize((collection: string) => {
-  const filePath = join(
-    config.metadataDirectory,
-    `${collection}.collection.json`
-  )
+  const filePath = join(config.metadataDirectory, `${collection}.json`)
   const fileContent = readFileSync(filePath, 'utf-8')
   return JSON.parse(fileContent) as ArticleMetadata[]
 })
@@ -78,7 +75,7 @@ export const getCollectionByName = memoize((collection: string) => {
  */
 export const getCollectionByNameAsync = memoize(
   async (collection: string): Promise<ArticleMetadata[]> => {
-    return await import(`@/data/${collection}.collection.json`).then(
+    return await import(`@/data/${collection}.json`).then(
       (module) => module.default
     )
   }

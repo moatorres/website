@@ -21,7 +21,9 @@ type Props = {
 async function getContent(collection: string, slug: string) {
   try {
     const { fileName } = getArticleBySlug(slug)
-    return React.lazy(() => import(`@/content/blog/${collection}/${fileName}`))
+    return React.lazy(
+      () => import(`@/content/articles/${collection}/${fileName}`)
+    )
   } catch {
     throw notFound()
   }

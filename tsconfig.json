@@ -7,9 +7,6 @@
       "path": "./apps/blog"
     },
     {
-      "path": "./libs/cli"
-    },
-    {
       "path": "./libs/ui"
     },
     {

@@ -45,7 +45,12 @@ const nextConfig = {
     return [
       {
         source: '/journal/:path*',
-        destination: '/blog/:path*',
+        destination: '/articles/:path*',
+        permanent: false,
+      },
+      {
+        source: '/blog/:path*',
+        destination: '/articles/:path*',
         permanent: false,
       },
     ]
