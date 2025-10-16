@@ -14,7 +14,7 @@
   "photosDirectory": "apps/blog/public/images/photos",
   "projectRoot": "apps/blog",
   "sections": "blog",
-  "snippetsDirectory": "apps/blog/src/assets/snippets",
+  "snippetsDirectory": "apps/blog/src/content/snippets",
   "title": "Moa Torres",
   "twitterUrl": "https://twitter.com/moatorres"
 }
