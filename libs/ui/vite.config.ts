@@ -24,7 +24,7 @@ export default defineConfig(() => ({
     },
     lib: {
       entry: 'src/index.ts',
-      name: 'fuck',
+      name: 'ui',
       fileName: 'index',
       formats: ['es' as const],
     },
