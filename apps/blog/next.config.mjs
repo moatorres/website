@@ -33,10 +33,21 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Apply to all routes
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+        ],
+      },
     ]
-  },
-  nx: {
-    svgr: false,
   },
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   poweredByHeader: false,
