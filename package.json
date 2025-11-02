@@ -81,12 +81,7 @@
   "pnpm": {
     "overrides": {
       "react": ">=19",
-      "react-dom": ">=19",
-      "@effect/typeclass": ">=0.35.8",
-      "@effect/platform": ">=0.80.21",
-      "@effect/cluster": ">=0.39.4",
-      "@effect/rpc": ">=0.62.4",
-      "@effect/sql": ">=0.38.2"
+      "react-dom": ">=19"
     },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
