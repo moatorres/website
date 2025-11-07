@@ -4,6 +4,7 @@
   "private": true,
   "description": "A blog built with Next.js and MDX.",
   "dependencies": {
+    "@blog/utils": "workspace:*",
     "@dprint/formatter": "^0.4.1",
     "@effect-atom/atom-react": "^0.3.4",
     "@effect/cli": "^0.71.0",
@@ -40,7 +41,6 @@
     "tailwindcss": "^4.1.4"
   },
   "devDependencies": {
-    "@blog/utils": "workspace:*",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.3.1",

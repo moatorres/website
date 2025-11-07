@@ -199,6 +199,9 @@ importers:
 
   apps/blog:
     dependencies:
+      '@blog/utils':
+        specifier: workspace:*
+        version: link:../../libs/utils
       '@dprint/formatter':
         specifier: ^0.4.1
         version: 0.4.1
@@ -302,9 +305,6 @@ importers:
         specifier: ^4.1.4
         version: 4.1.13
     devDependencies:
-      '@blog/utils':
-        specifier: workspace:*
-        version: link:../../libs/utils
       '@mdx-js/loader':
         specifier: ^3.1.0
         version: 3.1.1(webpack@5.101.3(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.25.10))
