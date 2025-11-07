@@ -1,5 +1,6 @@
 'use client'
 
+import { print } from '@blog/utils'
 import type { WebContainer } from '@webcontainer/api'
 
 let webcontainerInstance: WebContainer | null = null
@@ -7,7 +8,7 @@ let isBooting = false
 let bootPromise: Promise<WebContainer> | null = null
 
 export function resetWebContainerInstance() {
-  console.log('[v0] Resetting WebContainer instance')
+  print.log('Resetting WebContainer instance')
   webcontainerInstance = null
   isBooting = false
   bootPromise = null
@@ -21,27 +22,27 @@ export async function getWebContainerInstance(): Promise<WebContainer> {
   }
 
   if (webcontainerInstance) {
-    console.log('[v0] Reusing existing WebContainer instance')
+    print.log('Reusing existing WebContainer instance')
     return webcontainerInstance
   }
 
   if (isBooting && bootPromise) {
-    console.log('[v0] Waiting for existing boot process')
+    print.log('Waiting for existing boot process')
     return bootPromise
   }
 
   isBooting = true
-  console.log('[v0] Booting new WebContainer instance')
+  print.log('Booting new WebContainer instance')
 
   bootPromise = (async () => {
     try {
       const { WebContainer } = await import('@webcontainer/api')
       const instance = await WebContainer.boot()
       webcontainerInstance = instance
-      console.log('[v0] WebContainer booted successfully')
+      print.log('WebContainer booted successfully')
       return instance
     } catch (error) {
-      console.error('[v0] Failed to boot WebContainer:', error)
+      print.error('Failed to boot WebContainer:', error)
       resetWebContainerInstance()
       throw error
     } finally {
@@ -60,11 +61,11 @@ export async function clearFileSystem(instance: WebContainer) {
       try {
         await instance.fs.rm(file.name, { recursive: true, force: true })
       } catch (error) {
-        console.log(`[v0] Could not remove ${file.name}:`, error)
+        print.log(`Could not remove ${file.name}:`, error)
       }
     }
   } catch (error) {
-    console.error('[v0] Error clearing file system:', error)
+    print.error('Error clearing file system:', error)
   }
 }
 
@@ -113,6 +114,7 @@ export async function readAllFiles(instance: WebContainer): Promise<{
       for (const entry of entries) {
         const fullPath =
           path === '/' ? `/${entry.name}` : `${path}/${entry.name}`
+
         const relativePath = fullPath.startsWith('/')
           ? fullPath.slice(1)
           : fullPath
@@ -130,12 +132,12 @@ export async function readAllFiles(instance: WebContainer): Promise<{
             const content = await instance.fs.readFile(fullPath, 'utf-8')
             files[relativePath] = content
           } catch (error) {
-            console.error(`[v0] Error reading file ${fullPath}:`, error)
+            print.error(`Error reading file ${fullPath}:`, error)
           }
         }
       }
     } catch (error) {
-      console.error(`[v0] Error reading directory ${path}:`, error)
+      print.error(`Error reading directory ${path}:`, error)
     }
   }
 
@@ -149,45 +151,46 @@ export function watchFileSystem(
   callback: (data: {
     files: Record<string, string>
     directories: string[]
-  }) => void
+  }) => void,
+  options?: { ignoreIf?: () => boolean }
 ): () => void {
   const watchers: Array<{ close: () => void }> = []
+
   let isProcessing = false
 
   async function handleChange(
     eventType: string,
     filename: string | Uint8Array<ArrayBufferLike> | null
   ) {
-    // Debounce rapid changes
+    // Respect an external ignore predicate (e.g. while installing)
+    if (options?.ignoreIf?.()) {
+      print.log('Skipping FS change processing (ignored by predicate)')
+      return
+    }
+
     if (isProcessing) return
+
     isProcessing = true
 
-    console.log(
-      `[v0] File system change detected: ${eventType} ${filename || ''}`
-    )
+    print.log(`File system change detected: ${eventType} ${filename || ''}`)
 
     try {
-      // Re-read all files from WebContainer
       const data = await readAllFiles(instance)
-      console.log(
-        `[v0] Re-read ${Object.keys(data.files).length} files and ${data.directories.length} directories from WebContainer`
+      print.log(
+        `Re-read ${Object.keys(data.files).length} files and ${data.directories.length} directories from WebContainer`
       )
       callback(data)
     } catch (error) {
-      console.error('[v0] Error reading files after change:', error)
+      print.error('Error reading files after change:', error)
     } finally {
-      // Allow next change to be processed after a short delay
       setTimeout(() => {
         isProcessing = false
-      }, 100)
+      }, 200) // small increase to give pnpm a chance to flush many rapid events
     }
   }
 
-  // Watch root directory recursively
   try {
-    console.log(
-      '[v0] Setting up recursive file system watcher on root directory'
-    )
+    print.log('Setting up recursive file system watcher on root directory')
 
     const watcher = instance.fs.watch('/', { recursive: true }, handleChange)
 
@@ -195,19 +198,18 @@ export function watchFileSystem(
       close: () => {
         try {
           watcher.close()
-          console.log('[v0] Closed root directory watcher')
+          print.log('Closed root directory watcher')
         } catch (error) {
-          console.error('[v0] Error closing watcher:', error)
+          print.error('Error closing watcher:', error)
         }
       },
     })
   } catch (error) {
-    console.error('[v0] Error setting up file system watcher:', error)
+    print.error('Error setting up file system watcher:', error)
   }
 
-  // Return cleanup function
   return () => {
-    console.log('[v0] Cleaning up file system watchers')
+    print.log('Cleaning up file system watchers')
     watchers.forEach((watcher) => watcher.close())
   }
 }

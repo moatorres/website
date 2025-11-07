@@ -4,7 +4,8 @@ import { Editor, Monaco, type OnMount } from '@monaco-editor/react'
 import { useTheme } from 'next-themes'
 import { useCallback, useEffect, useRef } from 'react'
 
-import { monacoThemeDark, monacoThemeLight } from './editor-themes'
+import { setupWorkspaceFormatters } from '../services/formatters'
+import { monacoThemeDark, monacoThemeLight } from '../services/themes'
 
 interface CodeEditorProps {
   value: string
@@ -34,6 +35,7 @@ export function CodeEditor({
 
     if (onMonacoReady) {
       onMonacoReady(monaco)
+      await setupWorkspaceFormatters(monaco)
     }
 
     monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
@@ -48,25 +50,20 @@ export function CodeEditor({
       allowNonTsExtensions: true,
     })
 
-    // monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    //   allowNonTsExtensions: true,
-    //   exactOptionalPropertyTypes: true,
-    //   module: 199 as any, // ts.ModuleKind.NodeNext
-    //   moduleResolution: 99 as any, // ts.ModuleResolutionKind.ESNext
-    //   strict: true,
-    //   target: 99, // ts.ScriptTarget.ESNext,
-    // })
-
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      module: monaco.languages.typescript.ModuleKind.ESNext,
-      target: monaco.languages.typescript.ScriptTarget.ESNext,
+      allowJs: true,
+      allowNonTsExtensions: true,
       allowSyntheticDefaultImports: true,
       esModuleInterop: true,
+      exactOptionalPropertyTypes: true,
+      jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
+      module: monaco.languages.typescript.ModuleKind.ESNext,
       moduleDetection: 'force',
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
       resolveJsonModule: true,
       skipLibCheck: true,
-      allowJs: true,
+      strict: true,
+      target: monaco.languages.typescript.ScriptTarget.ESNext,
       types: ['node'],
     })
 

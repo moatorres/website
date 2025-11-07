@@ -34,7 +34,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 
-import type { FileNode } from './types'
+import type { FileNode } from '../services/types'
 
 interface FileTreeProps {
   nodes: FileNode[]

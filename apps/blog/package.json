@@ -4,6 +4,8 @@
   "private": true,
   "description": "A blog built with Next.js and MDX.",
   "dependencies": {
+    "@dprint/formatter": "^0.4.1",
+    "@effect-atom/atom-react": "^0.3.4",
     "@effect/cli": "^0.71.0",
     "@effect/platform": "^0.92.1",
     "@effect/platform-node": "^0.98.4",

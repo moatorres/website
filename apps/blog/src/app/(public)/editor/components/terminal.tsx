@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react'
 
 import '@xterm/xterm/css/xterm.css'
 
-import { xtermDarkTheme, xtermLightTheme } from './editor-themes'
+import { xtermDarkTheme, xtermLightTheme } from '../services/themes'
 
 interface TerminalProps {
   onReady: (terminal: XTerm, fitAddon: FitAddon) => void
@@ -52,12 +52,12 @@ export function Terminal({ onReady }: TerminalProps) {
         try {
           fitAddon.fit()
         } catch (error) {
-          console.error('[v0] Error fitting terminal:', error)
+          console.error('Error fitting terminal:', error)
           setTimeout(() => {
             try {
               fitAddon.fit()
             } catch (retryError) {
-              console.error('[v0] Error fitting terminal on retry:', retryError)
+              console.error('Error fitting terminal on retry:', retryError)
             }
           }, 100)
         }
@@ -79,7 +79,7 @@ export function Terminal({ onReady }: TerminalProps) {
         try {
           fitAddonRef.current.fit()
         } catch (error) {
-          console.error('[v0] Error fitting terminal on resize:', error)
+          console.error('Error fitting terminal on resize:', error)
         }
       }
     }
@@ -94,7 +94,7 @@ export function Terminal({ onReady }: TerminalProps) {
         xtermRef.current = null
       }
     }
-  }, [resolvedTheme])
+  }, [resolvedTheme, onReady])
 
   useEffect(() => {
     if (xtermRef.current && fitAddonRef.current && !onReadyCalledRef.current) {

@@ -22,6 +22,9 @@ const nextConfig = {
   experimental: {
     viewTransition: true,
   },
+  nx: {
+    svgr: false,
+  },
   async headers() {
     return [
       {

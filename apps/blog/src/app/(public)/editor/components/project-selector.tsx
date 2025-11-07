@@ -2,7 +2,7 @@
 
 import { Button, Card } from '@shadcn/ui'
 
-import type { Project } from './types'
+import type { Project } from '../services/types'
 
 interface ProjectSelectorProps {
   projects: Project[]

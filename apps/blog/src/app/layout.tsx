@@ -2,11 +2,10 @@ import { cn, Toaster } from '@shadcn/ui'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
 import { unstable_ViewTransition as ViewTransition } from 'react'
 
-import { SessionProvider, ThemeProvider } from '@/components/context/session'
-import { ActiveThemeProvider } from '@/components/context/theme'
+import { SessionProvider } from '@/components/context/session'
+import { ThemeProvider } from '@/components/context/theme'
 import config from '@/data/config.json'
 
 import './global.css'
@@ -89,9 +88,6 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: React.PropsWithChildren) {
-  const activeTheme = await cookies().then((store) => store.get('theme')?.value)
-  const isScaled = activeTheme?.endsWith('-scaled')
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -102,7 +98,7 @@ export default async function RootLayout({
                 if (localStorage.theme === 'dark' || ((!('theme' in localStorage) || localStorage.theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                   document.querySelector('meta[name="theme-color"]').setAttribute('content', '${META_THEME_COLORS.dark}')
                 }
-              } catch (_) {}
+              } catch {}
             `,
           }}
         />
@@ -111,26 +107,16 @@ export default async function RootLayout({
         <body
           className={cn(
             'overscroll-none font-sans antialiased',
-            activeTheme ? `theme-${activeTheme}` : '',
-            isScaled ? 'theme-scaled' : '',
             fontVariables,
             VisualSans.className
           )}
         >
           <SessionProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-              enableColorScheme
-            >
-              <ActiveThemeProvider initialTheme={activeTheme}>
-                {children}
-                <Toaster />
-                <Analytics />
-                <SpeedInsights />
-              </ActiveThemeProvider>
+            <ThemeProvider>
+              {children}
+              <Toaster />
+              <Analytics />
+              <SpeedInsights />
             </ThemeProvider>
           </SessionProvider>
         </body>

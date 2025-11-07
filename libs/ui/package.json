@@ -9,8 +9,8 @@
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts",
-      "default": "./src/index.ts",
-      "development": "./src/index.ts"
+      "development": "./src/index.ts",
+      "default": "./src/index.ts"
     },
     "./package.json": "./package.json"
   },
@@ -50,7 +50,7 @@
     "next-themes": "^0.4.6",
     "react-day-picker": "^8.10.1",
     "react-hook-form": "^7.56.3",
-    "react-resizable-panels": "^3.0.1",
+    "react-resizable-panels": "^3.0.6",
     "recharts": "^2.15.3",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.2.0",

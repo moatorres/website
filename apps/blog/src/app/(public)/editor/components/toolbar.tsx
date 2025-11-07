@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@shadcn/ui'
-import { Copy, Download, FolderOpen, Save } from 'lucide-react'
+import { Copy, Download, FolderOpen, Package, Save } from 'lucide-react'
 
 interface ToolbarProps {
   projectName: string
@@ -16,6 +16,8 @@ interface ToolbarProps {
   onSave: () => void
   onCopy: () => void
   onBack: () => void
+  onInstall?: () => void
+  isInstalling?: boolean
 }
 
 export function Toolbar({
@@ -24,6 +26,8 @@ export function Toolbar({
   onSave,
   onCopy,
   onBack,
+  onInstall,
+  isInstalling = false,
 }: ToolbarProps) {
   return (
     <div className="h-12 border-b border-border flex items-center px-4 gap-4 bg-card">
@@ -41,6 +45,27 @@ export function Toolbar({
       <h2 className="text-sm font-semibold">{projectName}</h2>
 
       <div className="flex-1" />
+
+      {onInstall && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onInstall}
+          disabled={isInstalling}
+        >
+          {isInstalling ? (
+            <>
+              <div className="animate-spin h-3 w-3 border-2 border-current border-t-transparent rounded-full mr-2" />
+              Installing...
+            </>
+          ) : (
+            <>
+              <Package className="w-4 h-4 mr-2" />
+              Install & Load Types
+            </>
+          )}
+        </Button>
+      )}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
