@@ -1,0 +1,10 @@
+/* Add padding inside the terminal content */
+.xterm .xterm-screen {
+  padding-inline: calc(0.25rem * 4);
+  box-sizing: border-box;
+}
+
+/* Optional: prevent scrollbars from showing due to padding */
+.xterm .xterm-viewport {
+  overflow: hidden !important;
+}

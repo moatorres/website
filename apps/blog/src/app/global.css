@@ -6,6 +6,7 @@
 
 @import '../assets/styles/sugar-high.css';
 @import '../assets/styles/themes.css';
+@import '../assets/styles/xterm.css';
 
 @source '../../../../libs/ui/src/**';
 
