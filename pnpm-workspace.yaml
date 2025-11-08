@@ -1,3 +1,4 @@
 packages:
   - 'apps/*'
   - 'libs/*'
+  - '!apps/blog/src/content/projects'

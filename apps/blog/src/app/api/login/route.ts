@@ -1,7 +1,7 @@
 'use server'
 
-import * as z from '@zod/mini'
 import { NextResponse } from 'next/server'
+import * as z from 'zod'
 
 import { checkPassword, signToken } from '@/lib/session'
 

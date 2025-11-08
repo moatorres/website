@@ -1,6 +1,5 @@
 // @ts-check
 import { composePlugins, withNx } from '@nx/next'
-
 import createMDX from '@next/mdx'
 import remarkGfm from 'remark-gfm'
 import remarkSugarHigh from 'remark-sugar-high'
@@ -22,9 +21,6 @@ const nextConfig = {
   experimental: {
     viewTransition: true,
   },
-  nx: {
-    svgr: false,
-  },
   async headers() {
     return [
       {
@@ -37,7 +33,6 @@ const nextConfig = {
         ],
       },
       {
-        // Apply to all routes
         source: '/:path*',
         headers: [
           {
@@ -72,7 +67,10 @@ const nextConfig = {
   webpack: (config, { dev }) => {
     // resolve imports with extension names on dev mode (e.g. import ansi from "./ansi.js")
     config.resolve.extensionAlias = {
-      '.js': ['.ts', '.tsx', '.js'],
+      '.js': ['.ts', '.tsx', '.js', '.jsx'],
+      '.mjs': ['.mts', '.mjs'],
+      '.cjs': ['.cts', '.cjs'],
+      '.jsx': ['.tsx', '.jsx'],
     }
     return config
   },

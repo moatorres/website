@@ -41,10 +41,10 @@ import {
   TabsTrigger,
   useIsMobile,
 } from '@shadcn/ui'
-import * as z from '@zod/mini'
 import { VariantProps } from 'class-variance-authority'
 import * as LucideReact from 'lucide-react'
 import React from 'react'
+import * as z from 'zod'
 
 import { ButtonGroup } from '@/components/ui/button-group'
 
@@ -85,7 +85,7 @@ export type BulkAction<T> = BulkActionWithClick<T> | BulkActionWithRender<T>
 type EntityTableProps<T extends object> = {
   entityName: string
   data: T[]
-  schema?: z.ZodMiniType<T[]>
+  schema?: z.ZodType<T[]>
   tabs?: TabOption[]
   bulkActions?: BulkAction<T>[]
   selectOptions?: keyof T | SelectOption<T>[]

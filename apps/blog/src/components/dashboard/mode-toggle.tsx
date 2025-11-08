@@ -1,7 +1,5 @@
 'use client'
 
-import * as React from 'react'
-import { useTheme } from 'next-themes'
 import {
   Button,
   DropdownMenu,
@@ -9,7 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@shadcn/ui'
-import { MoonIcon, SunIcon, MonitorIcon } from 'lucide-react'
+import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react'
+import { useTheme } from 'next-themes'
+import * as React from 'react'
 
 export function ModeToggle() {
   const { setTheme, resolvedTheme, theme } = useTheme()

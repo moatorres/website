@@ -8,6 +8,7 @@
     "bootstrap": {
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/src/data"],
+      "dependsOn": ["^build"],
       "options": {
         "env": {
           "NODE_OPTIONS": "--no-warnings --loader @mdx-js/node-loader"
@@ -17,10 +18,16 @@
       }
     },
     "build": {
-      "dependsOn": ["bootstrap"]
+      "dependsOn": ["bootstrap"],
+      "options": {
+        "args": ["--webpack"]
+      }
     },
     "dev": {
-      "dependsOn": ["bootstrap"]
+      "dependsOn": ["bootstrap"],
+      "options": {
+        "args": ["--webpack"]
+      }
     }
   }
 }

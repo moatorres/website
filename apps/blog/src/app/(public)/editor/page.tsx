@@ -1,5 +1,6 @@
 'use client'
 
+import { print } from '@blog/utils'
 import { Button } from '@shadcn/ui'
 import type { WebContainer } from '@webcontainer/api'
 import type { FitAddon } from '@xterm/addon-fit'
@@ -32,7 +33,6 @@ import {
   readAllFiles,
   watchFileSystem,
 } from './services/webcontainer'
-import { print } from '@blog/utils'
 
 const Terminal = dynamic(
   () =>

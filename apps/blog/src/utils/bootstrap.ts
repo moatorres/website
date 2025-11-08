@@ -55,7 +55,16 @@ export async function extractArticleMetadata(
     description: content.metadata.description,
     fileName,
     filePath: filepath,
-    collection,
+    /**
+     * Note: In this context, `collection` refers to the *relative directory*
+     * (e.g., "technology", "guides") inside the content hierarchy, not the
+     * higher-level content type ("articles", "snippets", etc.).
+     * This distinction prevents confusion between content collections and
+     * category folders under each collection root.
+     *
+     * @todo Desambiguate term "collection" from content collection (articles, snippets)
+     */
+    collection: relativeDir,
     readTime: getReadTime(filepath),
     createdAt: new Date(stats.ctime).toISOString(),
     updatedAt: new Date(stats.mtime).toISOString(),

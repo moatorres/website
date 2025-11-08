@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 
 import { verifySession } from './lib/session'
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const protectedRoutes = ['/about', '/dashboard']
   const currentPath = req.nextUrl.pathname
   const isProtectedRoute = protectedRoutes.some((route) =>

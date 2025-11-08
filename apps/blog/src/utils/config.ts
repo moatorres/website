@@ -9,8 +9,8 @@ import {
   print,
   yellow,
 } from '@blog/utils'
-import * as z from '@zod/mini'
 import dotenv from 'dotenv'
+import * as z from 'zod'
 
 import {
   Config,

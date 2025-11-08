@@ -160,7 +160,7 @@ export default function AboutPage() {
         </div>
 
         <div className="col-span-6">
-          <div className="aspect-[3/4] bg-muted overflow-hidden">
+          <div className="aspect-3/4 bg-muted overflow-hidden">
             <Image
               src="/images/about/moa-torres-by-will-stuetz.png"
               alt="Portrait of Moa Torres"

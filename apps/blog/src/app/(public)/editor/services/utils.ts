@@ -1,8 +1,8 @@
+import { print } from '@blog/utils'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 
 import { FileNode } from './types'
-import { print } from '@blog/utils'
 
 export const getLanguageFromPath = (path: string): string => {
   const ext = path.split('.').pop()?.toLowerCase()
