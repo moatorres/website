@@ -1,21 +1,23 @@
 {
   "css.customData": [".vscode/tailwind.json"],
-  "editor.tabSize": 2,
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "css.validate": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
   },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.inlineSuggest.enabled": true,
   "// activates tailwindcss intellisense for libraries": "",
   "editor.quickSuggestions": {
     "strings": true
   },
-  "css.validate": false,
-  "editor.inlineSuggest.enabled": true,
+  "editor.tabSize": 2,
+  "eslint.format.enable": true,
+  "eslint.validate": ["typescript", "javascript", "tsx", "jsx", "json"],
   "// adds tailwindcss intellisense support within cva function calls": "",
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(((?:[^()]|\\([^()]*\\))*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["cx\\(((?:[^()]|\\([^()]*\\))*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ],
-  "eslint.validate": ["json"]
+  ]
 }
