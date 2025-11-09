@@ -1,11 +1,11 @@
 'use client'
 
 import { print } from '@blog/utils'
-import { Button } from '@shadcn/ui'
+import { Button, useMobile } from '@shadcn/ui'
 import type { WebContainer } from '@webcontainer/api'
 import type { FitAddon } from '@xterm/addon-fit'
 import type { Terminal as XTerm } from '@xterm/xterm'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 
 import { CodeEditor } from './components/code-editor'
 import { FileTree } from './components/file-tree'
+import { MobileView } from './components/mobile-view'
 import { Preview } from './components/preview'
 import { ProjectSelector } from './components/project-selector'
 import { Toolbar } from './components/toolbar'
@@ -20,12 +21,13 @@ import { loadTypeDefinitions, useTypeLoader } from './hooks/use-type-loader'
 import { exampleProjects } from './services/projects'
 import type { FileNode, Project } from './services/types'
 import {
+  buildFileTree,
   copyProjectToClipboard,
   exportAsZip,
+  getLanguageFromPath,
   loadFromLocalStorage,
   saveToLocalStorage,
 } from './services/utils'
-import { buildFileTree, getLanguageFromPath } from './services/utils'
 import {
   clearFileSystem,
   convertFilesToFileTree,
@@ -58,10 +60,13 @@ export default function PlaygroundPage() {
   const [crossOriginIsolated, setCrossOriginIsolated] = useState<
     boolean | null
   >(null)
-  const [isMounted, setIsMounted] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [showPreview, setShowPreview] = useState(true)
-  const [isServerStarting, setIsServerStarting] = useState(false)
+  const [showExplorer, setShowExplorer] = useState(true)
+  const [showEditor, setShowEditor] = useState(true)
+  const [showTerminal, setShowTerminal] = useState(true)
+  const [isRunning, setIsRunning] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(true)
 
   const webcontainerRef = useRef<WebContainer | null>(null)
   const terminalRef = useRef<XTerm | null>(null)
@@ -70,6 +75,8 @@ export default function PlaygroundPage() {
   const fileWatcherRef = useRef<(() => void) | null>(null)
   const monacoRef = useRef<any>(null)
   const isInstallingRef = useRef(false)
+
+  const isMobile = useMobile()
 
   useTypeLoader(monacoRef.current, webcontainerRef.current, isInstalling)
 
@@ -105,12 +112,6 @@ export default function PlaygroundPage() {
   const setupFileWatching = useCallback(() => {
     if (!webcontainerRef.current) return
 
-    // if (fileWatcherRef.current) {
-    //   print.log('Cleaning up existing file watchers')
-    //   fileWatcherRef.current()
-    //   fileWatcherRef.current = null
-    // }
-
     print.log('Setting up file system watcher')
 
     fileWatcherRef.current = watchFileSystem(
@@ -120,17 +121,14 @@ export default function PlaygroundPage() {
           `File system updated, syncing ${Object.keys(files).length} files and ${directories.length} directories`
         )
 
-        // Update project state with new files
         setSelectedProject((prev) => {
           if (!prev) return prev
           return { ...prev, files }
         })
 
-        // Rebuild file tree
         const tree = buildFileTree(files, directories)
         setFileTree(tree)
 
-        // Update current file content if it changed
         setSelectedFile((currentFile) => {
           if (currentFile && files[currentFile]) {
             setFileContent(files[currentFile])
@@ -217,7 +215,6 @@ export default function PlaygroundPage() {
     setError(null)
     terminalReadyRef.current = false
     setPreviewUrl(null)
-    setIsServerStarting(false)
 
     if (fileWatcherRef.current) {
       fileWatcherRef.current()
@@ -248,7 +245,7 @@ export default function PlaygroundPage() {
       webcontainer.on('server-ready', (port, url) => {
         print.log('Server ready on port', port, 'at', url)
         setPreviewUrl(url)
-        setIsServerStarting(false)
+
         toast('Server Ready', {
           description: `Preview available on port ${port}`,
           duration: 3000,
@@ -405,21 +402,18 @@ export default function PlaygroundPage() {
     if (!webcontainerRef.current) return
 
     try {
-      // Create parent directories if they don't exist
       const parts = path.split('/')
       if (parts.length > 1) {
         const dirPath = parts.slice(0, -1).join('/')
         await webcontainerRef.current.fs.mkdir(dirPath, { recursive: true })
       }
 
-      // Create the file with empty content
       await webcontainerRef.current.fs.writeFile(path, '')
 
       toast('File Created', {
         description: `Created ${path}`,
       })
 
-      // Select the newly created file
       setSelectedFile(path)
       setFileContent('')
     } catch (error) {
@@ -461,7 +455,6 @@ export default function PlaygroundPage() {
           await webcontainerRef.current.fs.rm(path)
         }
 
-        // If the deleted file was selected, clear selection
         if (selectedFile === path || selectedFile?.startsWith(path + '/')) {
           setSelectedFile(null)
           setFileContent('')
@@ -474,6 +467,150 @@ export default function PlaygroundPage() {
         print.error('Error deleting:', error)
         toast.error('Error', {
           description: `Failed to delete ${isDirectory ? 'folder' : 'file'}`,
+        })
+      }
+    },
+    [selectedFile]
+  )
+
+  const handleRunCommand = useCallback(async () => {
+    if (!shellWriterRef.current || isRunning) return
+
+    setIsRunning(true)
+
+    try {
+      shellWriterRef.current.write('npm run dev\n')
+
+      toast('Starting Server', {
+        description: 'Running npm run dev...',
+      })
+
+      setTimeout(() => {
+        setIsRunning(false)
+      }, 3000)
+    } catch (error) {
+      print.error('Error running command:', error)
+      toast.error('Run Failed', {
+        description: 'Failed to start dev server',
+      })
+      setIsRunning(false)
+    }
+  }, [isRunning])
+
+  const handleRename = useCallback(
+    async (oldPath: string, newPath: string, isDirectory: boolean) => {
+      if (!webcontainerRef.current) return
+
+      try {
+        if (isDirectory) {
+          const files = await readAllFiles(webcontainerRef.current)
+          const filesToMove = Object.keys(files.files).filter((f) =>
+            f.startsWith(oldPath + '/')
+          )
+
+          await webcontainerRef.current.fs.mkdir(newPath, { recursive: true })
+
+          for (const file of filesToMove) {
+            const newFilePath = file.replace(oldPath, newPath)
+            const content = await webcontainerRef.current.fs.readFile(
+              file,
+              'utf-8'
+            )
+            await webcontainerRef.current.fs.writeFile(newFilePath, content)
+          }
+
+          await webcontainerRef.current.fs.rm(oldPath, {
+            recursive: true,
+            force: true,
+          })
+        } else {
+          const content = await webcontainerRef.current.fs.readFile(
+            oldPath,
+            'utf-8'
+          )
+          const newDir = newPath.split('/').slice(0, -1).join('/')
+          if (newDir) {
+            await webcontainerRef.current.fs.mkdir(newDir, { recursive: true })
+          }
+          await webcontainerRef.current.fs.writeFile(newPath, content)
+          await webcontainerRef.current.fs.rm(oldPath)
+        }
+
+        if (selectedFile === oldPath) {
+          setSelectedFile(newPath)
+        }
+
+        toast(isDirectory ? 'Folder Renamed' : 'File Renamed', {
+          description: `Renamed to ${newPath.split('/').pop()}`,
+        })
+      } catch (error) {
+        print.error('Error renaming:', error)
+        toast.error('Error', {
+          description: `Failed to rename ${isDirectory ? 'folder' : 'file'}`,
+        })
+      }
+    },
+    [selectedFile]
+  )
+
+  const handleMove = useCallback(
+    async (sourcePath: string, targetPath: string, isDirectory: boolean) => {
+      if (!webcontainerRef.current) return
+
+      try {
+        const fileName = sourcePath.split('/').pop()
+        // If targetPath is empty, move to root; otherwise move to folder
+        const newPath = targetPath ? `${targetPath}/${fileName}` : fileName!
+
+        if (isDirectory) {
+          const files = await readAllFiles(webcontainerRef.current)
+          const filesToMove = Object.keys(files.files).filter((f) =>
+            f.startsWith(sourcePath + '/')
+          )
+
+          await webcontainerRef.current.fs.mkdir(newPath, { recursive: true })
+
+          for (const file of filesToMove) {
+            const relPath = file.substring(sourcePath.length + 1)
+            const newFilePath = `${newPath}/${relPath}`
+            const content = await webcontainerRef.current.fs.readFile(
+              file,
+              'utf-8'
+            )
+            const newFileDir = newFilePath.split('/').slice(0, -1).join('/')
+            if (newFileDir) {
+              await webcontainerRef.current.fs.mkdir(newFileDir, {
+                recursive: true,
+              })
+            }
+            await webcontainerRef.current.fs.writeFile(newFilePath, content)
+          }
+
+          await webcontainerRef.current.fs.rm(sourcePath, {
+            recursive: true,
+            force: true,
+          })
+        } else {
+          const content = await webcontainerRef.current.fs.readFile(
+            sourcePath,
+            'utf-8'
+          )
+          await webcontainerRef.current.fs.writeFile(newPath, content)
+          await webcontainerRef.current.fs.rm(sourcePath)
+        }
+
+        if (selectedFile === sourcePath) {
+          setSelectedFile(newPath)
+        }
+
+        const destination = targetPath ? targetPath : 'root'
+        toast(isDirectory ? 'Folder Moved' : 'File Moved', {
+          description: `Moved to ${destination}`,
+        })
+      } catch (error) {
+        print.error('Error moving:', error)
+        toast.error('Error', {
+          description: `Failed to move ${isDirectory ? 'folder' : 'file'}`,
         })
       }
     },
@@ -493,12 +630,6 @@ export default function PlaygroundPage() {
   }, [])
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isMounted) return
-
     const isIsolated =
       typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated
     setCrossOriginIsolated(isIsolated)
@@ -506,16 +637,14 @@ export default function PlaygroundPage() {
     if (isIsolated) {
       print.log('Cross-Origin Isolation is enabled ✓')
     }
-  }, [isMounted, crossOriginIsolated])
+  }, [crossOriginIsolated])
 
-  if (!isMounted) {
+  if (isMobile) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
+      <MobileView
+        projectName={selectedProject?.name}
+        onBack={selectedProject ? () => setSelectedProject(null) : undefined}
+      />
     )
   }
 
@@ -561,49 +690,126 @@ export default function PlaygroundPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col p-6">
-      <div className="mx-auto w-full flex flex-col h-[calc(100vh-3rem)] rounded-xl border border-border/50 bg-background shadow-2xl overflow-hidden">
+    <div
+      className={`transition-all duration-300 ease-in-out ${isFullscreen ? 'fixed inset-0 z-50 bg-background' : 'min-h-screen flex flex-col p-6'}`}
+    >
+      <div
+        className={`
+        mx-auto w-full flex flex-col relative
+        ${isFullscreen ? 'h-full' : 'h-[calc(100vh-3rem)] rounded-xl shadow-2xl'}
+        ${isFullscreen ? '' : 'border border-border/50'}
+        bg-background overflow-hidden
+      `}
+      >
         <Toolbar
           projectName={selectedProject.name}
+          projects={exampleProjects}
+          currentProjectId={selectedProject.id}
           onExportZip={handleExportZip}
           onSave={handleSave}
           onCopy={handleCopy}
           onBack={() => setSelectedProject(null)}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
+          onProjectChange={handleProjectSelect}
+          showExplorer={showExplorer}
+          showEditor={showEditor}
+          showPreview={showPreview}
+          showTerminal={showTerminal}
+          onToggleExplorer={() => setShowExplorer(!showExplorer)}
+          onToggleEditor={() => setShowEditor(!showEditor)}
+          onTogglePreview={() => setShowPreview(!showPreview)}
+          onToggleTerminal={() => setShowTerminal(!showTerminal)}
+          onRunCommand={handleRunCommand}
+          isRunning={isRunning}
         />
 
-        <PanelGroup direction="vertical" className="flex-1">
-          <Panel defaultSize={70} minSize={30}>
-            <PanelGroup direction="horizontal">
-              {/* File Tree Panel */}
-              <Panel defaultSize={20} minSize={10} maxSize={30}>
-                <div className="h-full border-r border-border overflow-y-auto bg-card/50">
-                  <div className="p-3 border-b border-border/50">
+        {isLoading && (
+          <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-300 transition-all">
+            <div className="text-center">
+              <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+              <p className="text-muted-foreground font-medium">
+                Loading project...
+              </p>
+              <p className="text-xs text-muted-foreground/60 mt-2">
+                Setting up your workspace
+              </p>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="absolute inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-300 transition-all">
+            <div className="text-center max-w-md">
+              <div className="text-destructive text-4xl mb-4">⚠️</div>
+              <h2 className="text-xl font-semibold mb-2">
+                Failed to Load Project
+              </h2>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <Button
+                onClick={() => {
+                  setError(null)
+                  setSelectedProject(null)
+                }}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              >
+                Back to Projects
+              </Button>
+            </div>
+          </div>
+        )}
+
+        <PanelGroup
+          direction="vertical"
+          className="flex-1"
+          id="main-panel-group"
+        >
+          <Panel defaultSize={70} minSize={30} id="top-panel">
+            <PanelGroup direction="horizontal" id="horizontal-panel-group">
+              <Panel
+                defaultSize={20}
+                minSize={10}
+                maxSize={30}
+                id="explorer-panel"
+                className={showExplorer ? '' : 'hidden'}
+              >
+                <div className="h-full border-r border-border overflow-y-auto bg-card/50 flex flex-col">
+                  <div className="h-10 p-3 border-b border-border/50 flex items-center shrink-0">
                     <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                       Explorer
                     </h3>
                   </div>
-                  <FileTree
-                    nodes={fileTree}
-                    onFileSelect={handleFileSelect}
-                    selectedFile={selectedFile}
-                    onCreateFile={handleCreateFile}
-                    onCreateFolder={handleCreateFolder}
-                    onDelete={handleDelete}
-                  />
+                  <div className="flex-1 overflow-y-auto">
+                    <FileTree
+                      nodes={fileTree}
+                      onFileSelect={handleFileSelect}
+                      selectedFile={selectedFile}
+                      onCreateFile={handleCreateFile}
+                      onCreateFolder={handleCreateFolder}
+                      onDelete={handleDelete}
+                      onRename={handleRename}
+                      onMove={handleMove}
+                    />
+                  </div>
                 </div>
               </Panel>
 
-              <PanelResizeHandle className="w-0.5 bg-border/50 hover:bg-primary/50 transition-colors" />
+              <PanelResizeHandle
+                className={`w-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${showExplorer ? '' : 'hidden'}`}
+              />
 
-              {/* Editor + Preview Panel */}
-              <Panel defaultSize={85}>
-                <PanelGroup direction="horizontal">
-                  {/* Editor Panel */}
-                  <Panel defaultSize={showPreview ? 60 : 100} minSize={30}>
+              <Panel defaultSize={85} id="editor-preview-panel">
+                <PanelGroup direction="horizontal" id="editor-preview-group">
+                  <Panel
+                    defaultSize={showPreview ? 60 : 100}
+                    minSize={30}
+                    id="editor-panel"
+                    className={showEditor ? '' : 'hidden'}
+                  >
                     <div className="h-full flex flex-col">
                       {selectedFile ? (
                         <>
-                          <div className="h-10 border-b border-border/50 flex items-center px-4">
+                          <div className="h-10 border-b border-border/50 flex items-center px-4 shrink-0">
                             <span className="text-sm text-muted-foreground font-medium font-mono">
                               {selectedFile}
                             </span>
@@ -614,8 +820,6 @@ export default function PlaygroundPage() {
                               onChange={handleFileChange}
                               language={getLanguageFromPath(selectedFile)}
                               filePath={selectedFile}
-                              // TODO: Update this usage to @effect-atom/react-atom
-                              // Provides a reference once monaco is mounted, used by loadTypeDefinitions
                               onMonacoReady={(monaco) => {
                                 monacoRef.current = monaco
                               }}
@@ -633,46 +837,45 @@ export default function PlaygroundPage() {
                     </div>
                   </Panel>
 
-                  {/* Preview Panel */}
-                  {showPreview && (
-                    <>
-                      <PanelResizeHandle className="w-0.5 bg-border/50 hover:bg-primary/50 transition-colors" />
-                      <Panel defaultSize={40} minSize={20} className="px-0">
-                        <div className="h-full flex flex-col overflow-hidden bg-card/50 border-l border-border/50">
-                          <div className="h-10 border-b border-border/50 flex items-center justify-between px-4">
-                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                              Preview
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setShowPreview(false)}
-                              className="h-7 w-7 p-0 hover:bg-muted"
-                            >
-                              <EyeOff className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          <div className="flex-1 overflow-hidden">
-                            <Preview
-                              url={previewUrl}
-                              isLoading={isServerStarting}
-                            />
-                          </div>
-                        </div>
-                      </Panel>
-                    </>
-                  )}
+                  <PanelResizeHandle
+                    className={`w-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${showEditor && showPreview ? '' : 'hidden'}`}
+                  />
+
+                  <Panel
+                    defaultSize={40}
+                    minSize={20}
+                    id="preview-panel"
+                    className={`px-0 ${showPreview ? '' : 'hidden'}`}
+                  >
+                    <div className="h-full flex flex-col overflow-hidden bg-card/50 border-l border-border/50">
+                      <div className="h-10 border-b border-border/50 flex items-center justify-between px-4 shrink-0">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                          Preview
+                        </span>
+                      </div>
+                      <div className="flex-1 overflow-hidden">
+                        <Preview url={previewUrl} isLoading={false} />
+                      </div>
+                    </div>
+                  </Panel>
                 </PanelGroup>
               </Panel>
             </PanelGroup>
           </Panel>
 
-          <PanelResizeHandle className="h-0.5 bg-border/50 hover:bg-primary/50 transition-colors" />
+          <PanelResizeHandle
+            className={`h-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${showTerminal ? '' : 'hidden'}`}
+          />
 
-          {/* Terminal Panel */}
-          <Panel id="terminal-panel" defaultSize={30} minSize={15} maxSize={50}>
-            <div className="h-full border-t border-border/50 bg-background">
-              <div className="h-9 border-b border-border/50 flex items-center px-4">
+          <Panel
+            id="terminal-panel"
+            defaultSize={30}
+            minSize={15}
+            maxSize={50}
+            className={showTerminal ? '' : 'hidden'}
+          >
+            <div className="h-full border-t border-border/50 bg-background flex flex-col">
+              <div className="h-10 border-b border-border/50 flex items-center px-4 shrink-0">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                   Terminal
                 </span>
@@ -683,25 +886,13 @@ export default function PlaygroundPage() {
                   </span>
                 )}
               </div>
-              <div className="h-[calc(100%-2.25rem)] flex flex-col justify-end overflow-hidden">
+              <div className="flex-1 overflow-hidden">
                 <Terminal onReady={handleTerminalReady} />
               </div>
             </div>
           </Panel>
         </PanelGroup>
       </div>
-
-      {!showPreview && (
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => setShowPreview(true)}
-          className="fixed bottom-8 right-8 shadow-lg hover:shadow-xl transition-shadow"
-        >
-          <Eye className="h-4 w-4 mr-2" />
-          Show Preview
-        </Button>
-      )}
     </div>
   )
 }

@@ -1,44 +1,138 @@
 'use client'
 
-import { Button, Card } from '@shadcn/ui'
+import { Search, X } from 'lucide-react'
+import type React from 'react'
+import { useMemo, useState } from 'react'
 
 import type { Project } from '../services/types'
 
 interface ProjectSelectorProps {
   projects: Project[]
   onSelectProject: (project: Project) => void
+  blurredBackground?: React.ReactNode
 }
 
 export function ProjectSelector({
   projects,
   onSelectProject,
+  blurredBackground,
 }: ProjectSelectorProps) {
-  return (
-    <div className="min-h-screen flex items-center justify-center p-8">
-      <div className="max-w-4xl w-full">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 text-balance">
-            WebContainer Playground
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Choose a project to start coding in your browser
-          </p>
-        </div>
+  const [searchQuery, setSearchQuery] = useState('')
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {projects.map((project) => (
-            <Card
-              key={project.id}
-              className="p-6 hover:border-primary transition-colors cursor-pointer"
-              onClick={() => onSelectProject(project)}
-            >
-              <h3 className="text-xl font-semibold mb-2">{project.name}</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                {project.description}
-              </p>
-              <Button className="w-full">Load Project</Button>
-            </Card>
-          ))}
+  const filteredProjects = useMemo(() => {
+    if (!searchQuery.trim()) return projects
+
+    const query = searchQuery.toLowerCase()
+    return projects.filter(
+      (project) =>
+        project.name.toLowerCase().includes(query) ||
+        project.description.toLowerCase().includes(query)
+    )
+  }, [projects, searchQuery])
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Blurred background */}
+      <div className="absolute inset-0 backdrop-blur-xl bg-background/80" />
+
+      {/* Centered modal */}
+      <div className="relative z-10 w-full max-w-2xl mx-4 animate-in fade-in zoom-in-95 duration-300">
+        <div className="bg-card/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-border/50">
+            <h2 className="text-2xl font-semibold text-foreground mb-1">
+              Select a Project
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Choose a project to start coding in your browser
+            </p>
+          </div>
+
+          {/* Search bar */}
+          <div className="px-6 py-4 border-b border-border/50 bg-muted/30">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search projects..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-11 pl-10 pr-10 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow"
+                autoFocus
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Project list */}
+          <div className="max-h-[480px] overflow-y-auto">
+            {filteredProjects.length === 0 ? (
+              <div className="px-6 py-16 text-center">
+                <div className="text-muted-foreground text-sm">
+                  No projects found matching "{searchQuery}"
+                </div>
+              </div>
+            ) : (
+              <div className="divide-y divide-border/30">
+                {filteredProjects.map((project, index) => (
+                  <button
+                    key={project.id}
+                    onClick={() => onSelectProject(project)}
+                    className="w-full px-6 py-4 hover:bg-muted/50 transition-colors text-left group flex items-center gap-4"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                          {project.name}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {project.description}
+                      </p>
+                    </div>
+                    <div className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <kbd className="px-1.5 py-0.5 bg-muted border border-border/50 rounded text-[10px] font-mono">
+                          ⏎
+                        </kbd>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer hint */}
+          <div className="px-6 py-3 border-t border-border/50 bg-muted/20">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1.5">
+                  <kbd className="px-1.5 py-0.5 bg-background border border-border/50 rounded text-[10px] font-mono">
+                    ↑
+                  </kbd>
+                  <kbd className="px-1.5 py-0.5 bg-background border border-border/50 rounded text-[10px] font-mono">
+                    ↓
+                  </kbd>
+                  to navigate
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <kbd className="px-1.5 py-0.5 bg-background border border-border/50 rounded text-[10px] font-mono">
+                    ⏎
+                  </kbd>
+                  to select
+                </span>
+              </div>
+              <span>{filteredProjects.length} projects</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

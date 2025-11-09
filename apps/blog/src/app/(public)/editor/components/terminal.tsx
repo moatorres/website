@@ -84,24 +84,29 @@ export function Terminal({ onReady }: TerminalProps) {
       }
     }
 
+    let resizeObserver: ResizeObserver | null = null
+
+    if (terminalRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        handleResize()
+      })
+      resizeObserver.observe(terminalRef.current)
+    }
+
     window.addEventListener('resize', handleResize)
 
     return () => {
       clearTimeout(timeoutId)
       window.removeEventListener('resize', handleResize)
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      }
       if (xtermRef.current) {
         xtermRef.current.dispose()
         xtermRef.current = null
       }
     }
-  }, [resolvedTheme, onReady])
-
-  useEffect(() => {
-    if (xtermRef.current && fitAddonRef.current && !onReadyCalledRef.current) {
-      onReadyCalledRef.current = true
-      onReady(xtermRef.current, fitAddonRef.current)
-    }
-  }, [onReady])
+  }, [])
 
   return <div ref={terminalRef} className="h-full w-full" />
 }

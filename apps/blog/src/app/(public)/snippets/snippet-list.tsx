@@ -15,7 +15,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  useIsMobile,
+  useMobile,
 } from '@shadcn/ui'
 import { Code } from 'codice'
 import { formatDistanceToNow } from 'date-fns'
@@ -51,7 +51,7 @@ export default function SnippetList() {
   )
   const router = useRouter()
   const nonce = useNonce()
-  const isMobile = useIsMobile()
+  const isMobile = useMobile()
 
   React.useEffect(() => {
     const loadSnippets = async () => {

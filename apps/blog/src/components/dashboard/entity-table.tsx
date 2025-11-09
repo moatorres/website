@@ -39,7 +39,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  useIsMobile,
+  useMobile,
 } from '@shadcn/ui'
 import { VariantProps } from 'class-variance-authority'
 import * as LucideReact from 'lucide-react'
@@ -160,7 +160,7 @@ export function EntityTable<T extends WithId & Record<string, unknown>>({
   const [selectedFilter, setSelectedFilter] = React.useState<string>('all')
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
   const [view, setView] = React.useState<T | null>(null)
-  const isMobile = useIsMobile()
+  const isMobile = useMobile()
 
   // Validate with Zod if provided
   const safeData: T[] = React.useMemo(() => {
