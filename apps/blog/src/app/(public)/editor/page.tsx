@@ -67,6 +67,7 @@ export default function PlaygroundPage() {
   const [showTerminal, setShowTerminal] = useState(true)
   const [isRunning, setIsRunning] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(true)
+  const [showProjectSelector, setShowProjectSelector] = useState(false)
 
   const webcontainerRef = useRef<WebContainer | null>(null)
   const terminalRef = useRef<XTerm | null>(null)
@@ -620,6 +621,21 @@ export default function PlaygroundPage() {
     [selectedFile]
   )
 
+  const handleOpenProjectSelector = useCallback(() => {
+    setShowProjectSelector(true)
+  }, [])
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showProjectSelector) {
+        setShowProjectSelector(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [showProjectSelector])
+
   useEffect(() => {
     isInstallingRef.current = isInstalling
   }, [isInstalling])
@@ -725,6 +741,7 @@ export default function PlaygroundPage() {
           onToggleTerminal={() => setShowTerminal(!showTerminal)}
           onRunCommand={handleRunCommand}
           isRunning={isRunning}
+          onOpenProjectSelector={handleOpenProjectSelector}
         />
 
         {isLoading && (
@@ -896,6 +913,27 @@ export default function PlaygroundPage() {
           </Panel>
         </PanelGroup>
       </div>
+      {showProjectSelector && (
+        <div className="fixed inset-0 z-200 flex items-center justify-center">
+          <div
+            className="absolute inset-0 backdrop-blur-xs bg-background/80"
+            onClick={() => setShowProjectSelector(false)}
+          />
+
+          <div className="relative z-10 w-full max-w-2xl mx-4 animate-in fade-in zoom-in-95 duration-300">
+            <div className="bg-card/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-2xl overflow-hidden">
+              <ProjectSelector
+                asModal
+                projects={exampleProjects}
+                onSelectProject={(project) => {
+                  handleProjectSelect(project)
+                  setShowProjectSelector(false)
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

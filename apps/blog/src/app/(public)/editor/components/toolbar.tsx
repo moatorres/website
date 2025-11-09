@@ -2,22 +2,16 @@
 
 import {
   Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@shadcn/ui'
 import {
-  ChevronDown,
   Code2,
   Copy,
   Download,
-  FolderOpen,
+  Folders,
   Maximize2,
   Minimize2,
   Monitor,
@@ -56,6 +50,7 @@ interface ToolbarProps {
   onToggleTerminal?: () => void
   onRunCommand?: () => void
   isRunning?: boolean
+  onOpenProjectSelector?: () => void
 }
 
 export function Toolbar({
@@ -81,6 +76,7 @@ export function Toolbar({
   onToggleTerminal,
   onRunCommand,
   isRunning = false,
+  onOpenProjectSelector,
 }: ToolbarProps) {
   const [mounted, setMounted] = useState(false)
 
@@ -89,19 +85,19 @@ export function Toolbar({
   }, [])
 
   return (
-    <div className="h-12 py-2 border-b border-border flex items-center px-4 gap-3 bg-card shrink-0">
+    <div className="h-12 py-2 border-b border-border flex items-center px-4 gap-3 bg-background shrink-0">
       {/* Brand */}
       <div className="flex items-center gap-2 mr-2">
         <div className="w-6 h-6 bg-linear-to-br from-primary to-primary/70 rounded-md flex items-center justify-center">
           <span className="text-primary-foreground font-bold text-xs">MT</span>
         </div>
         <span className="font-semibold text-xs hidden sm:inline">
-          {projectName}
+          Moa Torres | Editor
         </span>
       </div>
 
       {/* Project Selector Dropdown */}
-      {projects.length > 0 && onProjectChange && (
+      {/* {projects.length > 0 && onProjectChange && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -140,6 +136,24 @@ export function Toolbar({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      )} */}
+
+      {/* Project Selector Button */}
+      {onOpenProjectSelector && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onOpenProjectSelector}
+              className="gap-2 bg-transparent h-7 text-xs"
+            >
+              <Folders className="w-3 h-3 shrink-0" />
+              <span className="hidden sm:inline">Projects</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Open Project Selector</TooltipContent>
+        </Tooltip>
       )}
 
       <div className="flex-1" />
