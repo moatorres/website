@@ -1,11 +1,10 @@
 'use client'
 
-import { print } from '@blog/utils'
+import type { Monaco } from '@monaco-editor/react'
 import { Button, useMobile } from '@shadcn/ui'
-import type { WebContainer } from '@webcontainer/api'
 import type { FitAddon } from '@xterm/addon-fit'
 import type { Terminal as XTerm } from '@xterm/xterm'
-import { Loader2 } from 'lucide-react'
+import { FolderDown, Loader, Loader2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
@@ -17,7 +16,8 @@ import { MobileView } from './components/mobile-view'
 import { Preview } from './components/preview'
 import { ProjectSelector } from './components/project-selector'
 import { Toolbar } from './components/toolbar'
-import { loadTypeDefinitions, useTypeLoader } from './hooks/use-type-loader'
+import { useWebContainer } from './contexts/webcontainer-context'
+import { useTypeLoader } from './hooks/use-type-loader'
 import { exampleProjects } from './services/projects'
 import type { FileNode, Project } from './services/types'
 import {
@@ -28,13 +28,7 @@ import {
   loadFromLocalStorage,
   saveToLocalStorage,
 } from './services/utils'
-import {
-  clearFileSystem,
-  convertFilesToFileTree,
-  getWebContainerInstance,
-  readAllFiles,
-  watchFileSystem,
-} from './services/webcontainer'
+import { convertFilesToFileTree } from './services/webcontainer'
 
 const Terminal = dynamic(
   () =>
@@ -42,7 +36,8 @@ const Terminal = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-full w-full flex items-center justify-center text-muted-foreground">
+      <div className="h-full w-full flex items-center justify-center text-muted-foreground gap-1.5 font-medium">
+        <Loader className="w-3 h-3 animate-spin" />
         <span className="text-sm">Loading terminal...</span>
       </div>
     ),
@@ -50,17 +45,30 @@ const Terminal = dynamic(
 )
 
 export default function PlaygroundPage() {
+  const {
+    webcontainer,
+    previewUrl,
+    setPreviewUrl,
+    isInstalling,
+    initializeWebContainer,
+    initializeTerminal,
+    writeFile,
+    createFile,
+    createFolder,
+    deleteItem,
+    renameItem,
+    moveItem,
+    readFiles,
+    setupFileWatcher,
+    runCommand,
+  } = useWebContainer()
+
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [fileTree, setFileTree] = useState<FileNode[]>([])
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [fileContent, setFileContent] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
-  const [isInstalling, setIsInstalling] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [crossOriginIsolated, setCrossOriginIsolated] = useState<
-    boolean | null
-  >(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [showPreview, setShowPreview] = useState(true)
   const [showExplorer, setShowExplorer] = useState(true)
   const [showEditor, setShowEditor] = useState(true)
@@ -69,59 +77,39 @@ export default function PlaygroundPage() {
   const [isFullscreen, setIsFullscreen] = useState(true)
   const [showProjectSelector, setShowProjectSelector] = useState(false)
 
-  const webcontainerRef = useRef<WebContainer | null>(null)
-  const terminalRef = useRef<XTerm | null>(null)
-  const shellWriterRef = useRef<WritableStreamDefaultWriter | null>(null)
-  const terminalReadyRef = useRef(false)
+  const monacoRef = useRef<Monaco>(null)
   const fileWatcherRef = useRef<(() => void) | null>(null)
-  const monacoRef = useRef<any>(null)
-  const isInstallingRef = useRef(false)
 
   const isMobile = useMobile()
 
-  useTypeLoader(monacoRef.current, webcontainerRef.current, isInstalling)
-
-  const WEBCONTAINER_BIN_PATH = 'node_modules/.bin:/usr/local/bin:/usr/bin:/bin'
+  useTypeLoader(monacoRef.current, webcontainer, isInstalling)
 
   const syncFilesFromWebContainer = useCallback(async () => {
-    if (!webcontainerRef.current || !selectedProject) return
+    if (!webcontainer || !selectedProject) return
 
     try {
-      const { files, directories } = await readAllFiles(webcontainerRef.current)
-      print.log(
-        'Synced files from WebContainer:',
-        Object.keys(files).length,
-        'files,',
-        directories.length,
-        'directories'
-      )
-
-      setSelectedProject({ ...selectedProject, files })
+      const { files, directories } = await readFiles()
+      setSelectedProject((prev) => {
+        if (!prev) return prev
+        return { ...prev, files }
+      })
 
       const tree = buildFileTree(files, directories)
-
       setFileTree(tree)
 
       if (selectedFile && files[selectedFile]) {
         setFileContent(files[selectedFile])
       }
     } catch (error) {
-      print.error('Error syncing files:', error)
+      console.error('Error syncing files:', error)
     }
-  }, [selectedProject, selectedFile])
+  }, [selectedProject, selectedFile, webcontainer, readFiles])
 
   const setupFileWatching = useCallback(() => {
-    if (!webcontainerRef.current) return
+    if (!webcontainer) return
 
-    print.log('Setting up file system watcher')
-
-    fileWatcherRef.current = watchFileSystem(
-      webcontainerRef.current,
+    fileWatcherRef.current = setupFileWatcher(
       ({ files, directories }) => {
-        print.log(
-          `File system updated, syncing ${Object.keys(files).length} files and ${directories.length} directories`
-        )
-
         setSelectedProject((prev) => {
           if (!prev) return prev
           return { ...prev, files }
@@ -137,11 +125,9 @@ export default function PlaygroundPage() {
           return currentFile
         })
       },
-      { ignoreIf: () => isInstallingRef.current }
+      { ignoreIf: () => isInstalling }
     )
-
-    print.log('File system watcher setup complete')
-  }, [])
+  }, [webcontainer, setupFileWatcher, isInstalling])
 
   const handleExportZip = useCallback(async () => {
     if (!selectedProject) return
@@ -151,11 +137,16 @@ export default function PlaygroundPage() {
 
       await exportAsZip(selectedProject.files, selectedProject.name)
 
-      toast('Export Successful', {
-        description: 'Project exported as ZIP file',
+      toast('Exporting Project', {
+        description: 'Exporting project as ZIP file',
+        icon: <FolderDown className="w-3.5 h-3.5" />,
+        action: {
+          label: 'Dismiss',
+          onClick: () => void 0,
+        },
       })
     } catch (error) {
-      print.error('Error exporting ZIP:', error)
+      console.error('Error exporting ZIP:', error)
       toast.error('Export Failed', {
         description: 'Failed to export project',
       })
@@ -181,7 +172,7 @@ export default function PlaygroundPage() {
         throw new Error('Failed to save')
       }
     } catch (error) {
-      print.error('Error saving:', error)
+      console.error('Error saving:', error)
       toast.error('Save Failed', {
         description: 'Failed to save project',
       })
@@ -204,7 +195,7 @@ export default function PlaygroundPage() {
         throw new Error('Failed to copy')
       }
     } catch (error) {
-      print.error('Error copying:', error)
+      console.error('Error copying:', error)
       toast.error('Copy Failed', {
         description: 'Failed to copy files',
       })
@@ -214,7 +205,6 @@ export default function PlaygroundPage() {
   const handleProjectSelect = async (project: Project) => {
     setIsLoading(true)
     setError(null)
-    terminalReadyRef.current = false
     setPreviewUrl(null)
 
     if (fileWatcherRef.current) {
@@ -223,8 +213,6 @@ export default function PlaygroundPage() {
     }
 
     try {
-      print.log('Loading project:', project.name)
-
       const savedFiles = loadFromLocalStorage(project.id)
       const projectToLoad = savedFiles
         ? { ...project, files: savedFiles }
@@ -233,42 +221,31 @@ export default function PlaygroundPage() {
       if (savedFiles) {
         toast('Loaded Saved Version', {
           description: 'Restored your previous changes',
+          dismissible: true,
         })
       }
 
       setSelectedProject(projectToLoad)
 
-      const webcontainer = await getWebContainerInstance()
-      print.log('WebContainer instance obtained')
-
-      webcontainerRef.current = webcontainer
-
-      webcontainer.on('server-ready', (port, url) => {
-        print.log('Server ready on port', port, 'at', url)
-        setPreviewUrl(url)
-
-        toast('Server Ready', {
-          description: `Preview available on port ${port}`,
-          duration: 3000,
-        })
-      })
-
-      print.log('Clearing file system...')
-      await clearFileSystem(webcontainer)
+      const container = await initializeWebContainer()
 
       const tree = buildFileTree(projectToLoad.files)
       setFileTree(tree)
 
-      print.log('Mounting file tree...')
       const fileTreeStructure = convertFilesToFileTree(projectToLoad.files)
-      await webcontainer.mount(fileTreeStructure)
-      print.log('File tree mounted successfully')
+
+      if (!container) {
+        throw new Error('WebContainer failed to initialize')
+      }
+
+      await container.mount(fileTreeStructure)
 
       const firstFile = Object.keys(projectToLoad.files)[0]
       setSelectedFile(firstFile)
       setFileContent(projectToLoad.files[firstFile])
     } catch (error) {
-      print.error('Error loading project:', error)
+      console.error('Project load error:', error)
+      console.error('Error loading project:', error)
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error'
       setError(`Error loading project: ${errorMessage}`)
@@ -290,9 +267,9 @@ export default function PlaygroundPage() {
   const handleFileChange = async (newContent: string) => {
     setFileContent(newContent)
 
-    if (selectedFile && webcontainerRef.current) {
+    if (selectedFile && webcontainer) {
       try {
-        await webcontainerRef.current.fs.writeFile(selectedFile, newContent)
+        await writeFile(selectedFile, newContent)
 
         if (selectedProject) {
           setSelectedProject({
@@ -304,186 +281,80 @@ export default function PlaygroundPage() {
           })
         }
       } catch (error) {
-        print.error('Error writing file:', error)
+        console.error('Error writing file:', error)
       }
     }
   }
 
   const handleTerminalReady = useCallback(
     async (xterm: XTerm, fitAddon: FitAddon) => {
-      if (terminalReadyRef.current) {
-        print.log('Terminal already initialized, skipping')
-        return
-      }
-
-      terminalReadyRef.current = true
-      terminalRef.current = xterm
-
-      if (!webcontainerRef.current) {
-        print.log('WebContainer not ready yet')
-        return
-      }
-
-      print.log('Initializing terminal...')
-      xterm.writeln('\x1b[1;34mWebContainer Terminal\x1b[0m')
-      xterm.writeln('Initializing...\n')
-
-      setIsInstalling(true)
-
-      try {
-        print.log('Starting pnpm install...')
-        const installProcess = await webcontainerRef.current.spawn('pnpm', [
-          'install',
-        ])
-
-        installProcess.output.pipeTo(
-          new WritableStream({
-            write(data) {
-              xterm.write(data)
-            },
-          })
-        )
-
-        const exitCode = await installProcess.exit
-        print.log('pnpm install exit code:', exitCode)
-
-        if (exitCode === 0) {
-          xterm.writeln(
-            '\n\x1b[1;32m✓ Dependencies installed successfully\x1b[0m\n'
-          )
-
-          toast('Initialized', {
-            description: 'Dependencies installed successfully',
-          })
-        } else {
-          xterm.writeln('\n\x1b[1;31m✗ Installation failed\x1b[0m\n')
-        }
-
-        print.log('Starting shell...')
-        const shellProcess = await webcontainerRef.current.spawn('jsh', {
-          terminal: {
-            cols: xterm.cols,
-            rows: xterm.rows,
-          },
-          env: {
-            PATH: WEBCONTAINER_BIN_PATH,
-            NODE_NO_WARNINGS: '1',
-          },
-        })
-
-        shellProcess.output.pipeTo(
-          new WritableStream({
-            write(data) {
-              xterm.write(data)
-            },
-          })
-        )
-
-        const input = shellProcess.input.getWriter()
-        shellWriterRef.current = input
-
-        xterm.onData((data) => {
-          input.write(data)
-        })
-
-        print.log('Terminal ready')
-      } catch (error) {
-        print.error('Terminal error:', error)
-        xterm.writeln('\x1b[1;31mError initializing terminal\x1b[0m')
-      } finally {
-        setIsInstalling(false)
-        print.log('Loading type definitions...')
-        await loadTypeDefinitions(monacoRef.current, webcontainerRef.current)
-        print.log('Type definitions loaded.')
-        print.log('Setting up file watching after install')
+      await initializeTerminal(xterm, fitAddon, () => {
         setupFileWatching()
-      }
+      })
     },
-    [setupFileWatching]
+    [initializeTerminal, setupFileWatching]
   )
 
-  const handleCreateFile = useCallback(async (path: string) => {
-    if (!webcontainerRef.current) return
-
-    try {
-      const parts = path.split('/')
-      if (parts.length > 1) {
-        const dirPath = parts.slice(0, -1).join('/')
-        await webcontainerRef.current.fs.mkdir(dirPath, { recursive: true })
-      }
-
-      await webcontainerRef.current.fs.writeFile(path, '')
-
-      toast('File Created', {
-        description: `Created ${path}`,
-      })
-
+  const handleCreateFile = useCallback(
+    async (path: string) => {
+      await createFile(path)
       setSelectedFile(path)
       setFileContent('')
-    } catch (error) {
-      print.error('Error creating file:', error)
-      toast.error('Error', {
-        description: 'Failed to create file',
-      })
-    }
-  }, [])
+    },
+    [createFile]
+  )
 
-  const handleCreateFolder = useCallback(async (path: string) => {
-    if (!webcontainerRef.current) return
-
-    try {
-      await webcontainerRef.current.fs.mkdir(path, { recursive: true })
-
-      toast('Folder Created', {
-        description: `Created ${path}`,
-      })
-    } catch (error) {
-      print.error('Error creating folder:', error)
-      toast.error('Error', {
-        description: 'Failed to create folder',
-      })
-    }
-  }, [])
+  const handleCreateFolder = useCallback(
+    async (path: string) => {
+      await createFolder(path)
+    },
+    [createFolder]
+  )
 
   const handleDelete = useCallback(
     async (path: string, isDirectory: boolean) => {
-      if (!webcontainerRef.current) return
+      await deleteItem(path, isDirectory)
 
-      try {
-        if (isDirectory) {
-          await webcontainerRef.current.fs.rm(path, {
-            recursive: true,
-            force: true,
-          })
-        } else {
-          await webcontainerRef.current.fs.rm(path)
-        }
-
-        if (selectedFile === path || selectedFile?.startsWith(path + '/')) {
-          setSelectedFile(null)
-          setFileContent('')
-        }
-
-        toast(isDirectory ? 'Folder Deleted' : 'File Deleted', {
-          description: `Deleted ${path}`,
-        })
-      } catch (error) {
-        print.error('Error deleting:', error)
-        toast.error('Error', {
-          description: `Failed to delete ${isDirectory ? 'folder' : 'file'}`,
-        })
+      if (selectedFile === path || selectedFile?.startsWith(path + '/')) {
+        setSelectedFile(null)
+        setFileContent('')
       }
     },
-    [selectedFile]
+    [deleteItem, selectedFile]
+  )
+
+  const handleRename = useCallback(
+    async (oldPath: string, newPath: string, isDirectory: boolean) => {
+      await renameItem(oldPath, newPath, isDirectory)
+
+      if (selectedFile === oldPath) {
+        setSelectedFile(newPath)
+      }
+    },
+    [renameItem, selectedFile]
+  )
+
+  const handleMove = useCallback(
+    async (sourcePath: string, targetPath: string, isDirectory: boolean) => {
+      await moveItem(sourcePath, targetPath, isDirectory)
+
+      const fileName = sourcePath.split('/').pop()
+      const newPath = targetPath ? `${targetPath}/${fileName}` : fileName!
+
+      if (selectedFile === sourcePath) {
+        setSelectedFile(newPath)
+      }
+    },
+    [moveItem, selectedFile]
   )
 
   const handleRunCommand = useCallback(async () => {
-    if (!shellWriterRef.current || isRunning) return
+    if (isRunning) return
 
     setIsRunning(true)
 
     try {
-      shellWriterRef.current.write('npm run dev\n')
+      await runCommand('npm run dev')
 
       toast('Starting Server', {
         description: 'Running npm run dev...',
@@ -493,133 +364,13 @@ export default function PlaygroundPage() {
         setIsRunning(false)
       }, 3000)
     } catch (error) {
-      print.error('Error running command:', error)
+      console.error('Error running command:', error)
       toast.error('Run Failed', {
         description: 'Failed to start dev server',
       })
       setIsRunning(false)
     }
-  }, [isRunning])
-
-  const handleRename = useCallback(
-    async (oldPath: string, newPath: string, isDirectory: boolean) => {
-      if (!webcontainerRef.current) return
-
-      try {
-        if (isDirectory) {
-          const files = await readAllFiles(webcontainerRef.current)
-          const filesToMove = Object.keys(files.files).filter((f) =>
-            f.startsWith(oldPath + '/')
-          )
-
-          await webcontainerRef.current.fs.mkdir(newPath, { recursive: true })
-
-          for (const file of filesToMove) {
-            const newFilePath = file.replace(oldPath, newPath)
-            const content = await webcontainerRef.current.fs.readFile(
-              file,
-              'utf-8'
-            )
-            await webcontainerRef.current.fs.writeFile(newFilePath, content)
-          }
-
-          await webcontainerRef.current.fs.rm(oldPath, {
-            recursive: true,
-            force: true,
-          })
-        } else {
-          const content = await webcontainerRef.current.fs.readFile(
-            oldPath,
-            'utf-8'
-          )
-          const newDir = newPath.split('/').slice(0, -1).join('/')
-          if (newDir) {
-            await webcontainerRef.current.fs.mkdir(newDir, { recursive: true })
-          }
-          await webcontainerRef.current.fs.writeFile(newPath, content)
-          await webcontainerRef.current.fs.rm(oldPath)
-        }
-
-        if (selectedFile === oldPath) {
-          setSelectedFile(newPath)
-        }
-
-        toast(isDirectory ? 'Folder Renamed' : 'File Renamed', {
-          description: `Renamed to ${newPath.split('/').pop()}`,
-        })
-      } catch (error) {
-        print.error('Error renaming:', error)
-        toast.error('Error', {
-          description: `Failed to rename ${isDirectory ? 'folder' : 'file'}`,
-        })
-      }
-    },
-    [selectedFile]
-  )
-
-  const handleMove = useCallback(
-    async (sourcePath: string, targetPath: string, isDirectory: boolean) => {
-      if (!webcontainerRef.current) return
-
-      try {
-        const fileName = sourcePath.split('/').pop()
-        // If targetPath is empty, move to root; otherwise move to folder
-        const newPath = targetPath ? `${targetPath}/${fileName}` : fileName!
-
-        if (isDirectory) {
-          const files = await readAllFiles(webcontainerRef.current)
-          const filesToMove = Object.keys(files.files).filter((f) =>
-            f.startsWith(sourcePath + '/')
-          )
-
-          await webcontainerRef.current.fs.mkdir(newPath, { recursive: true })
-
-          for (const file of filesToMove) {
-            const relPath = file.substring(sourcePath.length + 1)
-            const newFilePath = `${newPath}/${relPath}`
-            const content = await webcontainerRef.current.fs.readFile(
-              file,
-              'utf-8'
-            )
-            const newFileDir = newFilePath.split('/').slice(0, -1).join('/')
-            if (newFileDir) {
-              await webcontainerRef.current.fs.mkdir(newFileDir, {
-                recursive: true,
-              })
-            }
-            await webcontainerRef.current.fs.writeFile(newFilePath, content)
-          }
-
-          await webcontainerRef.current.fs.rm(sourcePath, {
-            recursive: true,
-            force: true,
-          })
-        } else {
-          const content = await webcontainerRef.current.fs.readFile(
-            sourcePath,
-            'utf-8'
-          )
-          await webcontainerRef.current.fs.writeFile(newPath, content)
-          await webcontainerRef.current.fs.rm(sourcePath)
-        }
-
-        if (selectedFile === sourcePath) {
-          setSelectedFile(newPath)
-        }
-
-        const destination = targetPath ? targetPath : 'root'
-        toast(isDirectory ? 'Folder Moved' : 'File Moved', {
-          description: `Moved to ${destination}`,
-        })
-      } catch (error) {
-        print.error('Error moving:', error)
-        toast.error('Error', {
-          description: `Failed to move ${isDirectory ? 'folder' : 'file'}`,
-        })
-      }
-    },
-    [selectedFile]
-  )
+  }, [isRunning, runCommand])
 
   const handleOpenProjectSelector = useCallback(() => {
     setShowProjectSelector(true)
@@ -637,26 +388,12 @@ export default function PlaygroundPage() {
   }, [showProjectSelector])
 
   useEffect(() => {
-    isInstallingRef.current = isInstalling
-  }, [isInstalling])
-
-  useEffect(() => {
     return () => {
       if (fileWatcherRef.current) {
         fileWatcherRef.current()
       }
     }
   }, [])
-
-  useEffect(() => {
-    const isIsolated =
-      typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated
-    setCrossOriginIsolated(isIsolated)
-
-    if (isIsolated) {
-      print.log('Cross-Origin Isolation is enabled ✓')
-    }
-  }, [crossOriginIsolated])
 
   if (isMobile) {
     return (
@@ -669,10 +406,17 @@ export default function PlaygroundPage() {
 
   if (!selectedProject) {
     return (
-      <ProjectSelector
-        projects={exampleProjects}
-        onSelectProject={handleProjectSelect}
-      />
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="absolute inset-0 backdrop-blur-xl bg-background/80" />
+        <div className="relative z-10 w-full max-w-2xl mx-4 animate-in fade-in zoom-in-95 duration-300">
+          <div className="bg-card/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-2xl overflow-hidden">
+            <ProjectSelector
+              projects={exampleProjects}
+              onSelectProject={handleProjectSelect}
+            />
+          </div>
+        </div>
+      </div>
     )
   }
 
@@ -840,6 +584,7 @@ export default function PlaygroundPage() {
                               onChange={handleFileChange}
                               language={getLanguageFromPath(selectedFile)}
                               filePath={selectedFile}
+                              files={selectedProject?.files}
                               onMonacoReady={(monaco) => {
                                 monacoRef.current = monaco
                               }}
@@ -913,6 +658,7 @@ export default function PlaygroundPage() {
           </Panel>
         </PanelGroup>
       </div>
+
       {showProjectSelector && (
         <div className="fixed inset-0 z-200 flex items-center justify-center">
           <div
@@ -923,7 +669,6 @@ export default function PlaygroundPage() {
           <div className="relative z-10 w-full max-w-2xl mx-4 animate-in fade-in zoom-in-95 duration-300">
             <div className="bg-card/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-2xl overflow-hidden">
               <ProjectSelector
-                asModal
                 projects={exampleProjects}
                 onSelectProject={(project) => {
                   handleProjectSelect(project)

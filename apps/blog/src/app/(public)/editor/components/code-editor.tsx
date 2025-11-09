@@ -1,11 +1,12 @@
 'use client'
 
-import { Editor, Monaco, type OnMount } from '@monaco-editor/react'
+import { Editor, type Monaco, type OnMount } from '@monaco-editor/react'
 import { useTheme } from 'next-themes'
 import { useCallback, useEffect, useRef } from 'react'
 
 import { setupWorkspaceFormatters } from '../services/formatters'
 import { monacoThemeDark, monacoThemeLight } from '../services/themes'
+import { getLanguageFromPath } from '../services/utils'
 
 interface CodeEditorProps {
   value: string
@@ -14,6 +15,7 @@ interface CodeEditorProps {
   language: string
   filePath: string
   onMonacoReady?: (monaco: Monaco) => void
+  files?: Record<string, string>
 }
 
 export function CodeEditor({
@@ -23,6 +25,7 @@ export function CodeEditor({
   language,
   filePath,
   onMonacoReady,
+  files,
 }: CodeEditorProps) {
   const editorRef = useRef<any>(null)
   const monacoRef = useRef<any>(null)
@@ -90,6 +93,27 @@ export function CodeEditor({
         }
       },
     })
+
+    if (files) {
+      try {
+        const filePaths = Object.keys(files)
+
+        for (const path of filePaths) {
+          const uri = monaco.Uri.file(path)
+          const existingModel = monaco.editor.getModel(uri)
+
+          if (!existingModel) {
+            // Get language from file extension
+            const fileLanguage = getLanguageFromPath(path)
+
+            // Create model for each file
+            monaco.editor.createModel(files[path], fileLanguage, uri)
+          }
+        }
+      } catch (error) {
+        console.error('Error syncing files to Monaco:', error)
+      }
+    }
   }
 
   useEffect(() => {

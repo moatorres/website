@@ -750,7 +750,10 @@ function FileTreeNode({
                 </code>
               </strong>
               ?
-              <Alert variant="destructive" className="mt-4 border-destructive">
+              <Alert
+                variant="destructive"
+                className="mt-4 bg-destructive/5 border-destructive"
+              >
                 <AlertCircleIcon />
                 <AlertTitle>This action cannot be undone.</AlertTitle>
                 <AlertDescription>

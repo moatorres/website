@@ -1,4 +1,5 @@
 'use client'
+
 import { Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
@@ -7,13 +8,11 @@ import type { Project } from '../services/types'
 interface ProjectSelectorProps {
   projects: Project[]
   onSelectProject: (project: Project) => void
-  asModal?: boolean
 }
 
 export function ProjectSelector({
   projects,
   onSelectProject,
-  asModal,
 }: ProjectSelectorProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -28,7 +27,7 @@ export function ProjectSelector({
     )
   }, [projects, searchQuery])
 
-  const Selector = (
+  return (
     <>
       {/* Header */}
       <div className="px-6 py-5 border-b border-border/50">
@@ -126,21 +125,5 @@ export function ProjectSelector({
         </div>
       </div>
     </>
-  )
-
-  return asModal ? (
-    Selector
-  ) : (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Blurred background */}
-      <div className="absolute inset-0 backdrop-blur-xl bg-background/80" />
-
-      {/* Centered modal */}
-      <div className="relative z-10 w-full max-w-2xl mx-4 animate-in fade-in zoom-in-95 duration-300">
-        <div className="bg-card/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-2xl overflow-hidden">
-          {Selector}
-        </div>
-      </div>
-    </div>
   )
 }
