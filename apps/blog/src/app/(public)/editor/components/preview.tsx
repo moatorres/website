@@ -1,7 +1,14 @@
 'use client'
 
 import { Button, Input } from '@shadcn/ui'
-import { ArrowLeft, ArrowRight, Loader2, RefreshCw } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowRight,
+  Fullscreen,
+  Loader2,
+  Minimize,
+  RefreshCw,
+} from 'lucide-react'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -16,6 +23,7 @@ export function Preview({ url, isLoading }: PreviewProps) {
   const [inputValue, setInputValue] = useState('/')
   const [history, setHistory] = useState<string[]>(['/'])
   const [historyIndex, setHistoryIndex] = useState(0)
+  const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false)
 
   useEffect(() => {
     if (url) {
@@ -32,6 +40,16 @@ export function Preview({ url, isLoading }: PreviewProps) {
       iframeRef.current.src = fullUrl
     }
   }, [url, currentPath])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isPreviewFullscreen) {
+        setIsPreviewFullscreen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isPreviewFullscreen])
 
   const handleNavigate = (e: React.FormEvent) => {
     e.preventDefault()
@@ -70,7 +88,8 @@ export function Preview({ url, isLoading }: PreviewProps) {
 
   const handleRefresh = () => {
     if (iframeRef.current) {
-      // iframeRef.current.src = iframeRef.current.src
+      // eslint-disable-next-line no-self-assign -- used to force iframe reload
+      iframeRef.current.src = iframeRef.current.src
     }
   }
 
@@ -101,8 +120,8 @@ export function Preview({ url, isLoading }: PreviewProps) {
     )
   }
 
-  return (
-    <div className="h-full w-full bg-background flex flex-col">
+  const previewContent = (
+    <>
       <div className="flex items-center gap-1 p-2 border-b bg-muted/30">
         <Button
           variant="ghost"
@@ -145,6 +164,21 @@ export function Preview({ url, isLoading }: PreviewProps) {
             className="h-8 text-sm font-mono"
           />
         </form>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => setIsPreviewFullscreen(!isPreviewFullscreen)}
+          title={
+            isPreviewFullscreen ? 'Exit Fullscreen (ESC)' : 'Fullscreen Preview'
+          }
+        >
+          {isPreviewFullscreen ? (
+            <Minimize className="h-4 w-4" />
+          ) : (
+            <Fullscreen className="h-4 w-4" />
+          )}
+        </Button>
       </div>
 
       <div className="flex-1 relative">
@@ -156,6 +190,20 @@ export function Preview({ url, isLoading }: PreviewProps) {
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
         />
       </div>
+    </>
+  )
+
+  if (isPreviewFullscreen) {
+    return (
+      <div className="fixed inset-0 z-100 bg-background flex flex-col">
+        {previewContent}
+      </div>
+    )
+  }
+
+  return (
+    <div className="h-full w-full bg-background flex flex-col relative">
+      {previewContent}
     </div>
   )
 }

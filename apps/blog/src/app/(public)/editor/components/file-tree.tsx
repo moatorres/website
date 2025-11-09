@@ -1,5 +1,6 @@
 'use client'
 
+import { print } from '@blog/utils'
 import {
   Alert,
   AlertDescription,
@@ -26,6 +27,7 @@ import {
   AlertCircleIcon,
   ChevronDown,
   ChevronRight,
+  ChevronsDownUp,
   Edit2,
   File,
   FilePlus,
@@ -58,6 +60,12 @@ interface FileTreeProps {
   ) => Promise<void>
 }
 
+interface DragState {
+  path: string
+  isDirectory: boolean
+  name: string
+}
+
 export function FileTree({
   nodes,
   onFileSelect,
@@ -72,6 +80,17 @@ export function FileTree({
   const [showNewFolderDialog, setShowNewFolderDialog] = useState(false)
   const [newItemName, setNewItemName] = useState('')
   const [isRootDragOver, setIsRootDragOver] = useState(false)
+  const [dragState, setDragState] = useState<DragState | null>(null)
+  const [highlightedFolderPath, setHighlightedFolderPath] = useState<
+    string | null
+  >(null)
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
+    new Set(nodes.filter((n) => n.type === 'directory').map((n) => n.path))
+  )
+
+  const handleCollapseAll = () => {
+    setExpandedFolders(new Set())
+  }
 
   const handleCreateFile = async () => {
     if (!newItemName.trim() || !onCreateFile) return
@@ -92,8 +111,18 @@ export function FileTree({
   const handleRootDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
+
+    if (dragState && dragState.path.includes('/')) {
+      const hasCollision = nodes.some((n) => n.name === dragState.name)
+      if (hasCollision) {
+        e.dataTransfer.dropEffect = 'none'
+        return
+      }
+    }
+
     e.dataTransfer.dropEffect = 'move'
     setIsRootDragOver(true)
+    setHighlightedFolderPath('')
   }
 
   const handleRootDragLeave = (e: React.DragEvent) => {
@@ -108,6 +137,7 @@ export function FileTree({
       y >= rect.bottom
     ) {
       setIsRootDragOver(false)
+      setHighlightedFolderPath(null)
     }
   }
 
@@ -115,13 +145,19 @@ export function FileTree({
     e.preventDefault()
     e.stopPropagation()
     setIsRootDragOver(false)
+    setHighlightedFolderPath(null)
 
-    if (!onMove) return
+    if (!onMove || !dragState) return
+
+    const hasCollision = nodes.some((n) => n.name === dragState.name)
+    if (hasCollision) {
+      print.warn('Cannot move to root: item with same name already exists')
+      return
+    }
 
     try {
-      const data = JSON.parse(e.dataTransfer.getData('text/plain'))
-      const sourcePath = data.path
-      const isDirectory = data.isDirectory
+      const sourcePath = dragState.path
+      const isDirectory = dragState.isDirectory
 
       if (sourcePath.includes('/')) {
         const fileName = sourcePath.split('/').pop()
@@ -165,16 +201,18 @@ export function FileTree({
 
           await onMove(sourcePath, targetPath, isDirectory)
         } catch (error) {
-          console.error('[v0] Failed to move to root:', error)
+          print.error('Failed to move to root:', error)
         }
       }
     } catch (error) {
-      console.error('[v0] Failed to parse drag data:', error)
+      print.error('Failed to parse drag data:', error)
     }
   }
 
   const handleRootDragEnd = () => {
     setIsRootDragOver(false)
+    setHighlightedFolderPath(null)
+    setDragState(null)
   }
 
   return (
@@ -200,6 +238,15 @@ export function FileTree({
           <FolderPlus className="w-3.5 h-3.5 mr-1" />
           Folder
         </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleCollapseAll}
+          className="h-7 px-2 text-xs ml-auto"
+          title="Collapse All Folders"
+        >
+          <ChevronsDownUp className="w-3.5 h-3.5" />
+        </Button>
       </div>
 
       <div
@@ -219,6 +266,13 @@ export function FileTree({
             onRename={onRename}
             onMove={onMove}
             level={0}
+            expandedFolders={expandedFolders}
+            setExpandedFolders={setExpandedFolders}
+            dragState={dragState}
+            setDragState={setDragState}
+            highlightedFolderPath={highlightedFolderPath}
+            setHighlightedFolderPath={setHighlightedFolderPath}
+            allNodes={nodes} // Pass all nodes to FileTreeNode for collision detection
           />
         ))}
         {isRootDragOver && (
@@ -325,6 +379,13 @@ interface FileTreeNodeProps {
     isDirectory: boolean
   ) => Promise<void>
   level: number
+  expandedFolders: Set<string>
+  setExpandedFolders: React.Dispatch<React.SetStateAction<Set<string>>>
+  dragState: DragState | null
+  setDragState: React.Dispatch<React.SetStateAction<DragState | null>>
+  highlightedFolderPath: string | null
+  setHighlightedFolderPath: React.Dispatch<React.SetStateAction<string | null>>
+  allNodes?: FileNode[]
 }
 
 function FileTreeNode({
@@ -335,19 +396,63 @@ function FileTreeNode({
   onRename,
   onMove,
   level,
+  expandedFolders,
+  setExpandedFolders,
+  dragState,
+  setDragState,
+  highlightedFolderPath,
+  setHighlightedFolderPath,
+  allNodes,
 }: FileTreeNodeProps) {
-  const [isExpanded, setIsExpanded] = useState(level === 0)
   const [isHovered, setIsHovered] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isRenaming, setIsRenaming] = useState(false)
   const [renameValue, setRenameValue] = useState(node.name)
   const [isDragOver, setIsDragOver] = useState(false)
   const isSelected = selectedFile === node.path
+  const isExpanded = expandedFolders.has(node.path)
+
+  const isHighlighted =
+    highlightedFolderPath !== null &&
+    (node.path === highlightedFolderPath ||
+      (node.path.startsWith(highlightedFolderPath + '/') &&
+        highlightedFolderPath !== '') ||
+      (highlightedFolderPath === '' && !node.path.includes('/')))
+
+  const getNodesInFolder = (folderPath: string): FileNode[] => {
+    if (!allNodes) return []
+
+    const findFolder = (nodes: FileNode[], path: string): FileNode | null => {
+      for (const n of nodes) {
+        if (n.path === path && n.type === 'directory') return n
+        if (n.type === 'directory' && n.children) {
+          const found = findFolder(n.children, path)
+          if (found) return found
+        }
+      }
+      return null
+    }
+
+    if (folderPath === '') {
+      return allNodes
+    }
+
+    const folder = findFolder(allNodes, folderPath)
+    return folder?.children || []
+  }
 
   const handleClick = () => {
     if (isRenaming) return
     if (node.type === 'directory') {
-      setIsExpanded(!isExpanded)
+      setExpandedFolders((prev) => {
+        const newFolders = new Set(prev)
+        if (isExpanded) {
+          newFolders.delete(node.path)
+        } else {
+          newFolders.add(node.path)
+        }
+        return newFolders
+      })
     } else {
       onFileSelect(node.path)
     }
@@ -398,14 +503,53 @@ function FileTreeNode({
         isDirectory: node.type === 'directory',
       })
     )
+    setDragState({
+      path: node.path,
+      isDirectory: node.type === 'directory',
+      name: node.name,
+    })
   }
 
   const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!dragState) return
+
+    let targetFolder: string
     if (node.type === 'directory') {
-      e.preventDefault()
-      e.stopPropagation() // Prevent parent folder from also highlighting
+      targetFolder = node.path
+    } else {
+      const pathParts = node.path.split('/')
+      targetFolder =
+        pathParts.length > 1 ? pathParts.slice(0, -1).join('/') : ''
+    }
+
+    const sourceParent = dragState.path.includes('/')
+      ? dragState.path.substring(0, dragState.path.lastIndexOf('/'))
+      : ''
+
+    const isSameParent = sourceParent === targetFolder
+    const isMovingIntoSelf =
+      dragState.path === targetFolder ||
+      node.path.startsWith(dragState.path + '/')
+
+    const targetChildren =
+      node.type === 'directory'
+        ? node.children || []
+        : getNodesInFolder(targetFolder)
+    const hasCollision = targetChildren.some(
+      (child) => child.name === dragState.name
+    )
+
+    if (isSameParent || isMovingIntoSelf || hasCollision) {
+      e.dataTransfer.dropEffect = 'none'
+      setIsDragOver(false)
+      setHighlightedFolderPath(null)
+    } else {
       e.dataTransfer.dropEffect = 'move'
       setIsDragOver(true)
+      setHighlightedFolderPath(targetFolder)
     }
   }
 
@@ -421,40 +565,72 @@ function FileTreeNode({
       y >= rect.bottom
     ) {
       setIsDragOver(false)
+      setHighlightedFolderPath(null)
     }
   }
 
   const handleDragEnd = () => {
     setIsDragOver(false)
+    setHighlightedFolderPath(null)
+    setDragState(null)
   }
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setIsDragOver(false) // Reset immediately when drop happens
+    setIsDragOver(false)
+    setHighlightedFolderPath(null)
 
-    if (node.type !== 'directory' || !onMove) return
+    if (!onMove || !dragState) return
 
     try {
-      const data = JSON.parse(e.dataTransfer.getData('text/plain'))
-      const sourcePath = data.path
-      const isDirectory = data.isDirectory
+      const sourcePath = dragState.path
+      const isDirectory = dragState.isDirectory
+      const sourceName = dragState.name
+
+      let targetFolder: string
+
+      if (node.type === 'directory') {
+        targetFolder = node.path
+      } else {
+        const pathParts = node.path.split('/')
+        targetFolder =
+          pathParts.length > 1 ? pathParts.slice(0, -1).join('/') : ''
+      }
 
       const sourceParent = sourcePath.includes('/')
         ? sourcePath.substring(0, sourcePath.lastIndexOf('/'))
         : ''
 
-      if (sourcePath === node.path || node.path.startsWith(sourcePath + '/')) {
+      if (
+        sourcePath === targetFolder ||
+        node.path.startsWith(sourcePath + '/')
+      ) {
         return
       }
 
-      if (sourceParent === node.path) {
+      if (sourceParent === targetFolder) {
         return
       }
 
-      await onMove(sourcePath, node.path, isDirectory)
+      const targetChildren =
+        node.type === 'directory'
+          ? node.children || []
+          : getNodesInFolder(targetFolder)
+      const hasCollision = targetChildren.some(
+        (child) => child.name === sourceName
+      )
+
+      if (hasCollision) {
+        print.warn(
+          'Cannot move: item with same name already exists in target folder'
+        )
+        return
+      }
+
+      await onMove(sourcePath, targetFolder, isDirectory)
     } catch (error) {
-      console.error('[v0] Failed to parse drag data:', error)
+      print.error('Failed to parse drag data:', error)
     }
   }
 
@@ -463,7 +639,7 @@ function FileTreeNode({
       <div
         className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-accent transition-colors group ${
           isSelected ? 'bg-accent text-accent-foreground' : ''
-        } ${isDragOver ? 'bg-primary/20 border-l-2 border-primary' : ''}`}
+        } ${isDragOver ? 'border-l-2 border-primary' : ''} ${isHighlighted ? 'bg-primary/10' : ''}`}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
@@ -473,7 +649,7 @@ function FileTreeNode({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onDragEnd={handleDragEnd} // Added drag end handler
+        onDragEnd={handleDragEnd}
       >
         {node.type === 'directory' ? (
           <>
@@ -548,6 +724,13 @@ function FileTreeNode({
               onRename={onRename}
               onMove={onMove}
               level={level + 1}
+              expandedFolders={expandedFolders}
+              setExpandedFolders={setExpandedFolders}
+              dragState={dragState}
+              setDragState={setDragState}
+              highlightedFolderPath={highlightedFolderPath}
+              setHighlightedFolderPath={setHighlightedFolderPath}
+              allNodes={allNodes}
             />
           ))}
         </div>
@@ -567,10 +750,7 @@ function FileTreeNode({
                 </code>
               </strong>
               ?
-              <Alert
-                variant="destructive"
-                className="mt-4 border-destructive bg-destructive/5"
-              >
+              <Alert variant="destructive" className="mt-4 border-destructive">
                 <AlertCircleIcon />
                 <AlertTitle>This action cannot be undone.</AlertTitle>
                 <AlertDescription>

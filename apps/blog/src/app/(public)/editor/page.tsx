@@ -281,6 +281,9 @@ export default function PlaygroundPage() {
     if (selectedProject) {
       setFileContent(selectedProject.files[path] || '')
     }
+    if (!showEditor) {
+      setShowEditor(true)
+    }
   }
 
   const handleFileChange = async (newContent: string) => {
@@ -773,7 +776,7 @@ export default function PlaygroundPage() {
                 id="explorer-panel"
                 className={showExplorer ? '' : 'hidden'}
               >
-                <div className="h-full border-r border-border overflow-y-auto bg-card/50 flex flex-col">
+                <div className="h-full border-r border-border overflow-y-auto bg-background/50 flex flex-col">
                   <div className="h-10 p-3 border-b border-border/50 flex items-center shrink-0">
                     <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                       Explorer
@@ -847,7 +850,7 @@ export default function PlaygroundPage() {
                     id="preview-panel"
                     className={`px-0 ${showPreview ? '' : 'hidden'}`}
                   >
-                    <div className="h-full flex flex-col overflow-hidden bg-card/50 border-l border-border/50">
+                    <div className="h-full flex flex-col overflow-hidden bg-background/50 border-l border-border/50">
                       <div className="h-10 border-b border-border/50 flex items-center justify-between px-4 shrink-0">
                         <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                           Preview
