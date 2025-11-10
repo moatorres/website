@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
   AlertTitle,
   Button,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -88,12 +89,30 @@ export function FileTree({
     new Set(nodes.filter((n) => n.type === 'directory').map((n) => n.path))
   )
 
+  const checkIfPathExists = (path: string): boolean => {
+    const checkNodes = (nodeList: FileNode[]): boolean => {
+      for (const node of nodeList) {
+        if (node.path === path) return true
+        if (node.type === 'directory' && node.children) {
+          if (checkNodes(node.children)) return true
+        }
+      }
+      return false
+    }
+    return checkNodes(nodes)
+  }
+
+  const isFileNameInvalid =
+    newItemName.trim() !== '' && checkIfPathExists(newItemName.trim())
+  const isFolderNameInvalid =
+    newItemName.trim() !== '' && checkIfPathExists(newItemName.trim())
+
   const handleCollapseAll = () => {
     setExpandedFolders(new Set())
   }
 
   const handleCreateFile = async () => {
-    if (!newItemName.trim() || !onCreateFile) return
+    if (!newItemName.trim() || !onCreateFile || isFileNameInvalid) return
 
     await onCreateFile(newItemName.trim())
     setNewItemName('')
@@ -101,7 +120,7 @@ export function FileTree({
   }
 
   const handleCreateFolder = async () => {
-    if (!newItemName.trim() || !onCreateFolder) return
+    if (!newItemName.trim() || !onCreateFolder || isFolderNameInvalid) return
 
     await onCreateFolder(newItemName.trim())
     setNewItemName('')
@@ -295,7 +314,7 @@ export function FileTree({
               <code className="bg-muted px-1.5 py-0.5 rounded">README.md</code>)
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="grid w-full items-center gap-3">
             <Label htmlFor="filename" className="mb-1">
               File Name
             </Label>
@@ -307,8 +326,17 @@ export function FileTree({
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleCreateFile()
               }}
+              className={cn(
+                'focus-visible:ring-accent',
+                isFileNameInvalid && 'opacity-50 bg-foreground/10'
+              )}
               autoFocus
             />
+            {isFileNameInvalid && (
+              <p className="text-xs opacity-50 -mt-2">
+                A file or folder with this path already exists
+              </p>
+            )}
           </div>
           <DialogFooter>
             <Button
@@ -317,7 +345,11 @@ export function FileTree({
             >
               Cancel
             </Button>
-            <Button onClick={handleCreateFile} disabled={!newItemName.trim()}>
+            <Button
+              onClick={handleCreateFile}
+              disabled={!newItemName.trim() || isFileNameInvalid}
+              className={'bg-green-600 hover:bg-green-700'}
+            >
               Create File
             </Button>
           </DialogFooter>
@@ -329,11 +361,15 @@ export function FileTree({
           <DialogHeader>
             <DialogTitle>Create New Folder</DialogTitle>
             <DialogDescription>
-              Enter the folder path (e.g., &quot;src/components&quot; or
-              &quot;utils&quot;)
+              Enter the folder path (e.g.,{' '}
+              <code className="bg-muted px-1.5 py-0.5 rounded">
+                src/components
+              </code>{' '}
+              or
+              <code className="bg-muted px-1.5 py-0.5 rounded">utils</code>)
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="grid w-full items-center gap-3">
             <Label htmlFor="foldername">Folder Path</Label>
             <Input
               id="foldername"
@@ -343,8 +379,17 @@ export function FileTree({
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleCreateFolder()
               }}
+              className={cn(
+                'focus-visible:ring-accent',
+                isFolderNameInvalid && 'opacity-50 bg-foreground/10'
+              )}
               autoFocus
             />
+            {isFolderNameInvalid && (
+              <p className="text-xs opacity-50 -mt-2">
+                A file or folder with this path already exists
+              </p>
+            )}
           </div>
           <DialogFooter>
             <Button
@@ -353,7 +398,11 @@ export function FileTree({
             >
               Cancel
             </Button>
-            <Button onClick={handleCreateFolder} disabled={!newItemName.trim()}>
+            <Button
+              onClick={handleCreateFolder}
+              disabled={!newItemName.trim() || isFolderNameInvalid}
+              className={'bg-green-600 hover:bg-green-700'}
+            >
               Create Folder
             </Button>
           </DialogFooter>
@@ -419,6 +468,28 @@ function FileTreeNode({
         highlightedFolderPath !== '') ||
       (highlightedFolderPath === '' && !node.path.includes('/')))
 
+  const checkRenameConflict = (): boolean => {
+    if (!renameValue.trim() || renameValue === node.name) return false
+
+    const pathParts = node.path.split('/')
+    pathParts[pathParts.length - 1] = renameValue.trim()
+    const newPath = pathParts.join('/')
+
+    // Check if the new path already exists
+    const checkNodes = (nodeList: FileNode[]): boolean => {
+      for (const n of nodeList) {
+        if (n.path === newPath) return true
+        if (n.type === 'directory' && n.children) {
+          if (checkNodes(n.children)) return true
+        }
+      }
+      return false
+    }
+    return allNodes ? checkNodes(allNodes) : false
+  }
+
+  const isRenameInvalid = renameValue.trim() !== '' && checkRenameConflict()
+
   const getNodesInFolder = (folderPath: string): FileNode[] => {
     if (!allNodes) return []
 
@@ -471,7 +542,12 @@ function FileTreeNode({
   }
 
   const handleRename = async () => {
-    if (!onRename || !renameValue.trim() || renameValue === node.name) {
+    if (
+      !onRename ||
+      !renameValue.trim() ||
+      renameValue === node.name ||
+      isRenameInvalid
+    ) {
       setIsRenaming(false)
       setRenameValue(node.name)
       return
@@ -673,7 +749,7 @@ function FileTreeNode({
             onChange={(e) => setRenameValue(e.target.value)}
             onBlur={handleRename}
             onKeyDown={handleRenameKeyDown}
-            className="h-5 px-1 py-0 text-sm flex-1"
+            className={`h-5 px-1 py-0 text-sm flex-1 rounded-xs border-none focus-visible:ring-0 ${isRenameInvalid ? 'opacity-50' : ''}`}
             autoFocus
             onClick={(e) => e.stopPropagation()}
           />
@@ -688,7 +764,7 @@ function FileTreeNode({
                 variant="ghost"
                 size="sm"
                 onClick={handleStartRename}
-                className="h-5 w-5 p-0"
+                className="h-5 w-5 p-0 hover:opacity-70 transition-opacity ease-in-out duration-200"
                 title="Rename"
               >
                 <Edit2 className="w-3 h-3" />
@@ -702,7 +778,7 @@ function FileTreeNode({
                   e.stopPropagation()
                   setShowDeleteDialog(true)
                 }}
-                className="h-5 w-5 p-0"
+                className="h-5 w-5 p-0 hover:opacity-70 transition-opacity ease-in-out duration-200"
                 title="Delete"
               >
                 <XIcon className="w-3 h-3" />

@@ -15,6 +15,9 @@ export const getLanguageFromPath = (path: string): string => {
     html: 'html',
     css: 'css',
     md: 'markdown',
+    sh: 'shell',
+    yml: 'yaml',
+    yaml: 'yaml',
   }
   return languageMap[ext || ''] || 'plaintext'
 }

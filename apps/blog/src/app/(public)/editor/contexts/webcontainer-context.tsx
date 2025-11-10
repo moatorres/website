@@ -229,6 +229,7 @@ export function WebContainerProvider({ children }: { children: ReactNode }) {
 
     try {
       const parts = path.split('/')
+
       if (parts.length > 1) {
         const dirPath = parts.slice(0, -1).join('/')
         await webcontainerRef.current.fs.mkdir(dirPath, { recursive: true })
