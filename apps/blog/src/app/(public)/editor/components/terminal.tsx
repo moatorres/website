@@ -106,6 +106,8 @@ export function Terminal({ onReady }: TerminalProps) {
         xtermRef.current = null
       }
     }
+    // Empty dependency array ensures terminal will only init once - DO NOT CHANGE THIS
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return <div ref={terminalRef} className="h-full w-full" />
