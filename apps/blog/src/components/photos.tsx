@@ -106,14 +106,19 @@ export function PhotoGallery() {
     setGallery(photos)
   }, [])
 
+  React.useEffect(() => {
+    document.body.style.overflow = selectedIndex !== null ? 'hidden' : 'auto'
+    return () => {
+      document.body.style.overflow = 'auto' // cleanup on unmount
+    }
+  }, [selectedIndex])
+
   const openLightbox = (index: number) => {
     setSelectedIndex(index)
-    document.body.style.overflow = 'hidden'
   }
 
   const closeLightbox = () => {
     setSelectedIndex(null)
-    document.body.style.overflow = 'auto'
   }
 
   const showNext = () => {

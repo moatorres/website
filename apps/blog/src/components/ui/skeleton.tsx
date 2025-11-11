@@ -57,7 +57,7 @@ export function CodeSkeleton({ className, lines = 3 }: SkeletonProps & Lines) {
                 key={`code-${i}`}
                 className="h-4 rounded-md bg-muted-foreground/30"
                 style={{
-                  width: `${Math.floor(Math.random() * 50) + 50}%`,
+                  width: `${60 + i * 30}%`,
                 }}
               />
             ))}
@@ -83,7 +83,7 @@ export function ArticleSkeleton({ className }: SkeletonProps) {
               <div
                 key={`l-${i}-${j}`}
                 className="h-4 rounded-md bg-muted"
-                style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+                style={{ width: `${60 + (i * 3 + j) * 10}%` }}
               />
             ))}
           </div>
@@ -98,7 +98,7 @@ export function ArticleSkeleton({ className }: SkeletonProps) {
             <div
               key={`p2-${i}`}
               className="h-4 rounded-md bg-muted"
-              style={{ width: `${Math.floor(Math.random() * 40) + 60}%` }}
+              style={{ width: `${60 + i * 30}%` }}
             />
           ))}
         </div>
