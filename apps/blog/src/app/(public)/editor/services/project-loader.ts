@@ -23,6 +23,7 @@ export async function loadProjectFromDir(projectDir: string): Promise<Project> {
   const id = pkgJson.name ?? `prj-${randomBytes(3).toString('hex')}`
   const name = pkgJson.displayName ?? id
   const description = pkgJson.description
+  const initialFile = pkgJson.metadata.initialFile
 
   const files: Record<string, string> = {}
   const ignoredPaths = ['dist', 'node_modules', '.git', '.next']
@@ -34,7 +35,7 @@ export async function loadProjectFromDir(projectDir: string): Promise<Project> {
     files[relPath] = content
   }
 
-  return { id, name, description, files }
+  return { id, name, description, initialFile, files }
 }
 
 const p = await loadProjectFromDir(
