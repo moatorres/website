@@ -1,6 +1,14 @@
 'use client'
 
-import { Search, X } from 'lucide-react'
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@shadcn/ui'
+import { ChevronDown, FolderOpen, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import type { Project } from '../services/types'
@@ -67,7 +75,7 @@ export function ProjectSelector({
         {filteredProjects.length === 0 ? (
           <div className="px-6 py-16 text-center">
             <div className="text-muted-foreground text-sm">
-              No projects found matching "{searchQuery}"
+              No projects found matching &quot;{searchQuery}&quot;
             </div>
           </div>
         ) : (
@@ -125,5 +133,65 @@ export function ProjectSelector({
         </div>
       </div>
     </>
+  )
+}
+
+interface ProjectSelectorDropdownProps {
+  projectName: string
+  projects?: Project[]
+  currentProjectId?: string
+  onBack: () => void
+  onProjectChange?: (project: Project) => void
+}
+
+export function ProjectSelectorDropdown({
+  projectName,
+  projects = [],
+  currentProjectId,
+  onBack,
+  onProjectChange,
+}: ProjectSelectorDropdownProps) {
+  return (
+    projects.length > 0 &&
+    onProjectChange && (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 max-w-[200px] bg-transparent h-7 text-xs"
+          >
+            <FolderOpen className="w-3 h-3 shrink-0" />
+            <span className="truncate">{projectName}</span>
+            <ChevronDown className="w-3 h-3 shrink-0 opacity-50" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-56">
+          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+            Switch Project
+          </div>
+          <DropdownMenuSeparator />
+          {projects.map((project) => (
+            <DropdownMenuItem
+              key={project.id}
+              onClick={() => onProjectChange(project)}
+              className="gap-2"
+              disabled={project.id === currentProjectId}
+            >
+              <FolderOpen className="w-4 h-4" />
+              <span className="flex-1 truncate">{project.name}</span>
+              {project.id === currentProjectId && (
+                <span className="text-xs text-muted-foreground">✓</span>
+              )}
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={onBack} className="gap-2">
+            <span className="text-muted-foreground">←</span>
+            <span>Back to All Projects</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
   )
 }

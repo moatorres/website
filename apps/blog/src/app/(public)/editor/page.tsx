@@ -472,16 +472,11 @@ export default function PlaygroundPage() {
       `}
       >
         <Toolbar
-          projectName={selectedProject.name}
-          projects={exampleProjects}
-          currentProjectId={selectedProject.id}
           onExportZip={handleExportZip}
           onSave={handleSave}
           onCopy={handleCopy}
-          onBack={() => setSelectedProject(null)}
           isFullscreen={isFullscreen}
           onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
-          onProjectChange={handleProjectSelect}
           onRunCommand={handleRunCommand}
           isRunning={isRunning}
           onOpenProjectSelector={handleOpenProjectSelector}
