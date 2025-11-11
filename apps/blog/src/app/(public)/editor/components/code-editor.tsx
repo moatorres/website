@@ -4,9 +4,9 @@ import { Editor, type Monaco, type OnMount } from '@monaco-editor/react'
 import { useTheme } from 'next-themes'
 import { useCallback, useEffect, useRef } from 'react'
 
+import { useCurrentFile } from '../atoms/current-file'
 import { setupWorkspaceFormatters } from '../services/formatters'
 import { monacoThemeDark, monacoThemeLight } from '../services/themes'
-import { getLanguageFromPath } from '../services/utils'
 
 interface CodeEditorProps {
   value: string
@@ -31,6 +31,7 @@ export function CodeEditor({
   const monacoRef = useRef<any>(null)
   const { resolvedTheme } = useTheme()
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const currentFile = useCurrentFile()
 
   const handleEditorDidMount: OnMount = async (editor, monaco) => {
     editorRef.current = editor
@@ -57,6 +58,7 @@ export function CodeEditor({
       allowJs: true,
       allowNonTsExtensions: true,
       allowSyntheticDefaultImports: true,
+      checkJs: true,
       esModuleInterop: true,
       exactOptionalPropertyTypes: true,
       jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
@@ -67,6 +69,17 @@ export function CodeEditor({
       skipLibCheck: true,
       strict: true,
       target: monaco.languages.typescript.ScriptTarget.ESNext,
+      types: ['node'],
+    })
+
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+      allowJs: true,
+      checkJs: true,
+      target: monaco.languages.typescript.ScriptTarget.ESNext,
+      module: monaco.languages.typescript.ModuleKind.ESNext,
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      allowSyntheticDefaultImports: true,
+      esModuleInterop: true,
       types: ['node'],
     })
 
@@ -81,12 +94,10 @@ export function CodeEditor({
       label: 'Format and Save',
       keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
       run: async (ed) => {
-        // Format first
+        // Format document
         await ed.getAction('editor.action.formatDocument')?.run()
-
         // Get formatted content
         const formattedContent = ed.getValue()
-
         // Save
         if (onSave) {
           onSave(formattedContent)
@@ -95,23 +106,43 @@ export function CodeEditor({
     })
 
     if (files) {
-      try {
-        const filePaths = Object.keys(files)
+      // Setup peek file definition
+      monaco.editor.registerEditorOpener({
+        openCodeEditor(editor, uri) {
+          const model = monaco.editor.getModel(uri)
 
-        for (const path of filePaths) {
-          const uri = monaco.Uri.file(path)
-          const existingModel = monaco.editor.getModel(uri)
+          if (!model) return false
 
-          if (!existingModel) {
-            // Get language from file extension
-            const fileLanguage = getLanguageFromPath(path)
+          const fullPath = uri.path.replace(/^\//, '')
 
-            // Create model for each file
-            monaco.editor.createModel(files[path], fileLanguage, uri)
+          if (!files[fullPath]) {
+            editor.trigger(
+              'registerEditorOpener',
+              'editor.action.peekDefinition',
+              {}
+            )
+            return false
           }
-        }
-      } catch (error) {
-        console.error('Error syncing files to Monaco:', error)
+
+          currentFile.setPath(fullPath)
+
+          return true
+        },
+      })
+
+      // Setup imports between project files
+      for (const [path, content] of Object.entries(files)) {
+        if (!/\.(ts|tsx|js|jsx)$/.test(path)) continue
+
+        const virtualPath = `file:///${path}`
+        monaco.languages.typescript.typescriptDefaults.addExtraLib(
+          content,
+          virtualPath
+        )
+        monaco.languages.typescript.javascriptDefaults.addExtraLib(
+          content,
+          virtualPath
+        )
       }
     }
   }
@@ -183,6 +214,7 @@ export function CodeEditor({
             strings: true,
           },
           suggestOnTriggerCharacters: true,
+          fixedOverflowWidgets: true,
         }}
       />
     </div>
