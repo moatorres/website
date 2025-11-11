@@ -10,5 +10,6 @@ export interface Project {
   id: string
   name: string
   description: string
+  initialFile: string
   files: Record<string, string>
 }

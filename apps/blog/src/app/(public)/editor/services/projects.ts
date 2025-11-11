@@ -7,6 +7,7 @@ export const exampleProjects: Project[] = [
     id: 'ffmpeg-stream',
     name: 'Effect Stream FFmpeg',
     description: 'Effect Stream with FFmpeg',
+    initialFile: 'src/main.ts',
     files: {
       'src/main.ts': `import { spawn } from 'node:child_process'
 import { createWriteStream } from 'node:fs'
@@ -113,6 +114,7 @@ Effect.all({
     id: 'vanilla-js',
     name: 'Vanilla JavaScript',
     description: 'Vanilla JavaScript counter app',
+    initialFile: 'src/main.js',
     files: {
       'src/main.js': `let count = 0;
 
@@ -241,31 +243,8 @@ button:active {
     id: 'react-todo',
     name: 'React Todo App',
     description: 'Interactive todo list with React',
+    initialFile: 'src/main.jsx',
     files: {
-      'dprint.json': JSON.stringify(
-        {
-          json: {
-            indentWidth: 2,
-            lineWidth: 120,
-            trailingCommas: 'never',
-          },
-          typescript: {
-            indentWidth: 2,
-            lineWidth: 120,
-            operatorPosition: 'maintain',
-            semiColons: 'asi',
-            quoteStyle: 'alwaysDouble',
-            trailingCommas: 'never',
-            'arrowFunction.useParentheses': 'force',
-          },
-          plugins: [
-            '/vendor/dprint/plugins/json-0.19.3.wasm',
-            '/vendor/dprint/plugins/typescript-0.93.0.wasm',
-          ],
-        },
-        null,
-        2
-      ),
       'package.json': JSON.stringify(
         {
           name: 'react-todo-app',
@@ -482,6 +461,7 @@ button:hover {
     id: 'node-express',
     name: 'Node.js Express API',
     description: 'Simple REST API with Express',
+    initialFile: 'src/server.js',
     files: {
       'dprint.json': JSON.stringify(
         {
@@ -586,6 +566,7 @@ app.listen(PORT, () => {
     id: 'react-todo-ts',
     name: 'React Todo App (TypeScript)',
     description: 'Interactive todo list built with React, TypeScript, and Vite',
+    initialFile: 'src/main.tsx',
     files: {
       'dprint.json': JSON.stringify(
         {
@@ -611,7 +592,6 @@ app.listen(PORT, () => {
         null,
         2
       ),
-
       'package.json': JSON.stringify(
         {
           name: 'react-todo-ts',
@@ -636,7 +616,6 @@ app.listen(PORT, () => {
         null,
         2
       ),
-
       'tsconfig.json': JSON.stringify(
         {
           compilerOptions: {
@@ -661,7 +640,6 @@ app.listen(PORT, () => {
         null,
         2
       ),
-
       'index.html': `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -674,7 +652,6 @@ app.listen(PORT, () => {
   <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>`,
-
       'vite.config.ts': `import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -868,6 +845,7 @@ button:hover {
     id: 'effect-atom',
     name: 'Effect Atoms React',
     description: 'Composing state with Effect Atoms',
+    initialFile: 'src/App.tsx',
     files: {
       'index.html':
         '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>React Todo App (TS)</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.tsx"></script>\n  </body>\n</html>\n',
