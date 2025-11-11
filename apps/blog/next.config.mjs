@@ -1,10 +1,10 @@
 // @ts-check
-import { composePlugins, withNx } from '@nx/next'
 import createMDX from '@next/mdx'
-import remarkGfm from 'remark-gfm'
-import remarkSugarHigh from 'remark-sugar-high'
+import { composePlugins } from '@nx/next'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeSlug from 'rehype-slug'
+import remarkGfm from 'remark-gfm'
+import remarkSugarHigh from 'remark-sugar-high'
 
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365
 
@@ -95,6 +95,6 @@ const withMdx = createMDX({
   },
 })
 
-const withPlugins = composePlugins(withNx, withMdx)
+const withPlugins = composePlugins(withMdx)
 
 export default withPlugins(nextConfig)
