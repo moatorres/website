@@ -1,3 +1,4 @@
+import { Provider as AtomsProvider } from 'jotai'
 import { ViewTransition } from 'react'
 
 import { WebContainerProvider } from './contexts/webcontainer-context'
@@ -5,7 +6,9 @@ import { WebContainerProvider } from './contexts/webcontainer-context'
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ViewTransition>
-      <WebContainerProvider>{children}</WebContainerProvider>
+      <AtomsProvider>
+        <WebContainerProvider>{children}</WebContainerProvider>
+      </AtomsProvider>
     </ViewTransition>
   )
 }

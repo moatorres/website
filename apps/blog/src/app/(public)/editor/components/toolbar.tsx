@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import type { Project } from '../services/types'
+import { usePanelVisible } from '../atoms/panels'
 
 import { ModeToggle } from './theme-toggle'
 
@@ -40,14 +40,6 @@ interface ToolbarProps {
   isFullscreen?: boolean
   onToggleFullscreen?: () => void
   onProjectChange?: (project: Project) => void
-  showExplorer?: boolean
-  showEditor?: boolean
-  showPreview?: boolean
-  showTerminal?: boolean
-  onToggleExplorer?: () => void
-  onToggleEditor?: () => void
-  onTogglePreview?: () => void
-  onToggleTerminal?: () => void
   onRunCommand?: () => void
   isRunning?: boolean
   onOpenProjectSelector?: () => void
@@ -66,19 +58,15 @@ export function Toolbar({
   isFullscreen = true,
   onToggleFullscreen,
   onProjectChange,
-  showExplorer = true,
-  showEditor = true,
-  showPreview = true,
-  showTerminal = true,
-  onToggleExplorer,
-  onToggleEditor,
-  onTogglePreview,
-  onToggleTerminal,
   onRunCommand,
   isRunning = false,
   onOpenProjectSelector,
 }: ToolbarProps) {
   const [mounted, setMounted] = useState(false)
+  const [
+    isPanelVisible,
+    { toggleEditor, toggleExplorer, togglePreview, toggleTerminal },
+  ] = usePanelVisible()
 
   useEffect(() => {
     setMounted(true)
@@ -187,77 +175,69 @@ export function Toolbar({
           {/* View controls and project actions group */}
           <div className="flex items-center gap-0.5 p-0.5">
             {/* Panel toggle buttons */}
-            {onToggleExplorer && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onToggleExplorer}
-                    className={`h-7 px-2 hover:bg-muted ${!showExplorer ? 'opacity-40' : ''}`}
-                  >
-                    <PanelLeft className="w-3.5 h-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {showExplorer ? 'Hide Explorer' : 'Show Explorer'}
-                </TooltipContent>
-              </Tooltip>
-            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleExplorer}
+                  className={`h-7 px-2 hover:bg-muted ${!isPanelVisible('explorer') ? 'opacity-40' : ''}`}
+                >
+                  <PanelLeft className="w-3.5 h-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isPanelVisible('explorer') ? 'Hide Explorer' : 'Show Explorer'}
+              </TooltipContent>
+            </Tooltip>
 
-            {onToggleEditor && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onToggleEditor}
-                    className={`h-7 px-2 hover:bg-muted ${!showEditor ? 'opacity-40' : ''}`}
-                  >
-                    <Code2 className="w-3.5 h-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {showEditor ? 'Hide Editor' : 'Show Editor'}
-                </TooltipContent>
-              </Tooltip>
-            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleEditor}
+                  className={`h-7 px-2 hover:bg-muted ${!isPanelVisible('editor') ? 'opacity-40' : ''}`}
+                >
+                  <Code2 className="w-3.5 h-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isPanelVisible('editor') ? 'Hide Editor' : 'Show Editor'}
+              </TooltipContent>
+            </Tooltip>
 
-            {onTogglePreview && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onTogglePreview}
-                    className={`h-7 px-2 hover:bg-muted ${!showPreview ? 'opacity-40' : ''}`}
-                  >
-                    <Monitor className="w-3.5 h-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {showPreview ? 'Hide Preview' : 'Show Preview'}
-                </TooltipContent>
-              </Tooltip>
-            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`h-7 px-2 hover:bg-muted ${!isPanelVisible('preview') ? 'opacity-40' : ''}`}
+                  onClick={togglePreview}
+                >
+                  <Monitor className="w-3.5 h-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isPanelVisible('preview') ? 'Hide Preview' : 'Show Preview'}
+              </TooltipContent>
+            </Tooltip>
 
-            {onToggleTerminal && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onToggleTerminal}
-                    className={`h-7 px-2 hover:bg-muted ${!showTerminal ? 'opacity-40' : ''}`}
-                  >
-                    <TerminalIcon className="w-3.5 h-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {showTerminal ? 'Hide Terminal' : 'Show Terminal'}
-                </TooltipContent>
-              </Tooltip>
-            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleTerminal}
+                  className={`h-7 px-2 hover:bg-muted ${!isPanelVisible('terminal') ? 'opacity-40' : ''}`}
+                >
+                  <TerminalIcon className="w-3.5 h-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isPanelVisible('terminal') ? 'Hide Terminal' : 'Show Terminal'}
+              </TooltipContent>
+            </Tooltip>
 
             {/* Divider */}
             <div className="w-px h-5 bg-border mx-0.5" />

@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { toast } from 'sonner'
 
+import { usePanelVisible } from './atoms/panels'
 import { CodeEditor } from './components/code-editor'
 import { FileTree } from './components/file-tree'
 import { MobileView } from './components/mobile-view'
@@ -69,13 +70,10 @@ export default function PlaygroundPage() {
   const [fileContent, setFileContent] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [showPreview, setShowPreview] = useState(true)
-  const [showExplorer, setShowExplorer] = useState(true)
-  const [showEditor, setShowEditor] = useState(true)
-  const [showTerminal, setShowTerminal] = useState(true)
   const [isRunning, setIsRunning] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(true)
   const [showProjectSelector, setShowProjectSelector] = useState(false)
+  const [isPanelVisible, { toggleEditor }] = usePanelVisible()
 
   const monacoRef = useRef<Monaco>(null)
   const fileWatcherRef = useRef<(() => void) | null>(null)
@@ -259,8 +257,8 @@ export default function PlaygroundPage() {
     if (selectedProject) {
       setFileContent(selectedProject.files[path] || '')
     }
-    if (!showEditor) {
-      setShowEditor(true)
+    if (!isPanelVisible('editor')) {
+      toggleEditor()
     }
   }
 
@@ -475,14 +473,6 @@ export default function PlaygroundPage() {
           isFullscreen={isFullscreen}
           onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
           onProjectChange={handleProjectSelect}
-          showExplorer={showExplorer}
-          showEditor={showEditor}
-          showPreview={showPreview}
-          showTerminal={showTerminal}
-          onToggleExplorer={() => setShowExplorer(!showExplorer)}
-          onToggleEditor={() => setShowEditor(!showEditor)}
-          onTogglePreview={() => setShowPreview(!showPreview)}
-          onToggleTerminal={() => setShowTerminal(!showTerminal)}
           onRunCommand={handleRunCommand}
           isRunning={isRunning}
           onOpenProjectSelector={handleOpenProjectSelector}
@@ -535,7 +525,7 @@ export default function PlaygroundPage() {
                 minSize={10}
                 maxSize={30}
                 id="explorer-panel"
-                className={showExplorer ? '' : 'hidden'}
+                className={isPanelVisible('explorer') ? '' : 'hidden'}
               >
                 <div className="h-full border-r border-border overflow-y-auto bg-background/50 flex flex-col">
                   <div className="h-10 p-3 border-b border-border/50 flex items-center shrink-0">
@@ -559,16 +549,16 @@ export default function PlaygroundPage() {
               </Panel>
 
               <PanelResizeHandle
-                className={`w-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${showExplorer ? '' : 'hidden'}`}
+                className={`w-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${isPanelVisible('explorer') ? '' : 'hidden'}`}
               />
 
               <Panel defaultSize={85} id="editor-preview-panel">
                 <PanelGroup direction="horizontal" id="editor-preview-group">
                   <Panel
-                    defaultSize={showPreview ? 60 : 100}
+                    defaultSize={isPanelVisible('preview') ? 60 : 100}
                     minSize={30}
                     id="editor-panel"
-                    className={showEditor ? '' : 'hidden'}
+                    className={isPanelVisible('editor') ? '' : 'hidden'}
                   >
                     <div className="h-full flex flex-col">
                       {selectedFile ? (
@@ -603,14 +593,14 @@ export default function PlaygroundPage() {
                   </Panel>
 
                   <PanelResizeHandle
-                    className={`w-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${showEditor && showPreview ? '' : 'hidden'}`}
+                    className={`w-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${isPanelVisible('editor') && isPanelVisible('preview') ? '' : 'hidden'}`}
                   />
 
                   <Panel
                     defaultSize={40}
                     minSize={20}
                     id="preview-panel"
-                    className={`px-0 ${showPreview ? '' : 'hidden'}`}
+                    className={`px-0 ${isPanelVisible('preview') ? '' : 'hidden'}`}
                   >
                     <div className="h-full flex flex-col overflow-hidden bg-background/50 border-l border-border/50">
                       <div className="h-10 border-b border-border/50 flex items-center justify-between px-4 shrink-0">
@@ -629,7 +619,7 @@ export default function PlaygroundPage() {
           </Panel>
 
           <PanelResizeHandle
-            className={`h-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${showTerminal ? '' : 'hidden'}`}
+            className={`h-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${isPanelVisible('terminal') ? '' : 'hidden'}`}
           />
 
           <Panel
@@ -637,7 +627,7 @@ export default function PlaygroundPage() {
             defaultSize={30}
             minSize={15}
             maxSize={50}
-            className={showTerminal ? '' : 'hidden'}
+            className={isPanelVisible('terminal') ? '' : 'hidden'}
           >
             <div className="h-full border-t border-border/50 bg-background flex flex-col">
               <div className="h-10 border-b border-border/50 flex items-center px-4 shrink-0">
