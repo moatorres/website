@@ -28,7 +28,7 @@ import {
   AlertCircleIcon,
   ChevronDown,
   ChevronRight,
-  ChevronsDownUp,
+  CopyMinus,
   Edit2,
   File,
   FilePlus,
@@ -264,7 +264,7 @@ export function FileTree({
           className="h-7 px-2 text-xs ml-auto"
           title="Collapse All Folders"
         >
-          <ChevronsDownUp className="w-3.5 h-3.5" />
+          <CopyMinus className="w-3.5 h-3.5 scale-x-[-1]" />
         </Button>
       </div>
 
