@@ -10,6 +10,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { toast } from 'sonner'
 
+import { useCurrentFile } from './atoms/current-file'
 import { usePanelVisible } from './atoms/panels'
 import { CodeEditor } from './components/code-editor'
 import { FileTree } from './components/file-tree'
@@ -66,8 +67,7 @@ export default function PlaygroundPage() {
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [fileTree, setFileTree] = useState<FileNode[]>([])
-  const [selectedFile, setSelectedFile] = useState<string | null>(null)
-  const [fileContent, setFileContent] = useState<string>('')
+  const currentFile = useCurrentFile()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isRunning, setIsRunning] = useState(false)
@@ -84,7 +84,6 @@ export default function PlaygroundPage() {
 
   const syncFilesFromWebContainer = useCallback(async () => {
     if (!webcontainer || !selectedProject) return
-
     try {
       const { files, directories } = await readFiles()
       setSelectedProject((prev) => {
@@ -95,13 +94,13 @@ export default function PlaygroundPage() {
       const tree = buildFileTree(files, directories)
       setFileTree(tree)
 
-      if (selectedFile && files[selectedFile]) {
-        setFileContent(files[selectedFile])
+      if (currentFile.path && files[currentFile.path]) {
+        currentFile.setContent(files[currentFile.path])
       }
     } catch (error) {
       console.error('Error syncing files:', error)
     }
-  }, [selectedProject, selectedFile, webcontainer, readFiles])
+  }, [selectedProject, currentFile, webcontainer, readFiles])
 
   const setupFileWatching = useCallback(() => {
     if (!webcontainer) return
@@ -114,18 +113,30 @@ export default function PlaygroundPage() {
         })
 
         const tree = buildFileTree(files, directories)
+
         setFileTree(tree)
 
-        setSelectedFile((currentFile) => {
-          if (currentFile && files[currentFile]) {
-            setFileContent(files[currentFile])
+        /**
+         * This conditional check guarantees that file content synchronization is safe
+         * and scoped only to the file currently tracked by the editor.
+         *
+         * It prevents a data leak/overwrite scenario where:
+         *
+         * - A previously opened file’s contents could accidentally overwrite the buffer
+         *   of a newly created or switched file if the watcher fired between transitions.
+         *
+         * - The editor would show stale content from a deleted or replaced file.
+         */
+        currentFile.setCurrentFile((state) => {
+          if (currentFile.path && files[currentFile.path]) {
+            currentFile.setContent(files[currentFile.path])
           }
-          return currentFile
+          return state
         })
       },
       { ignoreIf: () => isInstalling }
     )
-  }, [webcontainer, setupFileWatcher, isInstalling])
+  }, [webcontainer, currentFile, setupFileWatcher, isInstalling])
 
   const handleExportZip = useCallback(async () => {
     if (!selectedProject) return
@@ -238,11 +249,11 @@ export default function PlaygroundPage() {
 
       await container.mount(fileTreeStructure)
 
-      const firstFile = Object.keys(projectToLoad.files)[0]
-      setSelectedFile(firstFile)
-      setFileContent(projectToLoad.files[firstFile])
+      currentFile.setCurrentFile(() => ({
+        path: projectToLoad.initialFile,
+        content: projectToLoad.files[projectToLoad.initialFile],
+      }))
     } catch (error) {
-      console.error('Project load error:', error)
       console.error('Error loading project:', error)
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error'
@@ -253,9 +264,9 @@ export default function PlaygroundPage() {
   }
 
   const handleFileSelect = (path: string) => {
-    setSelectedFile(path)
+    currentFile.setPath(path)
     if (selectedProject) {
-      setFileContent(selectedProject.files[path] || '')
+      currentFile.setContent(selectedProject.files?.[path] ?? '')
     }
     if (!isPanelVisible('editor')) {
       toggleEditor()
@@ -263,19 +274,16 @@ export default function PlaygroundPage() {
   }
 
   const handleFileChange = async (newContent: string) => {
-    setFileContent(newContent)
+    currentFile.setContent(newContent)
 
-    if (selectedFile && webcontainer) {
+    if (currentFile.path && webcontainer) {
       try {
-        await writeFile(selectedFile, newContent)
+        await writeFile(currentFile.path, newContent)
 
         if (selectedProject) {
           setSelectedProject({
             ...selectedProject,
-            files: {
-              ...selectedProject.files,
-              [selectedFile]: newContent,
-            },
+            files: { ...selectedProject.files, [currentFile.path]: newContent },
           })
         }
       } catch (error) {
@@ -296,10 +304,9 @@ export default function PlaygroundPage() {
   const handleCreateFile = useCallback(
     async (path: string) => {
       await createFile(path)
-      setSelectedFile(path)
-      setFileContent('')
+      currentFile.setCurrentFile(() => ({ path, content: '' }))
     },
-    [createFile]
+    [createFile, currentFile]
   )
 
   const handleCreateFolder = useCallback(
@@ -313,23 +320,25 @@ export default function PlaygroundPage() {
     async (path: string, isDirectory: boolean) => {
       await deleteItem(path, isDirectory)
 
-      if (selectedFile === path || selectedFile?.startsWith(path + '/')) {
-        setSelectedFile(null)
-        setFileContent('')
+      if (
+        currentFile.path === path ||
+        currentFile.path?.startsWith(path + '/')
+      ) {
+        currentFile.clear()
       }
     },
-    [deleteItem, selectedFile]
+    [deleteItem, currentFile]
   )
 
   const handleRename = useCallback(
     async (oldPath: string, newPath: string, isDirectory: boolean) => {
       await renameItem(oldPath, newPath, isDirectory)
 
-      if (selectedFile === oldPath) {
-        setSelectedFile(newPath)
+      if (currentFile.path === oldPath) {
+        currentFile.setPath(newPath)
       }
     },
-    [renameItem, selectedFile]
+    [renameItem, currentFile]
   )
 
   const handleMove = useCallback(
@@ -339,11 +348,11 @@ export default function PlaygroundPage() {
       const fileName = sourcePath.split('/').pop()
       const newPath = targetPath ? `${targetPath}/${fileName}` : fileName!
 
-      if (selectedFile === sourcePath) {
-        setSelectedFile(newPath)
+      if (currentFile.path === sourcePath) {
+        currentFile.setPath(newPath)
       }
     },
-    [moveItem, selectedFile]
+    [moveItem, currentFile]
   )
 
   const handleRunCommand = useCallback(async () => {
@@ -537,7 +546,7 @@ export default function PlaygroundPage() {
                     <FileTree
                       nodes={fileTree}
                       onFileSelect={handleFileSelect}
-                      selectedFile={selectedFile}
+                      selectedFile={currentFile.path}
                       onCreateFile={handleCreateFile}
                       onCreateFolder={handleCreateFolder}
                       onDelete={handleDelete}
@@ -561,19 +570,19 @@ export default function PlaygroundPage() {
                     className={isPanelVisible('editor') ? '' : 'hidden'}
                   >
                     <div className="h-full flex flex-col">
-                      {selectedFile ? (
+                      {currentFile.path ? (
                         <>
                           <div className="h-10 border-b border-border/50 flex items-center px-4 shrink-0">
                             <span className="text-sm text-muted-foreground font-medium font-mono">
-                              {selectedFile}
+                              {currentFile.path}
                             </span>
                           </div>
                           <div className="flex-1">
                             <CodeEditor
-                              value={fileContent}
+                              value={currentFile.content}
                               onChange={handleFileChange}
-                              language={getLanguageFromPath(selectedFile)}
-                              filePath={selectedFile}
+                              language={getLanguageFromPath(currentFile.path)}
+                              filePath={currentFile.path}
                               files={selectedProject?.files}
                               onMonacoReady={(monaco) => {
                                 monacoRef.current = monaco
