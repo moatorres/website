@@ -1,4 +1,3 @@
-import { print } from '@blog/utils'
 import { Monaco } from '@monaco-editor/react'
 import type { WebContainer } from '@webcontainer/api'
 import { useCallback, useEffect, useRef } from 'react'
@@ -9,12 +8,14 @@ function clearLoadedTypeDefinitions() {
   for (const [, d] of monacoTypeDisposables) {
     try {
       d.dispose()
-    } catch {
-      // TODO: Handle error
+    } catch (error) {
+      console.error('Error disposing library', error)
     }
   }
   monacoTypeDisposables.clear()
 }
+
+const DEP_FILES = 'package.json'
 
 export function useTypeLoader(
   monaco: Monaco | null,
@@ -24,12 +25,8 @@ export function useTypeLoader(
   const isLoadingRef = useRef(false)
   const pendingRef = useRef(false)
   const ignoreInstallRef = useRef(isInstalling)
+  const debounceTimer = useRef<number | null>(null)
 
-  useEffect(() => {
-    ignoreInstallRef.current = isInstalling
-  }, [isInstalling])
-
-  /* Serialized scheduler */
   const scheduleLoad = useCallback(async () => {
     if (!monaco || !wc) return
     if (isLoadingRef.current) {
@@ -49,45 +46,80 @@ export function useTypeLoader(
     }
   }, [monaco, wc])
 
-  /* Watch package.json for dependency changes */
+  const reloadTypes = useCallback(async () => {
+    if (!monaco || !wc) return
+    if (isLoadingRef.current) return
+    isLoadingRef.current = true
+
+    try {
+      console.log('Dependencies changed, reloading types.')
+      await loadTypeDefinitions(monaco, wc)
+    } finally {
+      isLoadingRef.current = false
+      if (pendingRef.current) {
+        pendingRef.current = false
+        setTimeout(() => scheduleLoad(), 250)
+      }
+    }
+  }, [monaco, wc, scheduleLoad])
+
+  useEffect(() => {
+    ignoreInstallRef.current = isInstalling
+  }, [isInstalling])
+
   useEffect(() => {
     if (!wc || !monaco) return
     const decoder = new TextDecoder()
+
+    const refreshOpenModel = async (name: string) => {
+      try {
+        const models = monaco.editor.getModels()
+        await Promise.all(
+          models.map(async (model) => {
+            const path = model.uri.path.replace(/^\//, '')
+            if (name.includes(DEP_FILES) && path.endsWith(name)) {
+              const content = await wc.fs.readFile(path, 'utf-8')
+              if (model.getValue() !== content) {
+                model.setValue(content)
+                console.log(`[useMonacoTypes] refreshed content of ${path}`)
+              }
+            }
+          })
+        )
+      } catch (err) {
+        console.warn('[useMonacoTypes] model refresh failed:', err)
+      }
+    }
 
     const onChange = (
       _type: string,
       filename: string | Uint8Array<ArrayBufferLike> | null
     ) => {
-      if (!filename) return
+      if (!filename || ignoreInstallRef.current) return
       const name =
         typeof filename === 'string' ? filename : decoder.decode(filename)
-      if (name.endsWith('package.json') || name === 'package.json') {
-        print.log('[useMonacoTypes] package.json changed — scheduling reload')
-        scheduleLoad()
-      }
+      refreshOpenModel(name)
+
+      if (!name.endsWith('package.json')) return
+
+      console.log(`File ${name} changed`)
+
+      if (debounceTimer.current) clearTimeout(debounceTimer.current)
+      debounceTimer.current = window.setTimeout(() => {
+        reloadTypes()
+      }, 3000)
     }
 
-    const watcher = wc.fs.watch('/', { recursive: false }, onChange)
-    return () => watcher.close()
-  }, [wc, monaco, scheduleLoad])
+    console.log('Setting up dependency-only FS watcher')
+    const watcher = wc.fs.watch('/', { recursive: true }, onChange)
 
-  // useEffect(() => {
-  //   if (!wc) return
-  //   let debounceTimer: number | null = null
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current)
+      watcher.close()
+    }
+  }, [wc, monaco, reloadTypes])
 
-  //   const handler = () => {
-  //     if (ignoreInstallRef.current) return
-  //     if (debounceTimer) clearTimeout(debounceTimer)
-  //     debounceTimer = window.setTimeout(() => scheduleLoad(), 500)
-  //   }
-
-  //   const watcher = wc.fs.watch('/', { recursive: true }, handler)
-  //   return () => {
-  //     if (debounceTimer) clearTimeout(debounceTimer)
-  //     watcher.close()
-  //   }
-  // }, [wc, scheduleLoad])
-
+  // Dispose libraries on unmount
   useEffect(() => {
     return () => {
       clearLoadedTypeDefinitions()
@@ -105,7 +137,7 @@ export async function loadTypeDefinitions(
   batchSize = 50,
   delayMs = 10
 ) {
-  print.log('Scanning for .d.ts files (safe mode)...')
+  console.log('Scanning for .d.ts files...')
 
   const fileQueue: { path: string; virtualPath: string }[] = []
 
@@ -119,17 +151,9 @@ export async function loadTypeDefinitions(
 
     for (const entry of entries) {
       const fullPath = `${dir}/${entry.name}`
-
       if (entry.isDirectory()) {
-        // Only scan relevant node_modules packages to reduce memory
-        // if (fullPath.includes('.pnpm')) {
         await scanDir(fullPath)
-        // }
-      } else if (
-        entry.name.endsWith('.d.ts') ||
-        entry.name === 'package.json'
-      ) {
-        // Create virtual path for Monaco
+      } else if (entry.name.endsWith('.d.ts')) {
         const normalized = fullPath.replace(
           /.*\/node_modules\//,
           '/node_modules/'
@@ -142,7 +166,7 @@ export async function loadTypeDefinitions(
 
   await scanDir(basePath)
 
-  print.log(`Queued ${fileQueue.length} type files for Monaco`)
+  console.log(`Queued ${fileQueue.length} type files for Monaco`)
 
   // Batch processing
   for (let i = 0; i < fileQueue.length; i += batchSize) {
@@ -159,8 +183,8 @@ export async function loadTypeDefinitions(
           if (existing) {
             try {
               existing.dispose()
-            } catch {
-              // TODO: Handle error
+            } catch (error) {
+              console.error('Error disposing library', error)
             }
             monacoTypeDisposables.delete(virtualPath)
           }
@@ -178,18 +202,14 @@ export async function loadTypeDefinitions(
             dispose: () => {
               try {
                 d1.dispose()
-              } catch {
-                // TODO: Handle error
-              }
-              try {
                 d2.dispose()
-              } catch {
-                // TODO: Handle error
+              } catch (error) {
+                console.error('Error disposing library', error)
               }
             },
           })
         } catch (e) {
-          print.warn(`Failed to read or add ${path}:`, e)
+          console.warn(`Failed to read or add ${path}:`, e)
         }
       })
     )
@@ -198,6 +218,7 @@ export async function loadTypeDefinitions(
     if (delayMs > 0) await new Promise((r) => setTimeout(r, delayMs))
   }
 
-  print.log('Type definitions loaded safely.')
+  console.log('Type definitions loaded.')
+
   await scanDir(basePath)
 }
