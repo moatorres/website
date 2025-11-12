@@ -74,12 +74,14 @@ export function CodeEditor({
 
     monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
       allowJs: true,
+      allowSyntheticDefaultImports: true,
       checkJs: true,
-      target: monaco.languages.typescript.ScriptTarget.ESNext,
+      esModuleInterop: true,
+      jsx: monaco.languages.typescript.JsxEmit.ReactJSX,
       module: monaco.languages.typescript.ModuleKind.ESNext,
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      allowSyntheticDefaultImports: true,
-      esModuleInterop: true,
+      resolveJsonModule: true,
+      target: monaco.languages.typescript.ScriptTarget.ESNext,
       types: ['node'],
     })
 
