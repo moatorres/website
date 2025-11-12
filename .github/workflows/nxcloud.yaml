@@ -1,9 +1,5 @@
 name: NxCloud
 
-env:
-  APP_CONFIG_FILE: 'apps/blog/info.json'
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-
 on:
   push:
     branches:
@@ -17,6 +13,12 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+
+    env:
+      NX_BASE: origin/master
+      APP_CONFIG_FILE: 'apps/blog/info.json'
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
         with:
