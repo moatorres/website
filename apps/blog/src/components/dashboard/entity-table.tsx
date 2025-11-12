@@ -39,12 +39,12 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  useIsMobile,
+  useMobile,
 } from '@shadcn/ui'
-import * as z from '@zod/mini'
 import { VariantProps } from 'class-variance-authority'
 import * as LucideReact from 'lucide-react'
 import React from 'react'
+import * as z from 'zod'
 
 import { ButtonGroup } from '@/components/ui/button-group'
 
@@ -85,7 +85,7 @@ export type BulkAction<T> = BulkActionWithClick<T> | BulkActionWithRender<T>
 type EntityTableProps<T extends object> = {
   entityName: string
   data: T[]
-  schema?: z.ZodMiniType<T[]>
+  schema?: z.ZodType<T[]>
   tabs?: TabOption[]
   bulkActions?: BulkAction<T>[]
   selectOptions?: keyof T | SelectOption<T>[]
@@ -160,7 +160,7 @@ export function EntityTable<T extends WithId & Record<string, unknown>>({
   const [selectedFilter, setSelectedFilter] = React.useState<string>('all')
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
   const [view, setView] = React.useState<T | null>(null)
-  const isMobile = useIsMobile()
+  const isMobile = useMobile()
 
   // Validate with Zod if provided
   const safeData: T[] = React.useMemo(() => {

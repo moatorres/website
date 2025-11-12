@@ -58,6 +58,8 @@ export default [
         },
       ],
       'simple-import-sort/exports': 'error',
+      'require-yield': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {

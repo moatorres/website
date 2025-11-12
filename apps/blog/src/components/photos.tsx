@@ -71,7 +71,7 @@ export function Lightbox({ photo, onClose, onNext, onPrev }: LightboxProps) {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="relative max-h-screen max-w-screen-lg p-4">
+      <div className="relative max-h-screen max-w-5xl p-4">
         <div className="relative h-full max-h-[80vh] w-auto">
           <Image
             src={photo.src}
@@ -106,14 +106,19 @@ export function PhotoGallery() {
     setGallery(photos)
   }, [])
 
+  React.useEffect(() => {
+    document.body.style.overflow = selectedIndex !== null ? 'hidden' : 'auto'
+    return () => {
+      document.body.style.overflow = 'auto' // cleanup on unmount
+    }
+  }, [selectedIndex])
+
   const openLightbox = (index: number) => {
     setSelectedIndex(index)
-    document.body.style.overflow = 'hidden'
   }
 
   const closeLightbox = () => {
     setSelectedIndex(null)
-    document.body.style.overflow = 'auto'
   }
 
   const showNext = () => {

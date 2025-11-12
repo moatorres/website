@@ -1,9 +1,5 @@
 'use client'
 
-import {
-  ThemeProvider as NextThemesProvider,
-  ThemeProviderProps,
-} from 'next-themes'
 import React from 'react'
 
 import { isAdmin } from '@/lib/session'
@@ -47,7 +43,3 @@ export const SessionProvider = ({
 }
 
 export const useSession = () => React.useContext(SessionContext)
-
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
-}

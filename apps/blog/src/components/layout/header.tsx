@@ -1,7 +1,7 @@
 'use client'
 
 import { initials, lastSegment } from '@blog/utils'
-import { Button, cn, useIsMobile } from '@shadcn/ui'
+import { Button, cn, useMobile } from '@shadcn/ui'
 import * as LucideReact from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
@@ -82,7 +82,7 @@ const items: NavIconItem[] = [
 
 export function Header({ className }: { className?: string }) {
   const { isAdmin } = useSession()
-  const isMobile = useIsMobile()
+  const isMobile = useMobile()
 
   return (
     <header className={cn('py-6 px-8 print:hidden', className)}>

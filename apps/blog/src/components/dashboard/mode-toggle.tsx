@@ -1,27 +1,52 @@
 'use client'
 
-import { Button } from '@shadcn/ui'
-import { MoonIcon, SunIcon } from 'lucide-react'
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@shadcn/ui'
+import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
 
 export function ModeToggle() {
-  const { setTheme, resolvedTheme } = useTheme()
+  const { setTheme, resolvedTheme, theme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => setMounted(true), [])
 
-  const toggleTheme = React.useCallback(() => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
-  }, [resolvedTheme, setTheme])
+  const Icon = React.useMemo(() => {
+    if (!mounted) return SunIcon
+    if (theme === 'system') return MonitorIcon
+    return resolvedTheme === 'dark' ? MoonIcon : SunIcon
+  }, [mounted, theme, resolvedTheme])
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="group/toggle size-8 text-muted-foreground"
-      onClick={toggleTheme}
-    >
-      <SunIcon strokeWidth={1.625} className="hidden [html.dark_&]:block" />
-      <MoonIcon strokeWidth={1.625} className="hidden [html.light_&]:block" />
-      <span className="sr-only">Toggle theme</span>
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8 text-muted-foreground"
+          aria-label="Toggle theme"
+        >
+          <Icon strokeWidth={1.625} />
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" sideOffset={4}>
+        <DropdownMenuItem onClick={() => setTheme('light')}>
+          <SunIcon className="mr-2 size-4" strokeWidth={1.625} /> Light
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('dark')}>
+          <MoonIcon className="mr-2 size-4" strokeWidth={1.625} /> Dark
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('system')}>
+          <MonitorIcon className="mr-2 size-4" strokeWidth={1.625} /> System
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

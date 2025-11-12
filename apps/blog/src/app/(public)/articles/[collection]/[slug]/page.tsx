@@ -7,9 +7,8 @@ import { Suspense } from 'react'
 
 import { Toc } from '@/components/toc'
 import { ArticleSkeleton } from '@/components/ui/skeleton'
-import collections from '@/data/collections.json'
 import config from '@/data/config.json'
-import { getArticleBySlug, getCollectionByName } from '@/lib/articles'
+import { getArticleBySlug, getArticles } from '@/lib/articles'
 
 type Props = {
   params: Promise<{
@@ -29,17 +28,13 @@ async function getContent(collection: string, slug: string) {
   }
 }
 
-export async function generateStaticParams() {
-  let paths: Array<{ collection: string; slug: string }> = []
+export function generateStaticParams() {
+  const articles = getArticles()
 
-  for (const collection of collections) {
-    const files = getCollectionByName(collection).map((file) => ({
-      collection,
-      slug: file.slug,
-    }))
-
-    paths = paths.concat(files)
-  }
+  const paths = articles.map((a) => ({
+    collection: a.collection,
+    slug: a.slug,
+  }))
 
   return paths
 }
@@ -131,7 +126,7 @@ export default async function BlogArticle({ params }: Props) {
       <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
         {category}
       </p>
-      <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight mb-6 text-[var(--tw-prose-headings)]">
+      <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight mb-6 text-(--tw-prose-headings)">
         {title}
       </h1>
       <p className="flex justify-between -mt-4 mb-10 text-muted">

@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 
-import * as z from '@zod/mini'
+import * as z from 'zod'
 
 const SiteConfig = z.object({
   author: z.string().check(z.minLength(2)),
@@ -19,16 +19,13 @@ const SocialConfig = z.object({
   twitterUrl: z.url(),
 })
 
-const BaseEncoded = z.intersection(
-  z.partial(SiteConfig),
-  z.partial(SocialConfig)
-)
+const BaseEncoded = SiteConfig.partial().and(SocialConfig.partial())
 
-const SectionsEncoded = z.partial(
-  z.object({
-    sections: z.string().check(z.minLength(2)),
+const SectionsEncoded = z
+  .object({
+    sections: z.string().min(2),
   })
-)
+  .partial()
 
 export const MetaConfigEncoded = z.intersection(BaseEncoded, SectionsEncoded)
 export type MetaConfigEncoded = z.infer<typeof MetaConfigEncoded>

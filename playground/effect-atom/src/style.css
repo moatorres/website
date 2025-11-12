@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background: black;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+button {
+  background: transparent;
+  padding-block: 0.5rem;
+  margin-right: 1rem;
+  color: #cbff10;
+  border: none;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+button:hover {
+  opacity: 70%;
+  cursor: pointer;
+}
+
+ul {
+  opacity: 50%;
+}

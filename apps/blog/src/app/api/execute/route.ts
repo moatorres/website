@@ -3,8 +3,8 @@
 import { execFile } from 'child_process'
 import { resolve } from 'path'
 
-import * as z from '@zod/mini'
 import { NextRequest, NextResponse } from 'next/server'
+import * as z from 'zod'
 
 import 'server-only'
 

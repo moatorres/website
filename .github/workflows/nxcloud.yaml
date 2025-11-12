@@ -1,9 +1,5 @@
 name: NxCloud
 
-env:
-  APP_CONFIG_FILE: 'apps/blog/info.json'
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-
 on:
   push:
     branches:
@@ -17,19 +13,25 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+
+    env:
+      NX_BASE: origin/master
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          filter: tree:0
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22.8.0
+          node-version: 22.20.0
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
-          version: 9.15.4
+          version: 10.19.0
           run_install: false
 
       - name: Get pnpm store directory
@@ -44,8 +46,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - run: pnpm dlx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - uses: nrwl/nx-set-shas@v4
+      - run: npx nx-cloud record -- nx format:check
       - run: pnpm exec nx affected -t lint test build
