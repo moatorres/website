@@ -4,6 +4,8 @@ import JSZip from 'jszip'
 
 import { FileNode } from './types'
 
+const STORAGE_PREFIX = 'webcontainer-project-'
+
 export const getLanguageFromPath = (path: string): string => {
   const ext = path.split('.').pop()?.toLowerCase()
   const languageMap: Record<string, string> = {
@@ -176,7 +178,7 @@ export function saveToLocalStorage(
   try {
     const sourceFiles = filterSourceFiles(files)
 
-    const key = `webcontainer-project-${projectId}`
+    const key = `${STORAGE_PREFIX}${projectId}`
     localStorage.setItem(key, JSON.stringify(sourceFiles))
     print.log(
       `Project saved to localStorage: ${key} (${Object.keys(sourceFiles).length} source files)`
@@ -192,7 +194,7 @@ export function loadFromLocalStorage(
   projectId: string
 ): Record<string, string> | null {
   try {
-    const key = `webcontainer-project-${projectId}`
+    const key = `${STORAGE_PREFIX}${projectId}`
     const data = localStorage.getItem(key)
     if (data) {
       print.log(`Project loaded from localStorage: ${key}`)
@@ -202,6 +204,17 @@ export function loadFromLocalStorage(
     print.error('Error loading from localStorage:', error)
   }
   return null
+}
+
+export function clearFromLocalStorage(projectId: string): boolean {
+  try {
+    const key = `${STORAGE_PREFIX}${projectId}`
+    localStorage.removeItem(key)
+    return true
+  } catch (error) {
+    print.error('Error removing from localStorage:', error)
+    return false
+  }
 }
 
 export async function copyProjectToClipboard(files: Record<string, string>) {

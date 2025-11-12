@@ -18,6 +18,7 @@ import {
   Package,
   PanelLeft,
   Play,
+  RotateCcw,
   Save,
   TerminalIcon,
 } from 'lucide-react'
@@ -30,6 +31,7 @@ import { ModeToggle } from './theme-toggle'
 interface ToolbarProps {
   onExportZip: () => void
   onSave: () => void
+  onReset: () => void
   onCopy: () => void
   onInstall?: () => void
   isInstalling?: boolean
@@ -43,6 +45,7 @@ interface ToolbarProps {
 export function Toolbar({
   onExportZip,
   onSave,
+  onReset,
   onCopy,
   onInstall,
   isInstalling = false,
@@ -232,6 +235,21 @@ export function Toolbar({
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Save to Browser</TooltipContent>
+            </Tooltip>
+
+            {/* Reset original project */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onReset}
+                  className="h-7 px-2 hover:bg-muted"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Reset Project</TooltipContent>
             </Tooltip>
 
             {/* Export as ZIP */}

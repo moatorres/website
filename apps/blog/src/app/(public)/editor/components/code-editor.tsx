@@ -134,7 +134,7 @@ export function CodeEditor({
 
       // Setup imports between project files
       for (const [path, content] of Object.entries(files)) {
-        if (!/\.(ts|tsx|js|jsx)$/.test(path)) continue
+        if (!/\.(ts|tsx|js|jsx|json)$/.test(path)) continue
 
         const virtualPath = `file:///${path}`
         monaco.languages.typescript.typescriptDefaults.addExtraLib(

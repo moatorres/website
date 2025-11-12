@@ -33,6 +33,7 @@ import { exampleProjects } from './services/projects'
 import type { FileNode, Project } from './services/types'
 import {
   buildFileTree,
+  clearFromLocalStorage,
   copyProjectToClipboard,
   exportAsZip,
   getLanguageFromPath,
@@ -219,6 +220,38 @@ export default function PlaygroundPage() {
       })
     }
   }, [selectedProject, syncFilesFromWebContainer])
+
+  const handleReset = useCallback(async () => {
+    if (!selectedProject) return
+
+    try {
+      // Clear localStorage for this project
+      clearFromLocalStorage(selectedProject.id)
+
+      toast('Resetting Project', {
+        description: 'Clearing saved changes and reloading original...',
+      })
+
+      // Find the original project from exampleProjects
+      const originalProject = exampleProjects.find(
+        (p) => p.id === selectedProject.id
+      )
+
+      if (originalProject) {
+        // Reload the original project
+        await handleProjectSelect(originalProject)
+
+        toast('Project Reset', {
+          description: 'Project has been reset to original state',
+        })
+      }
+    } catch (error) {
+      console.error('Error resetting project:', error)
+      toast.error('Reset Failed', {
+        description: 'Failed to reset project',
+      })
+    }
+  }, [selectedProject])
 
   const handleProjectSelect = async (project: Project) => {
     setIsLoading(true)
@@ -482,6 +515,7 @@ export default function PlaygroundPage() {
         <Toolbar
           onExportZip={handleExportZip}
           onSave={handleSave}
+          onReset={handleReset}
           onCopy={handleCopy}
           isFullscreen={isFullscreen}
           onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
@@ -564,7 +598,7 @@ export default function PlaygroundPage() {
                 className={`w-0.5 bg-border/50 hover:bg-primary/50 transition-colors ${isPanelVisible('explorer') ? '' : 'hidden'}`}
               />
 
-              <Panel defaultSize={85} id="editor-preview-panel">
+              <Panel defaultSize={80} id="editor-preview-panel">
                 <PanelGroup direction="horizontal" id="editor-preview-group">
                   <Panel
                     defaultSize={isPanelVisible('preview') ? 60 : 100}
