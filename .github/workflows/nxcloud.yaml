@@ -22,7 +22,13 @@ jobs:
         with:
           fetch-depth: 0
           filter: tree:0
+
       - run: pnpm dlx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
+
+      - uses: actions/setup-node@v6
+        with:
+          cache: 'pnpm'
+          node-version-file: '.nvmrc'
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
@@ -30,10 +36,17 @@ jobs:
           version: 10.19.0
           run_install: false
 
-      - uses: actions/setup-node@v6
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
         with:
-          node-version: 22.20.0
-          cache: 'pnpm'
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
