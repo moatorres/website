@@ -11,6 +11,7 @@
       "dependsOn": ["^build"],
       "options": {
         "env": {
+          "APP_CONFIG_FILE": "apps/blog/info.json",
           "NODE_OPTIONS": "--no-warnings --loader @mdx-js/node-loader"
         },
         "cwd": "{workspaceRoot}",
