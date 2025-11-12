@@ -8,3 +8,4 @@ next-env.d.ts
 pnpm-lock.yaml
 dist
 node_modules
+playground

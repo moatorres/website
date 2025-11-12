@@ -1,8 +1,7 @@
 'use server'
 
 import { randomBytes } from 'crypto'
-import { writeFileSync } from 'fs'
-import { opendir, readFile } from 'fs/promises'
+import { opendir, readdir, readFile, writeFile } from 'fs/promises'
 import { dirname, join, relative, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -21,9 +20,10 @@ export async function loadProjectFromDir(projectDir: string): Promise<Project> {
   const pkgJson = JSON.parse(await readFile(pkgPath, 'utf-8'))
 
   const id = pkgJson.name ?? `prj-${randomBytes(3).toString('hex')}`
-  const name = pkgJson.displayName ?? id
+  const name = pkgJson.metadata.displayName ?? id
   const description = pkgJson.description
-  const initialFile = pkgJson.metadata.initialFile
+  const initialFile =
+    pkgJson.metadata.initialFile.replace(/^\.?\//, '') ?? 'package.json'
 
   const files: Record<string, string> = {}
   const ignoredPaths = ['dist', 'node_modules', '.git', '.next']
@@ -38,10 +38,27 @@ export async function loadProjectFromDir(projectDir: string): Promise<Project> {
   return { id, name, description, initialFile, files }
 }
 
-const p = await loadProjectFromDir(
-  resolve(dirname(fileURLToPath(import.meta.url)), './projects/effect-atom')
-)
+// TODO: Remove this after bootstrap refactor
+export async function parseProjects(
+  projectsDir = '../../../../../../../playground'
+) {
+  const basePath = resolve(dirname(fileURLToPath(import.meta.url)), projectsDir)
+  const entries = await readdir(basePath, { withFileTypes: true })
 
-writeFileSync('foo.json', JSON.stringify(p))
+  const projects = []
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const projectPath = resolve(basePath, entry.name)
+      const loaded = await loadProjectFromDir(projectPath)
+      projects.push(loaded)
+    }
+  }
 
-console.dir(p, { depth: 3 })
+  const output = resolve(
+    dirname(fileURLToPath(import.meta.url)),
+    '../../../../data/projects.json'
+  )
+  await writeFile(output, JSON.stringify(projects, null, 2))
+
+  return projects
+}

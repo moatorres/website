@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 import { Dirent, existsSync, readFileSync } from 'fs'
 import { mkdir, readdir, stat, writeFile } from 'fs/promises'
-import { dirname, join, relative } from 'path'
+import { dirname, join, relative, resolve } from 'path'
 
 import { green, print, red, relativePath, slugify, yellow } from '@blog/utils'
 import { imageSize } from 'image-size'
@@ -9,6 +9,8 @@ import { ISizeCalculationResult } from 'image-size/types/interface'
 
 import { ArticleMetadata } from '@/lib/articles'
 import { PhotoMetadata } from '@/lib/photos'
+
+import { loadProjectFromDir } from '../app/(public)/editor/services/project-loader'
 
 import { getConfig } from './config'
 import { extractSnippetMetadata } from './snippets'
@@ -94,6 +96,23 @@ export function extractPhotoMetadata(
     width: size.width,
     height: size.height,
   }
+}
+
+export async function extractPlaygroundProjects() {
+  const basePath = resolve(process.cwd(), 'playground')
+  const entries = await readdir(basePath, { withFileTypes: true })
+
+  const projects = []
+
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const projectPath = resolve(basePath, entry.name)
+      const loaded = await loadProjectFromDir(projectPath)
+      projects.push(loaded)
+    }
+  }
+
+  return projects
 }
 
 function findOrExit(path: string, label = 'File') {
@@ -189,6 +208,10 @@ async function main() {
   const snippets = await extractSnippetMetadata(config.snippetsDirectory)
 
   await write('snippets.json', snippets)
+
+  const projects = await extractPlaygroundProjects()
+
+  await write('projects.json', projects)
 
   print.info(
     `Files written to ${green(relativePath(config.metadataDirectory))}`

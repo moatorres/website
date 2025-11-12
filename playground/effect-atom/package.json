@@ -1,0 +1,28 @@
+{
+  "name": "effect-atom",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Composing state with Effect Atoms",
+  "metadata": {
+    "preview": true,
+    "initialFile": "./src/App.tsx",
+    "displayName": "Effect Atoms React"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@effect-atom/atom-react": "^0.3.4",
+    "effect": "^3.18.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
+  }
+}
