@@ -303,9 +303,8 @@ export default function PlaygroundPage() {
 
   const handleTerminalReady = useCallback(
     async (xterm: XTerm, fitAddon: FitAddon) => {
-      await initializeTerminal(xterm, fitAddon, () => {
-        setupFileWatching()
-      })
+      setupFileWatching()
+      await initializeTerminal(xterm, fitAddon)
     },
     [initializeTerminal, setupFileWatching]
   )
