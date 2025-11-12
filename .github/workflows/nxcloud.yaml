@@ -25,8 +25,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          cache: 'pnpm'
-          node-version-file: '.nvmrc'
+          node-version: 22.20.0
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
