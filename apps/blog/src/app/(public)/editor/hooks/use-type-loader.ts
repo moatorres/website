@@ -15,7 +15,7 @@ function clearLoadedTypeDefinitions() {
   monacoTypeDisposables.clear()
 }
 
-const DEP_FILES = 'package.json'
+const DEP_FILES = ['package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml']
 
 export function useTypeLoader(
   monaco: Monaco | null,
@@ -77,7 +77,7 @@ export function useTypeLoader(
         await Promise.all(
           models.map(async (model) => {
             const path = model.uri.path.replace(/^\//, '')
-            if (name.includes(DEP_FILES) && path.endsWith(name)) {
+            if (name.includes('package.json') && path.endsWith(name)) {
               const content = await wc.fs.readFile(path, 'utf-8')
               if (model.getValue() !== content) {
                 model.setValue(content)
@@ -95,14 +95,14 @@ export function useTypeLoader(
       _type: string,
       filename: string | Uint8Array<ArrayBufferLike> | null
     ) => {
-      if (!filename || ignoreInstallRef.current) return
+      if (!filename) return
       const name =
         typeof filename === 'string' ? filename : decoder.decode(filename)
       refreshOpenModel(name)
 
-      if (!name.endsWith('package.json')) return
+      if (!DEP_FILES.some((f) => name.endsWith(f))) return
 
-      console.log(`File ${name} changed`)
+      console.debug(`File ${name} changed`)
 
       if (debounceTimer.current) clearTimeout(debounceTimer.current)
       debounceTimer.current = window.setTimeout(() => {
@@ -110,7 +110,6 @@ export function useTypeLoader(
       }, 3000)
     }
 
-    console.log('Setting up dependency-only FS watcher')
     const watcher = wc.fs.watch('/', { recursive: true }, onChange)
 
     return () => {
@@ -153,7 +152,10 @@ export async function loadTypeDefinitions(
       const fullPath = `${dir}/${entry.name}`
       if (entry.isDirectory()) {
         await scanDir(fullPath)
-      } else if (entry.name.endsWith('.d.ts')) {
+      } else if (
+        entry.name.endsWith('.d.ts') ||
+        entry.name === 'package.json'
+      ) {
         const normalized = fullPath.replace(
           /.*\/node_modules\//,
           '/node_modules/'
@@ -167,6 +169,8 @@ export async function loadTypeDefinitions(
   await scanDir(basePath)
 
   console.log(`Queued ${fileQueue.length} type files for Monaco`)
+
+  clearLoadedTypeDefinitions()
 
   // Batch processing
   for (let i = 0; i < fileQueue.length; i += batchSize) {
