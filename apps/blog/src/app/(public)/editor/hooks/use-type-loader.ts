@@ -2,6 +2,12 @@ import { Monaco } from '@monaco-editor/react'
 import type { WebContainer } from '@webcontainer/api'
 import { useCallback, useEffect, useRef } from 'react'
 
+import { useDebounce } from './use-debounce'
+
+const DEBOUNCE_MS = 100
+
+const loadedTypeHashes = new Map<string, string>()
+
 const monacoTypeDisposables = new Map<string, { dispose: () => void }>()
 
 function clearLoadedTypeDefinitions() {
@@ -25,7 +31,6 @@ export function useTypeLoader(
   const isLoadingRef = useRef(false)
   const pendingRef = useRef(false)
   const ignoreInstallRef = useRef(isInstalling)
-  const debounceTimer = useRef<number | null>(null)
 
   const scheduleLoad = useCallback(async () => {
     if (!monaco || !wc) return
@@ -41,7 +46,7 @@ export function useTypeLoader(
       isLoadingRef.current = false
       if (pendingRef.current) {
         pendingRef.current = false
-        setTimeout(() => scheduleLoad(), 250)
+        setTimeout(() => scheduleLoad(), DEBOUNCE_MS)
       }
     }
   }, [monaco, wc])
@@ -52,7 +57,7 @@ export function useTypeLoader(
     isLoadingRef.current = true
 
     try {
-      console.log('Dependencies changed, reloading types.')
+      console.log('[TypeLoader] Dependencies changed, reloading types.')
       await loadTypeDefinitions(monaco, wc)
     } finally {
       isLoadingRef.current = false
@@ -62,6 +67,8 @@ export function useTypeLoader(
       }
     }
   }, [monaco, wc, scheduleLoad])
+
+  const reloadTypeDefintions = useDebounce(reloadTypes, DEBOUNCE_MS)
 
   useEffect(() => {
     ignoreInstallRef.current = isInstalling
@@ -81,13 +88,13 @@ export function useTypeLoader(
               const content = await wc.fs.readFile(path, 'utf-8')
               if (model.getValue() !== content) {
                 model.setValue(content)
-                console.log(`[useMonacoTypes] refreshed content of ${path}`)
+                console.log(`[TypeLoader] Refreshed content of ${path}`)
               }
             }
           })
         )
       } catch (err) {
-        console.warn('[useMonacoTypes] model refresh failed:', err)
+        console.warn('[TypeLoader] Model refresh failed:', err)
       }
     }
 
@@ -102,21 +109,17 @@ export function useTypeLoader(
 
       if (!DEP_FILES.some((f) => name.endsWith(f))) return
 
-      console.debug(`File ${name} changed`)
+      console.debug(`[TypeLoader] File ${name} changed`)
 
-      if (debounceTimer.current) clearTimeout(debounceTimer.current)
-      debounceTimer.current = window.setTimeout(() => {
-        reloadTypes()
-      }, 3000)
+      reloadTypeDefintions()
     }
 
     const watcher = wc.fs.watch('/', { recursive: true }, onChange)
 
     return () => {
-      if (debounceTimer.current) clearTimeout(debounceTimer.current)
       watcher.close()
     }
-  }, [wc, monaco, reloadTypes])
+  }, [wc, monaco, reloadTypeDefintions])
 
   // Dispose libraries on unmount
   useEffect(() => {
@@ -136,8 +139,7 @@ export async function loadTypeDefinitions(
   batchSize = 50,
   delayMs = 10
 ) {
-  console.log('Scanning for .d.ts files...')
-
+  console.log('[TypeLoader] Scanning for .d.ts files...')
   const fileQueue: { path: string; virtualPath: string }[] = []
 
   async function scanDir(dir: string) {
@@ -167,31 +169,37 @@ export async function loadTypeDefinitions(
   }
 
   await scanDir(basePath)
+  console.log(`[TypeLoader] Queued ${fileQueue.length} types`)
 
-  console.log(`Queued ${fileQueue.length} type files for Monaco`)
+  const newTypeHashes = new Map<string, string>()
 
-  clearLoadedTypeDefinitions()
+  let reused = 0
 
-  // Batch processing
   for (let i = 0; i < fileQueue.length; i += batchSize) {
     const batch = fileQueue.slice(i, i + batchSize)
-
     await Promise.all(
       batch.map(async ({ path, virtualPath }) => {
         try {
           const content = await webcontainer.fs.readFile(path, 'utf-8')
+          const hashBuffer = await crypto.subtle.digest(
+            'SHA-1',
+            new TextEncoder().encode(content)
+          )
+          const hashHex = Array.from(new Uint8Array(hashBuffer))
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('')
 
-          // Dispose previous definitions for this path
+          newTypeHashes.set(virtualPath, hashHex)
+
+          // unchanged → skip
+          if (loadedTypeHashes.get(virtualPath) === hashHex) {
+            reused++
+            return
+          }
+
           const existing = monacoTypeDisposables.get(virtualPath)
 
-          if (existing) {
-            try {
-              existing.dispose()
-            } catch (error) {
-              console.error('Error disposing library', error)
-            }
-            monacoTypeDisposables.delete(virtualPath)
-          }
+          if (existing) existing.dispose()
 
           const d1 = monaco.languages.typescript.typescriptDefaults.addExtraLib(
             content,
@@ -204,25 +212,32 @@ export async function loadTypeDefinitions(
 
           monacoTypeDisposables.set(virtualPath, {
             dispose: () => {
-              try {
-                d1.dispose()
-                d2.dispose()
-              } catch (error) {
-                console.error('Error disposing library', error)
-              }
+              d1.dispose()
+              d2.dispose()
             },
           })
         } catch (e) {
-          console.warn(`Failed to read or add ${path}:`, e)
+          console.warn(`[TypeLoader] Failed to read or add ${path}:`, e)
         }
       })
     )
 
-    // Throttle between batches
     if (delayMs > 0) await new Promise((r) => setTimeout(r, delayMs))
   }
 
-  console.log('Type definitions loaded.')
+  for (const [vpath, dlib] of monacoTypeDisposables.entries()) {
+    if (!newTypeHashes.has(vpath)) {
+      dlib.dispose()
+      monacoTypeDisposables.delete(vpath)
+      loadedTypeHashes.delete(vpath)
+    }
+  }
 
-  await scanDir(basePath)
+  loadedTypeHashes.clear()
+
+  for (const [k, v] of newTypeHashes.entries()) loadedTypeHashes.set(k, v)
+
+  console.log(
+    `[TypeLoader] Reused ${reused} of ${loadedTypeHashes.size} project types.`
+  )
 }
