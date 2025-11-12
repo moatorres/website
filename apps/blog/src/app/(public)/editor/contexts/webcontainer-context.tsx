@@ -15,7 +15,6 @@ import {
 } from 'react'
 import { toast } from 'sonner'
 
-import { loadTypeDefinitions } from '../hooks/use-type-loader'
 import {
   clearFileSystem,
   getWebContainerInstance,
@@ -192,14 +191,6 @@ export function WebContainerProvider({ children }: { children: ReactNode }) {
         console.error('Terminal error:', error)
       } finally {
         setIsInstalling(false)
-
-        // Load type definitions
-        if (monaco) {
-          await loadTypeDefinitions(monaco, webcontainerRef.current)
-          toast('Loaded Types', {
-            description: 'Type definitions loaded successfully',
-          })
-        }
 
         // Callback when ready
         onReady?.()
