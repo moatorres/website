@@ -130,7 +130,7 @@ export function WebContainerProvider({ children }: { children: ReactNode }) {
 
       if (!webcontainerRef.current) return
 
-      xterm.writeln('\x1b[1;34m[moatorres.co] Terminal\x1b[0m')
+      xterm.writeln('\x1b[1;34m[moatorres.co] Terminal\x1b[0m\n')
       xterm.writeln('Initializing...\n')
 
       setIsInstalling(true)

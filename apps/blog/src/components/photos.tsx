@@ -71,7 +71,7 @@ export function Lightbox({ photo, onClose, onNext, onPrev }: LightboxProps) {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="relative max-h-screen max-w-screen-lg p-4">
+      <div className="relative max-h-screen max-w-5xl p-4">
         <div className="relative h-full max-h-[80vh] w-auto">
           <Image
             src={photo.src}

@@ -157,6 +157,7 @@ export function watchFileSystem(
   const watchers: Array<{ close: () => void }> = []
 
   let isProcessing = false
+  const DEBOUNCE_MS = 200
 
   async function handleChange(
     eventType: string,
@@ -185,7 +186,7 @@ export function watchFileSystem(
     } finally {
       setTimeout(() => {
         isProcessing = false
-      }, 200) // small increase to give pnpm a chance to flush many rapid events
+      }, DEBOUNCE_MS)
     }
   }
 

@@ -33,10 +33,10 @@ interface ToolbarProps {
   onCopy: () => void
   onInstall?: () => void
   isInstalling?: boolean
-  isFullscreen?: boolean
   onToggleFullscreen?: () => void
+  isFullscreen: boolean
   onRunCommand?: () => void
-  isRunning?: boolean
+  isRunning: boolean
   onOpenProjectSelector?: () => void
 }
 

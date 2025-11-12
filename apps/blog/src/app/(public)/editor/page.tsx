@@ -1,7 +1,16 @@
 'use client'
 
 import type { Monaco } from '@monaco-editor/react'
-import { Button, useMobile } from '@shadcn/ui'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  Button,
+  useMobile,
+} from '@shadcn/ui'
 import type { FitAddon } from '@xterm/addon-fit'
 import type { Terminal as XTerm } from '@xterm/xterm'
 import { FolderDown, Loader, Loader2 } from 'lucide-react'
@@ -568,9 +577,35 @@ export default function PlaygroundPage() {
                       {currentFile.path ? (
                         <>
                           <div className="h-10 border-b border-border/50 flex items-center px-4 shrink-0">
-                            <span className="text-sm text-muted-foreground font-medium font-mono">
-                              {currentFile.path}
-                            </span>
+                            <Breadcrumb>
+                              <BreadcrumbList>
+                                {currentFile.path
+                                  .split('/')
+                                  .map((segment, index, arr) => {
+                                    const isLast = index === arr.length - 1
+                                    const path = arr
+                                      .slice(0, index + 1)
+                                      .join('/')
+
+                                    return (
+                                      <BreadcrumbItem key={path}>
+                                        {isLast ? (
+                                          <BreadcrumbPage className="text-sm font-medium">
+                                            {segment}
+                                          </BreadcrumbPage>
+                                        ) : (
+                                          <>
+                                            <BreadcrumbLink className="text-sm cursor-pointer hover:text-foreground transition-colors">
+                                              {segment}
+                                            </BreadcrumbLink>
+                                            <BreadcrumbSeparator />
+                                          </>
+                                        )}
+                                      </BreadcrumbItem>
+                                    )
+                                  })}
+                              </BreadcrumbList>
+                            </Breadcrumb>
                           </div>
                           <div className="flex-1">
                             <CodeEditor
