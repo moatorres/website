@@ -30,9 +30,10 @@ import {
   XIcon,
 } from 'lucide-react'
 import type React from 'react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { useCurrentFile } from '../atoms/current-file'
+import { useFileTreeStore } from '../atoms/file-tree'
 import type { FileNode } from '../services/types'
 import { getWebContainerInstance, readAllFiles } from '../services/webcontainer'
 
@@ -71,34 +72,34 @@ export function FileTree({
   onRename,
   onMove,
 }: FileTreeProps) {
-  const [newItemName, setNewItemName] = useState('')
-  const [newItemPath, setNewItemPath] = useState('')
-  const [newItemType, setNewItemType] = useState<'file' | 'folder' | null>(null)
-  const [lastClickedItem, setLastClickedItem] = useState<string | null>(null)
-
-  const [dragState, setDragState] = useState<DragState | null>(null)
-  const [isRootDragOver, setIsRootDragOver] = useState(false)
-  const [highlightedFolderPath, setHighlightedFolderPath] = useState<
-    string | null
-  >(null)
+  const {
+    newItem,
+    setNewItem,
+    lastClickedItem,
+    setLastClickedItem,
+    setHighlightedFolderPath,
+  } = useFileTreeStore()
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set(nodes.filter((n) => n.type === 'directory').map((n) => n.path))
   )
 
   const currentFile = useCurrentFile()
 
-  const checkIfPathExists = (path: string): boolean => {
-    const checkNodes = (nodeList: FileNode[]): boolean => {
-      for (const node of nodeList) {
-        if (node.path === path) return true
-        if (node.type === 'directory' && node.children) {
-          if (checkNodes(node.children)) return true
+  const checkIfPathExists = useCallback(
+    (path: string): boolean => {
+      const checkNodes = (nodeList: FileNode[]): boolean => {
+        for (const node of nodeList) {
+          if (node.path === path) return true
+          if (node.type === 'directory' && node.children) {
+            if (checkNodes(node.children)) return true
+          }
         }
+        return false
       }
-      return false
-    }
-    return checkNodes(nodes)
-  }
+      return checkNodes(nodes)
+    },
+    [nodes]
+  )
 
   const handleCollapseAll = () => {
     setExpandedFolders(new Set())
@@ -246,9 +247,7 @@ export function FileTree({
         : ''
     }
 
-    setNewItemType(type)
-    setNewItemPath(targetDir)
-    setNewItemName('')
+    setNewItem({ name: '', type, path: targetDir })
 
     if (targetDir) {
       setExpandedFolders((prev) => new Set([...prev, targetDir]))
@@ -256,32 +255,30 @@ export function FileTree({
   }
 
   const handleCreateItem = async () => {
-    if (!newItemName.trim()) {
-      setNewItemType(null)
+    if (!newItem.name.trim()) {
+      setNewItem({ type: null })
       return
     }
 
-    const fullPath = newItemPath
-      ? `${newItemPath}/${newItemName.trim()}`
-      : newItemName.trim()
+    const fullPath = newItem.path
+      ? `${newItem.path}/${newItem.name.trim()}`
+      : newItem.name.trim()
 
     if (checkIfPathExists(fullPath)) {
       return
     }
 
-    if (newItemType === 'file' && onCreateFile) {
+    if (newItem.type === 'file' && onCreateFile) {
       await onCreateFile(fullPath)
-    } else if (newItemType === 'folder' && onCreateFolder) {
+    } else if (newItem.type === 'folder' && onCreateFolder) {
       await onCreateFolder(fullPath)
     }
 
-    setNewItemType(null)
-    setNewItemName('')
+    setNewItem({ name: '', type: null })
   }
 
   const handleCancelCreateItem = () => {
-    setNewItemType(null)
-    setNewItemName('')
+    setNewItem({ name: '', type: null })
   }
 
   return (
@@ -325,7 +322,7 @@ export function FileTree({
         onDrop={handleRootDrop}
         onDragEnd={handleRootDragEnd}
       >
-        {newItemType === 'folder' && newItemPath === '' && (
+        {newItem.type === 'folder' && newItem.path === '' && (
           <div
             className="flex items-center gap-1 px-2 py-1 bg-accent/50"
             style={{ paddingLeft: '8px' }}
@@ -333,8 +330,8 @@ export function FileTree({
             <span className="w-4" />
             <Folder className="w-4 h-4 text-primary" />
             <Input
-              value={newItemName}
-              onChange={(e) => setNewItemName(e.target.value)}
+              value={newItem.name}
+              onChange={(e) => setNewItem({ name: e.target.value })}
               onBlur={handleCreateItem}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleCreateItem()
@@ -342,8 +339,8 @@ export function FileTree({
               }}
               className={cn(
                 'h-5 px-1 py-0 text-sm flex-1 rounded-xs border-none focus-visible:ring-1',
-                newItemName.trim() &&
-                  checkIfPathExists(newItemName.trim()) &&
+                newItem.name.trim() &&
+                  checkIfPathExists(newItem.name.trim()) &&
                   'border-destructive focus-visible:ring-destructive'
               )}
               autoFocus
@@ -371,13 +368,7 @@ export function FileTree({
                   setExpandedFolders={setExpandedFolders}
                   dragState={dragState}
                   setDragState={setDragState}
-                  highlightedFolderPath={highlightedFolderPath}
-                  setHighlightedFolderPath={setHighlightedFolderPath}
                   allNodes={nodes}
-                  newItemType={newItemType}
-                  newItemPath={newItemPath}
-                  newItemName={newItemName}
-                  setNewItemName={setNewItemName}
                   onCreateItem={handleCreateItem}
                   onCancelCreateItem={handleCancelCreateItem}
                   checkIfPathExists={checkIfPathExists}
@@ -386,7 +377,7 @@ export function FileTree({
                 />
               ))}
 
-              {newItemType === 'file' && newItemPath === '' && (
+              {newItem.type === 'file' && newItem.path === '' && (
                 <div
                   className="flex items-center gap-1 px-2 py-1 bg-accent/50"
                   style={{ paddingLeft: '8px' }}
@@ -394,8 +385,8 @@ export function FileTree({
                   <span className="w-4" />
                   <File className="w-4 h-4 text-muted-foreground" />
                   <Input
-                    value={newItemName}
-                    onChange={(e) => setNewItemName(e.target.value)}
+                    value={newItem.name}
+                    onChange={(e) => setNewItem({ name: e.target.value })}
                     onBlur={handleCreateItem}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleCreateItem()
@@ -403,8 +394,8 @@ export function FileTree({
                     }}
                     className={cn(
                       'h-5 px-1 py-0 text-sm flex-1 rounded-xs border-none focus-visible:ring-1',
-                      newItemName.trim() &&
-                        checkIfPathExists(newItemName.trim()) &&
+                      newItem.name.trim() &&
+                        checkIfPathExists(newItem.name.trim()) &&
                         'border-destructive focus-visible:ring-destructive'
                     )}
                     autoFocus
@@ -426,13 +417,7 @@ export function FileTree({
                   setExpandedFolders={setExpandedFolders}
                   dragState={dragState}
                   setDragState={setDragState}
-                  highlightedFolderPath={highlightedFolderPath}
-                  setHighlightedFolderPath={setHighlightedFolderPath}
                   allNodes={nodes}
-                  newItemType={newItemType}
-                  newItemPath={newItemPath}
-                  newItemName={newItemName}
-                  setNewItemName={setNewItemName}
                   onCreateItem={handleCreateItem}
                   onCancelCreateItem={handleCancelCreateItem}
                   checkIfPathExists={checkIfPathExists}
@@ -474,13 +459,7 @@ interface FileTreeNodeProps {
   setExpandedFolders: React.Dispatch<React.SetStateAction<Set<string>>>
   dragState: DragState | null
   setDragState: React.Dispatch<React.SetStateAction<DragState | null>>
-  highlightedFolderPath: string | null
-  setHighlightedFolderPath: React.Dispatch<React.SetStateAction<string | null>>
   allNodes?: FileNode[]
-  newItemType?: 'file' | 'folder' | null
-  newItemPath?: string
-  newItemName?: string
-  setNewItemName?: (name: string) => void
   onCreateItem?: () => Promise<void>
   onCancelCreateItem?: () => void
   checkIfPathExists?: (path: string) => boolean
@@ -500,19 +479,19 @@ function FileTreeNode({
   setExpandedFolders,
   dragState,
   setDragState,
-  highlightedFolderPath,
-  setHighlightedFolderPath,
   allNodes,
-  newItemType,
-  newItemPath,
-  newItemName,
-  setNewItemName,
   onCreateItem,
   onCancelCreateItem,
   checkIfPathExists,
   onItemClick,
   lastClickedItemPath,
 }: FileTreeNodeProps) {
+  const {
+    newItem,
+    setNewItem,
+    highlightedFolderPath,
+    setHighlightedFolderPath,
+  } = useFileTreeStore()
   const [isHovered, setIsHovered] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isRenaming, setIsRenaming] = useState(false)
@@ -774,17 +753,17 @@ function FileTreeNode({
   }
 
   const shouldShowNewItemInput =
-    newItemType &&
-    newItemPath === node.path &&
+    newItem.type &&
+    newItem.path === node.path &&
     node.type === 'directory' &&
     isExpanded
 
   const getNewItemPath = () => {
-    if (!newItemName?.trim()) return ''
+    if (!newItem.name?.trim()) return ''
 
-    return newItemPath
-      ? `${newItemPath}/${newItemName.trim()}`
-      : newItemName.trim()
+    return newItem.path
+      ? `${newItem.path}/${newItem.name.trim()}`
+      : newItem.name.trim()
   }
 
   const isExistingItemPath =
@@ -883,7 +862,7 @@ function FileTreeNode({
 
             return (
               <>
-                {shouldShowNewItemInput && newItemType === 'folder' && (
+                {shouldShowNewItemInput && newItem.type === 'folder' && (
                   <div
                     className="flex items-center gap-1 px-2 py-1 bg-accent/50"
                     style={{ paddingLeft: `${(level + 1) * 12 + 8}px` }}
@@ -891,8 +870,8 @@ function FileTreeNode({
                     <span className="w-4" />
                     <Folder className="w-4 h-4 text-primary" />
                     <Input
-                      value={newItemName}
-                      onChange={(e) => setNewItemName?.(e.target.value)}
+                      value={newItem.name}
+                      onChange={(e) => setNewItem({ name: e.target.value })}
                       onBlur={() => onCreateItem?.()}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && onCreateItem) onCreateItem()
@@ -923,13 +902,7 @@ function FileTreeNode({
                     setExpandedFolders={setExpandedFolders}
                     dragState={dragState}
                     setDragState={setDragState}
-                    highlightedFolderPath={highlightedFolderPath}
-                    setHighlightedFolderPath={setHighlightedFolderPath}
                     allNodes={allNodes}
-                    newItemType={newItemType}
-                    newItemPath={newItemPath}
-                    newItemName={newItemName}
-                    setNewItemName={setNewItemName}
                     onCreateItem={onCreateItem}
                     onCancelCreateItem={onCancelCreateItem}
                     checkIfPathExists={checkIfPathExists}
@@ -938,7 +911,7 @@ function FileTreeNode({
                   />
                 ))}
 
-                {shouldShowNewItemInput && newItemType === 'file' && (
+                {shouldShowNewItemInput && newItem.type === 'file' && (
                   <div
                     className="flex items-center gap-1 px-2 py-1 bg-accent/50"
                     style={{ paddingLeft: `${(level + 1) * 12 + 8}px` }}
@@ -946,8 +919,8 @@ function FileTreeNode({
                     <span className="w-4" />
                     <File className="w-4 h-4 text-muted-foreground" />
                     <Input
-                      value={newItemName}
-                      onChange={(e) => setNewItemName?.(e.target.value)}
+                      value={newItem.name}
+                      onChange={(e) => setNewItem({ name: e.target.value })}
                       onBlur={() => onCreateItem?.()}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && onCreateItem) onCreateItem()
@@ -978,13 +951,7 @@ function FileTreeNode({
                     setExpandedFolders={setExpandedFolders}
                     dragState={dragState}
                     setDragState={setDragState}
-                    highlightedFolderPath={highlightedFolderPath}
-                    setHighlightedFolderPath={setHighlightedFolderPath}
                     allNodes={allNodes}
-                    newItemType={newItemType}
-                    newItemPath={newItemPath}
-                    newItemName={newItemName}
-                    setNewItemName={setNewItemName}
                     onCreateItem={onCreateItem}
                     onCancelCreateItem={onCancelCreateItem}
                     checkIfPathExists={checkIfPathExists}
