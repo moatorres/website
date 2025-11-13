@@ -31,3 +31,29 @@ export const useFileTreeStore = create<FileTreeState>((set, get) => ({
   setLastClickedItem: (v) => set({ lastClickedItem: v }),
   setHighlightedFolderPath: (v) => set({ highlightedFolderPath: v }),
 }))
+
+// --- DraggableNode --------------------------------------
+
+interface DraggableNode {
+  name: string
+  isDirectory: boolean
+  path: string
+}
+
+interface DraggableStore {
+  name: string
+  path: string
+  active: boolean
+  isDirectory: boolean
+  set: (item: DraggableNode) => void
+  reset: () => void
+}
+
+export const useDraggableNode = create<DraggableStore>((set) => ({
+  name: '',
+  path: '',
+  active: false,
+  isDirectory: false,
+  set: (item) => set({ ...item, active: true }),
+  reset: () => set({ name: '', path: '', isDirectory: false, active: false }),
+}))

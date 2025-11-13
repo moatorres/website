@@ -33,7 +33,7 @@ import type React from 'react'
 import { useCallback, useState } from 'react'
 
 import { useCurrentFile } from '../atoms/current-file'
-import { useFileTreeStore } from '../atoms/file-tree'
+import { useDraggableNode, useFileTreeStore } from '../atoms/file-tree'
 import type { FileNode } from '../services/types'
 import { getWebContainerInstance, readAllFiles } from '../services/webcontainer'
 
@@ -56,12 +56,6 @@ interface FileTreeProps {
   ) => Promise<void>
 }
 
-interface DragState {
-  path: string
-  isDirectory: boolean
-  name: string
-}
-
 export function FileTree({
   nodes,
   onFileSelect,
@@ -79,6 +73,8 @@ export function FileTree({
     setLastClickedItem,
     setHighlightedFolderPath,
   } = useFileTreeStore()
+  const draggable = useDraggableNode()
+
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set(nodes.filter((n) => n.type === 'directory').map((n) => n.path))
   )
@@ -109,8 +105,8 @@ export function FileTree({
     e.preventDefault()
     e.stopPropagation()
 
-    if (dragState && dragState.path.includes('/')) {
-      const hasCollision = nodes.some((n) => n.name === dragState.name)
+    if (draggable.active && draggable.path.includes('/')) {
+      const hasCollision = nodes.some((n) => n.name === draggable.name)
       if (hasCollision) {
         e.dataTransfer.dropEffect = 'none'
         return
@@ -118,7 +114,6 @@ export function FileTree({
     }
 
     e.dataTransfer.dropEffect = 'move'
-    setIsRootDragOver(true)
     setHighlightedFolderPath('')
   }
 
@@ -133,7 +128,6 @@ export function FileTree({
       y <= rect.top ||
       y >= rect.bottom
     ) {
-      setIsRootDragOver(false)
       setHighlightedFolderPath(null)
     }
   }
@@ -141,20 +135,19 @@ export function FileTree({
   const handleRootDrop = async (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setIsRootDragOver(false)
     setHighlightedFolderPath(null)
 
-    if (!onMove || !dragState) return
+    if (!onMove || !draggable.active) return
 
-    const hasCollision = nodes.some((n) => n.name === dragState.name)
+    const hasCollision = nodes.some((n) => n.name === draggable.name)
     if (hasCollision) {
       print.warn('Cannot move to root: item with same name already exists')
       return
     }
 
     try {
-      const sourcePath = dragState.path
-      const isDirectory = dragState.isDirectory
+      const sourcePath = draggable.path
+      const isDirectory = draggable.isDirectory
 
       if (sourcePath.includes('/')) {
         const fileName = sourcePath.split('/').pop()
@@ -207,9 +200,8 @@ export function FileTree({
   }
 
   const handleRootDragEnd = () => {
-    setIsRootDragOver(false)
     setHighlightedFolderPath(null)
-    setDragState(null)
+    draggable.reset()
   }
 
   const handleStartCreateItem = (type: 'file' | 'folder') => {
@@ -316,7 +308,7 @@ export function FileTree({
       </div>
 
       <div
-        className={`transition-colors min-h-[200px] ${isRootDragOver ? 'bg-primary/10' : ''}`}
+        className="transition-colors min-h-[200px]"
         onDragOver={handleRootDragOver}
         onDragLeave={handleRootDragLeave}
         onDrop={handleRootDrop}
@@ -366,8 +358,6 @@ export function FileTree({
                   level={0}
                   expandedFolders={expandedFolders}
                   setExpandedFolders={setExpandedFolders}
-                  dragState={dragState}
-                  setDragState={setDragState}
                   allNodes={nodes}
                   onCreateItem={handleCreateItem}
                   onCancelCreateItem={handleCancelCreateItem}
@@ -415,8 +405,6 @@ export function FileTree({
                   level={0}
                   expandedFolders={expandedFolders}
                   setExpandedFolders={setExpandedFolders}
-                  dragState={dragState}
-                  setDragState={setDragState}
                   allNodes={nodes}
                   onCreateItem={handleCreateItem}
                   onCancelCreateItem={handleCancelCreateItem}
@@ -428,12 +416,6 @@ export function FileTree({
             </>
           )
         })()}
-
-        {isRootDragOver && (
-          <div className="p-4 text-center text-sm text-muted-foreground border-2 border-dashed border-primary rounded m-2">
-            Drop here to move to root folder
-          </div>
-        )}
       </div>
     </div>
   )
@@ -457,8 +439,6 @@ interface FileTreeNodeProps {
   level: number
   expandedFolders: Set<string>
   setExpandedFolders: React.Dispatch<React.SetStateAction<Set<string>>>
-  dragState: DragState | null
-  setDragState: React.Dispatch<React.SetStateAction<DragState | null>>
   allNodes?: FileNode[]
   onCreateItem?: () => Promise<void>
   onCancelCreateItem?: () => void
@@ -477,8 +457,6 @@ function FileTreeNode({
   level,
   expandedFolders,
   setExpandedFolders,
-  dragState,
-  setDragState,
   allNodes,
   onCreateItem,
   onCancelCreateItem,
@@ -496,10 +474,10 @@ function FileTreeNode({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isRenaming, setIsRenaming] = useState(false)
   const [renameValue, setRenameValue] = useState(node.name)
-  const [isDragOver, setIsDragOver] = useState(false)
   const isSelected = selectedFile === node.path
   const isExpanded = expandedFolders.has(node.path)
   const isLastClickedItem = lastClickedItemPath === node.path
+  const draggable = useDraggableNode()
 
   const isHighlighted =
     highlightedFolderPath !== null &&
@@ -621,10 +599,10 @@ function FileTreeNode({
         isDirectory: node.type === 'directory',
       })
     )
-    setDragState({
-      path: node.path,
-      isDirectory: node.type === 'directory',
+    draggable.set({
       name: node.name,
+      isDirectory: node.type === 'directory',
+      path: node.path,
     })
   }
 
@@ -632,7 +610,7 @@ function FileTreeNode({
     e.preventDefault()
     e.stopPropagation()
 
-    if (!dragState) return
+    if (!draggable.active) return
 
     let targetFolder: string
     if (node.type === 'directory') {
@@ -643,30 +621,28 @@ function FileTreeNode({
         pathParts.length > 1 ? pathParts.slice(0, -1).join('/') : ''
     }
 
-    const sourceParent = dragState.path.includes('/')
-      ? dragState.path.substring(0, dragState.path.lastIndexOf('/'))
+    const sourceParent = draggable.path.includes('/')
+      ? draggable.path.substring(0, draggable.path.lastIndexOf('/'))
       : ''
 
     const isSameParent = sourceParent === targetFolder
     const isMovingIntoSelf =
-      dragState.path === targetFolder ||
-      node.path.startsWith(dragState.path + '/')
+      draggable.path === targetFolder ||
+      node.path.startsWith(draggable.path + '/')
 
     const targetChildren =
       node.type === 'directory'
         ? node.children || []
         : getNodesInFolder(targetFolder)
     const hasCollision = targetChildren.some(
-      (child) => child.name === dragState.name
+      (child) => child.name === draggable.name
     )
 
     if (isSameParent || isMovingIntoSelf || hasCollision) {
       e.dataTransfer.dropEffect = 'none'
-      setIsDragOver(false)
       setHighlightedFolderPath(null)
     } else {
       e.dataTransfer.dropEffect = 'move'
-      setIsDragOver(true)
       setHighlightedFolderPath(targetFolder)
     }
   }
@@ -682,29 +658,26 @@ function FileTreeNode({
       y <= rect.top ||
       y >= rect.bottom
     ) {
-      setIsDragOver(false)
       setHighlightedFolderPath(null)
     }
   }
 
   const handleDragEnd = () => {
-    setIsDragOver(false)
     setHighlightedFolderPath(null)
-    setDragState(null)
+    draggable.reset()
   }
 
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setIsDragOver(false)
     setHighlightedFolderPath(null)
 
-    if (!onMove || !dragState) return
+    if (!onMove || !draggable.active) return
 
     try {
-      const sourcePath = dragState.path
-      const isDirectory = dragState.isDirectory
-      const sourceName = dragState.name
+      const sourcePath = draggable.path
+      const isDirectory = draggable.isDirectory
+      const sourceName = draggable.name
 
       let targetFolder: string
 
@@ -773,11 +746,10 @@ function FileTreeNode({
     <div>
       <div
         className={cn(
-          'flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-accent transition-colors group',
+          'flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-accent transition-colors group border-l-2 border-transparent',
           isSelected && 'bg-accent text-accent-foreground',
           isLastClickedItem && 'bg-accent text-accent-foreground',
-          isDragOver && 'border-l-2 border-primary',
-          isHighlighted && 'bg-primary/10'
+          isHighlighted && 'border-primary bg-primary/10'
         )}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
         onClick={handleClick}
@@ -900,8 +872,6 @@ function FileTreeNode({
                     level={level + 1}
                     expandedFolders={expandedFolders}
                     setExpandedFolders={setExpandedFolders}
-                    dragState={dragState}
-                    setDragState={setDragState}
                     allNodes={allNodes}
                     onCreateItem={onCreateItem}
                     onCancelCreateItem={onCancelCreateItem}
@@ -949,8 +919,6 @@ function FileTreeNode({
                     level={level + 1}
                     expandedFolders={expandedFolders}
                     setExpandedFolders={setExpandedFolders}
-                    dragState={dragState}
-                    setDragState={setDragState}
                     allNodes={allNodes}
                     onCreateItem={onCreateItem}
                     onCancelCreateItem={onCancelCreateItem}
