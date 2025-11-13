@@ -1,33 +1,44 @@
-import { atom, useAtomValue, useSetAtom } from 'jotai'
+import { create } from 'zustand'
 
-// --- Files ----------------------------------------------
-
-type CurrentFileAtomValue = {
+type CurrentFile = {
   path: string | null
   content: string
 }
 
-export const currentFileAtom = atom<CurrentFileAtomValue>({
+interface CurrentFileState extends CurrentFile {
+  setPath: (path: string | null) => void
+  setContent: (content: string) => void
+  setCurrentFile: (file: CurrentFile) => void
+  clear: () => void
+
+  /**
+   * Safely synchronizes the editor’s current file content
+   * with an external source of truth (e.g. filesystem watcher or in-memory file map).
+   *
+   * This guard prevents race conditions where:
+   * - A previously opened file’s update event could overwrite the content
+   *   of a newly opened file if the watcher fires mid-transition.
+   * - The editor could display stale content for a file that was deleted or replaced.
+   *
+   * The method only applies updates when:
+   *  - The current file has a valid `path`.
+   *  - That path exists in the provided `files` map.
+   *
+   * Otherwise, it silently skips the sync, keeping the editor state consistent.
+   */
+  sync: (files: Record<string, string>) => void
+}
+
+export const useCurrentFile = create<CurrentFileState>((set, get) => ({
   path: null,
   content: '',
-})
 
-export function useCurrentFile() {
-  const currentFile = useAtomValue(currentFileAtom)
-  const setCurrentFile = useSetAtom(currentFileAtom)
-
-  const setPath = (path: string | null) =>
-    setCurrentFile((state) => ({ ...state, path }))
-  const setContent = (content: string) =>
-    setCurrentFile((state) => ({ ...state, content }))
-  const clear = () => setCurrentFile((state) => ({ path: null, content: '' }))
-
-  return {
-    path: currentFile.path,
-    content: currentFile.content,
-    clear,
-    setPath,
-    setContent,
-    setCurrentFile,
-  } as const
-}
+  setPath: (path) => set((state) => ({ ...state, path })),
+  setContent: (content) => set((state) => ({ ...state, content })),
+  setCurrentFile: (file) => set(file),
+  clear: () => set({ path: null, content: '' }),
+  sync: (files) => {
+    const { path } = get()
+    if (path && files[path]) set({ content: files[path] })
+  },
+}))

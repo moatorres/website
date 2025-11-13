@@ -83,7 +83,7 @@ export default function PlaygroundPage() {
   const [isRunning, setIsRunning] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(true)
   const [showProjectSelector, setShowProjectSelector] = useState(false)
-  const [isPanelVisible, { toggleEditor }] = usePanelVisible()
+  const { isPanelVisible, toggleEditor } = usePanelVisible()
 
   const monacoRef = useRef<Monaco>(null)
   const fileWatcherRef = useRef<(() => void) | null>(null)
@@ -126,23 +126,7 @@ export default function PlaygroundPage() {
 
         setFileTree(tree)
 
-        /**
-         * This conditional check guarantees that file content synchronization is safe
-         * and scoped only to the file currently tracked by the editor.
-         *
-         * It prevents a data leak/overwrite scenario where:
-         *
-         * - A previously opened file’s contents could accidentally overwrite the buffer
-         *   of a newly created or switched file if the watcher fired between transitions.
-         *
-         * - The editor would show stale content from a deleted or replaced file.
-         */
-        currentFile.setCurrentFile((state) => {
-          if (currentFile.path && files[currentFile.path]) {
-            currentFile.setContent(files[currentFile.path])
-          }
-          return state
-        })
+        currentFile.sync(files)
       },
       { ignoreIf: () => isInstalling }
     )
@@ -291,10 +275,10 @@ export default function PlaygroundPage() {
 
       await container.mount(fileTreeStructure)
 
-      currentFile.setCurrentFile(() => ({
+      currentFile.setCurrentFile({
         path: projectToLoad.initialFile,
         content: projectToLoad.files[projectToLoad.initialFile],
-      }))
+      })
     } catch (error) {
       console.error('Error loading project:', error)
       const errorMessage =
@@ -345,7 +329,7 @@ export default function PlaygroundPage() {
   const handleCreateFile = useCallback(
     async (path: string) => {
       await createFile(path)
-      currentFile.setCurrentFile(() => ({ path, content: '' }))
+      currentFile.setCurrentFile({ path, content: '' })
     },
     [createFile, currentFile]
   )

@@ -56,10 +56,13 @@ export function Toolbar({
   onOpenProjectSelector,
 }: ToolbarProps) {
   const [mounted, setMounted] = useState(false)
-  const [
+  const {
     isPanelVisible,
-    { toggleEditor, toggleExplorer, togglePreview, toggleTerminal },
-  ] = usePanelVisible()
+    toggleEditor,
+    toggleExplorer,
+    togglePreview,
+    toggleTerminal,
+  } = usePanelVisible()
 
   useEffect(() => {
     setMounted(true)
