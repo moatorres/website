@@ -1,16 +1,7 @@
 'use client'
 
 import type { Monaco } from '@monaco-editor/react'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  Button,
-  useMobile,
-} from '@shadcn/ui'
+import { Button, useMobile } from '@shadcn/ui'
 import type { FitAddon } from '@xterm/addon-fit'
 import type { Terminal as XTerm } from '@xterm/xterm'
 import { FolderDown, Loader, Loader2 } from 'lucide-react'
@@ -20,8 +11,10 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { toast } from 'sonner'
 
 import { useCurrentFile } from './atoms/current-file'
+import { useEditorTabs } from './atoms/editor-tabs'
 import { usePanelVisible } from './atoms/panels'
 import { CodeEditor } from './components/code-editor'
+import { EditorTabs } from './components/editor-tabs'
 import { FileTree } from './components/file-tree'
 import { MobileView } from './components/mobile-view'
 import { Preview } from './components/preview'
@@ -84,6 +77,7 @@ export default function PlaygroundPage() {
   const [isFullscreen, setIsFullscreen] = useState(true)
   const [showProjectSelector, setShowProjectSelector] = useState(false)
   const { isPanelVisible, toggleEditor } = usePanelVisible()
+  const { openTab, closeTab } = useEditorTabs()
 
   const monacoRef = useRef<Monaco>(null)
   const fileWatcherRef = useRef<(() => void) | null>(null)
@@ -279,6 +273,7 @@ export default function PlaygroundPage() {
         path: projectToLoad.initialFile,
         content: projectToLoad.files[projectToLoad.initialFile],
       })
+      openTab(projectToLoad.initialFile)
     } catch (error) {
       console.error('Error loading project:', error)
       const errorMessage =
@@ -290,6 +285,7 @@ export default function PlaygroundPage() {
   }
 
   const handleFileSelect = (path: string) => {
+    openTab(path)
     currentFile.setPath(path)
     if (selectedProject) {
       currentFile.setContent(selectedProject.files?.[path] ?? '')
@@ -330,6 +326,7 @@ export default function PlaygroundPage() {
     async (path: string) => {
       await createFile(path)
       currentFile.setCurrentFile({ path, content: '' })
+      openTab(path)
     },
     [createFile, currentFile]
   )
@@ -350,6 +347,7 @@ export default function PlaygroundPage() {
         currentFile.path?.startsWith(path + '/')
       ) {
         currentFile.clear()
+        closeTab(path)
       }
     },
     [deleteItem, currentFile]
@@ -593,37 +591,7 @@ export default function PlaygroundPage() {
                     <div className="h-full flex flex-col">
                       {currentFile.path ? (
                         <>
-                          <div className="h-10 border-b border-border/50 flex items-center px-4 shrink-0">
-                            <Breadcrumb>
-                              <BreadcrumbList>
-                                {currentFile.path
-                                  .split('/')
-                                  .map((segment, index, arr) => {
-                                    const isLast = index === arr.length - 1
-                                    const path = arr
-                                      .slice(0, index + 1)
-                                      .join('/')
-
-                                    return (
-                                      <BreadcrumbItem key={path}>
-                                        {isLast ? (
-                                          <BreadcrumbPage className="text-sm font-medium">
-                                            {segment}
-                                          </BreadcrumbPage>
-                                        ) : (
-                                          <>
-                                            <BreadcrumbLink className="text-sm cursor-pointer hover:text-foreground transition-colors">
-                                              {segment}
-                                            </BreadcrumbLink>
-                                            <BreadcrumbSeparator />
-                                          </>
-                                        )}
-                                      </BreadcrumbItem>
-                                    )
-                                  })}
-                              </BreadcrumbList>
-                            </Breadcrumb>
-                          </div>
+                          <EditorTabs files={selectedProject?.files} />
                           <div className="flex-1">
                             <CodeEditor
                               value={currentFile.content}
