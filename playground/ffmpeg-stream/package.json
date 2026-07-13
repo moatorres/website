@@ -3,22 +3,17 @@
   "version": "1.0.0",
   "description": "Effect Stream with FFmpeg",
   "type": "module",
-  "metadata": {
-    "preview": false,
-    "initialFile": "./src/main.ts",
-    "displayName": "Effect Stream FFmpeg"
-  },
   "scripts": {
     "dev": "pnpm exec tsx ./src/main.ts"
   },
   "dependencies": {
-    "@effect/platform": "^0.92.1",
-    "@effect/platform-node": "^0.98.4",
-    "effect": "^3.18.4"
+    "@effect/platform": "^0.93.0",
+    "@effect/platform-node": "^0.100.0",
+    "effect": "^3.19.2"
   },
   "devDependencies": {
-    "@types/node": "^24.9.2",
-    "tsx": "^4.20.6",
+    "@types/node": "^24.13.3",
+    "tsx": "^4.23.0",
     "typescript": "^5.9.3"
   }
 }

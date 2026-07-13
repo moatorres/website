@@ -9,6 +9,7 @@ import {
   FileText,
   X,
 } from 'lucide-react'
+
 import { useEditorTabs } from '../atoms/editor-tabs'
 
 interface EditorTabsProps {
@@ -33,7 +34,7 @@ export function EditorTabs({ files }: EditorTabsProps) {
       case 'css':
         return <FileSliders className="w-3.5 h-3.5 stroke-indigo-300" />
       case 'json':
-        return <FileBraces className="w-3.5 h-3.5 stroke-amber-300" />
+        return <FileBraces className="w-3.5 h-3.5 stroke-amber-300/70" />
       case 'md':
         return <FileText className="w-3.5 h-3.5 stroke-green-300" />
       default:
@@ -52,7 +53,7 @@ export function EditorTabs({ files }: EditorTabsProps) {
           const isActive = path === activeTab
 
           // TODO: Track actual modifications
-          const isModified = files && files[path] !== undefined
+          const isModified = files && files[path] === undefined
 
           return (
             <div

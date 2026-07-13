@@ -1,0 +1,10 @@
+{
+  "name": "React Todo App (TypeScript)",
+  "main": "./src/App.tsx",
+  "prepare": "pnpm install",
+  "run": {
+    "command": "pnpm dev",
+    "label": "vite dev server",
+    "server": true
+  }
+}

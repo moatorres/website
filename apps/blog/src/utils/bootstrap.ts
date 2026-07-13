@@ -10,9 +10,8 @@ import { ISizeCalculationResult } from 'image-size/types/interface'
 import { ArticleMetadata } from '@/lib/articles'
 import { PhotoMetadata } from '@/lib/photos'
 
-import { loadProjectFromDir } from '../app/(public)/editor/services/project-loader'
-
 import { getConfig } from './config'
+import { loadPlaygroundProjects } from './playground'
 import { extractSnippetMetadata } from './snippets'
 
 const config = getConfig()
@@ -96,23 +95,6 @@ export function extractPhotoMetadata(
     width: size.width,
     height: size.height,
   }
-}
-
-export async function extractPlaygroundProjects() {
-  const basePath = resolve(process.cwd(), 'playground')
-  const entries = await readdir(basePath, { withFileTypes: true })
-
-  const projects = []
-
-  for (const entry of entries) {
-    if (entry.isDirectory()) {
-      const projectPath = resolve(basePath, entry.name)
-      const loaded = await loadProjectFromDir(projectPath)
-      projects.push(loaded)
-    }
-  }
-
-  return projects
 }
 
 function findOrExit(path: string, label = 'File') {
@@ -209,7 +191,9 @@ async function main() {
 
   await write('snippets.json', snippets)
 
-  const projects = await extractPlaygroundProjects()
+  const projects = await loadPlaygroundProjects(
+    resolve(process.cwd(), 'playground')
+  )
 
   await write('projects.json', projects)
 

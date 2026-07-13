@@ -1,4 +1,25 @@
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  '@vercel/speed-insights': true
+  'esbuild': true
+  'less': true
+  'msgpackr-extract': true
+  'nx': true
+  'sharp': true
+  'unrs-resolver': true
+
+catalog:
+  'next': '>=16.2.10'
+  'react': '>=19.2.7'
+  'react-dom': '>=19.2.7'
+
+overrides:
+  'next': 'catalog:'
+  'react': 'catalog:'
+  'react-dom': 'catalog:'
+
 packages:
   - 'apps/*'
   - 'libs/*'
-  - '!playground/*'
+  - 'playground/*'

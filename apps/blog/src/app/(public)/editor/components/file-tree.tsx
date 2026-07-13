@@ -17,6 +17,7 @@ import {
   cn,
   Input,
 } from '@shadcn/ui'
+import { Effect } from 'effect'
 import {
   AlertCircleIcon,
   ChevronDown,
@@ -34,14 +35,20 @@ import { useCallback, useState } from 'react'
 
 import { useCurrentFile } from '../atoms/current-file'
 import { useDraggableNode, useFileTreeStore } from '../atoms/file-tree'
+import { useProjectStore } from '../atoms/project-store.js'
+import { wcRuntime } from '../services/runtime'
 import type { FileNode } from '../services/types'
-import { getWebContainerInstance, readAllFiles } from '../services/webcontainer'
+import { WebContainerService } from '../services/WebContainerService'
+
+/** run a WebContainerService operation against the active workspace */
+const withService = <A,>(
+  f: (svc: WebContainerService) => Effect.Effect<A>
+): Promise<A> => wcRuntime.runPromise(Effect.flatMap(WebContainerService, f))
 
 interface FileTreeProps {
-  nodes: FileNode[]
   onFileSelect: (path: string) => void
   selectedFile: string | null
-  onCreateFile?: (path: string) => Promise<void>
+  onCreateFile?: (path: string) => Promise<void> | void
   onCreateFolder?: (path: string) => Promise<void>
   onDelete?: (path: string, isDirectory: boolean) => Promise<void>
   onRename?: (
@@ -57,7 +64,6 @@ interface FileTreeProps {
 }
 
 export function FileTree({
-  nodes,
   onFileSelect,
   selectedFile,
   onCreateFile,
@@ -66,20 +72,20 @@ export function FileTree({
   onRename,
   onMove,
 }: FileTreeProps) {
-  const {
-    newItem,
-    setNewItem,
-    lastClickedItem,
-    setLastClickedItem,
-    setHighlightedFolderPath,
-  } = useFileTreeStore()
-  const draggable = useDraggableNode()
+  // narrow selectors — a whole-store subscription here re-renders the entire
+  // tree on every dragover highlight change, keystroke, and watcher sync
+  const newItem = useFileTreeStore((s) => s.newItem)
+  const setNewItem = useFileTreeStore((s) => s.setNewItem)
+  const lastClickedItem = useFileTreeStore((s) => s.lastClickedItem)
+  const setLastClickedItem = useFileTreeStore((s) => s.setLastClickedItem)
+  const setHighlightedFolderPath = useFileTreeStore(
+    (s) => s.setHighlightedFolderPath
+  )
+  const nodes = useProjectStore((s) => s.fileTree)
 
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set(nodes.filter((n) => n.type === 'directory').map((n) => n.path))
   )
-
-  const currentFile = useCurrentFile()
 
   const checkIfPathExists = useCallback(
     (path: string): boolean => {
@@ -105,6 +111,7 @@ export function FileTree({
     e.preventDefault()
     e.stopPropagation()
 
+    const draggable = useDraggableNode.getState()
     if (draggable.active && draggable.path.includes('/')) {
       const hasCollision = nodes.some((n) => n.name === draggable.name)
       if (hasCollision) {
@@ -137,6 +144,7 @@ export function FileTree({
     e.stopPropagation()
     setHighlightedFolderPath(null)
 
+    const draggable = useDraggableNode.getState()
     if (!onMove || !draggable.active) return
 
     const hasCollision = nodes.some((n) => n.name === draggable.name)
@@ -156,37 +164,32 @@ export function FileTree({
         const targetPath = ''
 
         try {
-          const webcontainer = await getWebContainerInstance()
-
-          if (!webcontainer) return
-
           if (isDirectory) {
-            const files = await readAllFiles(webcontainer)
-            const filesToMove = Object.keys(files.files).filter((f) =>
+            const { files } = await withService((svc) => svc.readAllFiles())
+            const filesToMove = Object.keys(files).filter((f) =>
               f.startsWith(sourcePath + '/')
             )
 
-            await webcontainer.fs.mkdir(fileName, { recursive: true })
+            await withService((svc) => svc.mkdir(fileName, { recursive: true }))
 
             for (const file of filesToMove) {
               const relPath = file.substring(sourcePath.length + 1)
               const newFilePath = `${fileName}/${relPath}`
-              const content = await webcontainer.fs.readFile(file, 'utf-8')
+              const content = await withService((svc) => svc.readFile(file))
               const newFileDir = newFilePath.split('/').slice(0, -1).join('/')
               if (newFileDir) {
-                await webcontainer.fs.mkdir(newFileDir, { recursive: true })
+                await withService((svc) =>
+                  svc.mkdir(newFileDir, { recursive: true })
+                )
               }
-              await webcontainer.fs.writeFile(newFilePath, content)
+              await withService((svc) => svc.writeFile(newFilePath, content))
             }
 
-            await webcontainer.fs.rm(sourcePath, {
-              recursive: true,
-              force: true,
-            })
+            await withService((svc) => svc.removeFile(sourcePath))
           } else {
-            const content = await webcontainer.fs.readFile(sourcePath, 'utf-8')
-            await webcontainer.fs.writeFile(fileName, content)
-            await webcontainer.fs.rm(sourcePath)
+            const content = await withService((svc) => svc.readFile(sourcePath))
+            await withService((svc) => svc.writeFile(fileName, content))
+            await withService((svc) => svc.removeFile(sourcePath))
           }
 
           await onMove(sourcePath, targetPath, isDirectory)
@@ -201,7 +204,7 @@ export function FileTree({
 
   const handleRootDragEnd = () => {
     setHighlightedFolderPath(null)
-    draggable.reset()
+    useDraggableNode.getState().reset()
   }
 
   const handleStartCreateItem = (type: 'file' | 'folder') => {
@@ -233,10 +236,13 @@ export function FileTree({
             : ''
         }
       }
-    } else if (currentFile.path) {
-      targetDir = currentFile.path.includes('/')
-        ? currentFile.path.split('/').slice(0, -1).join('/')
-        : ''
+    } else {
+      const currentFilePath = useCurrentFile.getState().path
+      if (currentFilePath) {
+        targetDir = currentFilePath.includes('/')
+          ? currentFilePath.split('/').slice(0, -1).join('/')
+          : ''
+      }
     }
 
     setNewItem({ name: '', type, path: targetDir })
@@ -464,12 +470,11 @@ function FileTreeNode({
   onItemClick,
   lastClickedItemPath,
 }: FileTreeNodeProps) {
-  const {
-    newItem,
-    setNewItem,
-    highlightedFolderPath,
-    setHighlightedFolderPath,
-  } = useFileTreeStore()
+  const newItem = useFileTreeStore((s) => s.newItem)
+  const setNewItem = useFileTreeStore((s) => s.setNewItem)
+  const setHighlightedFolderPath = useFileTreeStore(
+    (s) => s.setHighlightedFolderPath
+  )
   const [isHovered, setIsHovered] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isRenaming, setIsRenaming] = useState(false)
@@ -477,14 +482,15 @@ function FileTreeNode({
   const isSelected = selectedFile === node.path
   const isExpanded = expandedFolders.has(node.path)
   const isLastClickedItem = lastClickedItemPath === node.path
-  const draggable = useDraggableNode()
 
-  const isHighlighted =
-    highlightedFolderPath !== null &&
-    (node.path === highlightedFolderPath ||
-      (node.path.startsWith(highlightedFolderPath + '/') &&
-        highlightedFolderPath !== '') ||
-      (highlightedFolderPath === '' && !node.path.includes('/')))
+  // derive the boolean inside the selector so drag-over highlight changes
+  // only re-render the nodes whose highlight actually flips, not every node
+  const isHighlighted = useFileTreeStore((s) => {
+    const highlighted = s.highlightedFolderPath
+    if (highlighted === null) return false
+    if (highlighted === '') return !node.path.includes('/')
+    return node.path === highlighted || node.path.startsWith(`${highlighted}/`)
+  })
 
   const checkRenameConflict = (): boolean => {
     if (!renameValue.trim() || renameValue === node.name) return false
@@ -599,7 +605,7 @@ function FileTreeNode({
         isDirectory: node.type === 'directory',
       })
     )
-    draggable.set({
+    useDraggableNode.getState().set({
       name: node.name,
       isDirectory: node.type === 'directory',
       path: node.path,
@@ -610,6 +616,7 @@ function FileTreeNode({
     e.preventDefault()
     e.stopPropagation()
 
+    const draggable = useDraggableNode.getState()
     if (!draggable.active) return
 
     let targetFolder: string
@@ -664,7 +671,7 @@ function FileTreeNode({
 
   const handleDragEnd = () => {
     setHighlightedFolderPath(null)
-    draggable.reset()
+    useDraggableNode.getState().reset()
   }
 
   const handleDrop = async (e: React.DragEvent) => {
@@ -672,6 +679,7 @@ function FileTreeNode({
     e.stopPropagation()
     setHighlightedFolderPath(null)
 
+    const draggable = useDraggableNode.getState()
     if (!onMove || !draggable.active) return
 
     try {

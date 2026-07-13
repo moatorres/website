@@ -20,7 +20,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "react/experimental"],
     "outDir": "dist",
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"

@@ -1,0 +1,10 @@
+{
+  "name": "Vanilla JavaScript",
+  "main": "./src/main.js",
+  "prepare": "pnpm install",
+  "run": {
+    "command": "pnpm dev",
+    "label": "vite dev server",
+    "server": true
+  }
+}

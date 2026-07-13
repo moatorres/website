@@ -7,17 +7,16 @@ import { useEffect, useRef } from 'react'
 
 import '@xterm/xterm/css/xterm.css'
 
+import { useWebContainer } from '../contexts/webcontainer'
 import { xtermDarkTheme, xtermLightTheme } from '../services/themes'
 
-interface TerminalProps {
-  onReady: (terminal: XTerm, fitAddon: FitAddon) => void
-}
-
-export function Terminal({ onReady }: TerminalProps) {
+export function Terminal() {
   const terminalRef = useRef<HTMLDivElement>(null)
   const xtermRef = useRef<XTerm | null>(null)
   const fitAddonRef = useRef<FitAddon | null>(null)
-  const onReadyCalledRef = useRef(false)
+
+  const { attachTerminal } = useWebContainer()
+
   const { resolvedTheme } = useTheme()
 
   useEffect(() => {
@@ -44,32 +43,16 @@ export function Terminal({ onReady }: TerminalProps) {
       })
 
       const fitAddon = new FitAddon()
-      xterm.loadAddon(fitAddon)
 
+      xterm.loadAddon(fitAddon)
       xterm.open(terminalRef.current)
 
-      requestAnimationFrame(() => {
-        try {
-          fitAddon.fit()
-        } catch (error) {
-          console.error('Error fitting terminal:', error)
-          setTimeout(() => {
-            try {
-              fitAddon.fit()
-            } catch (retryError) {
-              console.error('Error fitting terminal on retry:', retryError)
-            }
-          }, 100)
-        }
-      })
+      requestAnimationFrame(() => fitAddon.fit())
 
       xtermRef.current = xterm
       fitAddonRef.current = fitAddon
 
-      if (!onReadyCalledRef.current) {
-        onReadyCalledRef.current = true
-        onReady(xterm, fitAddon)
-      }
+      void attachTerminal(xterm, fitAddon)
     }
 
     const timeoutId = setTimeout(initTerminal, 50)
@@ -106,6 +89,7 @@ export function Terminal({ onReady }: TerminalProps) {
         xtermRef.current = null
       }
     }
+
     // Empty dependency array ensures terminal will only init once - DO NOT CHANGE THIS
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

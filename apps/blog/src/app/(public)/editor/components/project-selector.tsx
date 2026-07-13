@@ -11,7 +11,7 @@ import {
 import { ChevronDown, FolderOpen, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
-import type { Project } from '../services/types'
+import { type Project, projectMeta } from '../services/types'
 
 interface ProjectSelectorProps {
   projects: Project[]
@@ -28,11 +28,13 @@ export function ProjectSelector({
     if (!searchQuery.trim()) return projects
 
     const query = searchQuery.toLowerCase()
-    return projects.filter(
-      (project) =>
-        project.name.toLowerCase().includes(query) ||
-        project.description.toLowerCase().includes(query)
-    )
+    return projects.filter((project) => {
+      const meta = projectMeta(project)
+      return (
+        meta.name.toLowerCase().includes(query) ||
+        meta.description.toLowerCase().includes(query)
+      )
+    })
   }, [projects, searchQuery])
 
   return (
@@ -89,11 +91,11 @@ export function ProjectSelector({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
-                      {project.name}
+                      {projectMeta(project).name}
                     </h3>
                   </div>
                   <p className="text-sm text-muted-foreground line-clamp-1">
-                    {project.description}
+                    {projectMeta(project).description}
                   </p>
                 </div>
                 <div className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -179,7 +181,9 @@ export function ProjectSelectorDropdown({
               disabled={project.id === currentProjectId}
             >
               <FolderOpen className="w-4 h-4" />
-              <span className="flex-1 truncate">{project.name}</span>
+              <span className="flex-1 truncate">
+                {projectMeta(project).name}
+              </span>
               {project.id === currentProjectId && (
                 <span className="text-xs text-muted-foreground">✓</span>
               )}

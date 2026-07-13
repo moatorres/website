@@ -5,6 +5,7 @@ import { useTheme } from 'next-themes'
 import { useCallback, useEffect, useRef } from 'react'
 
 import { useCurrentFile } from '../atoms/current-file'
+import { setupAutoImports, syncProjectModels } from '../services/auto-imports'
 import { setupWorkspaceFormatters } from '../services/formatters'
 import { monacoThemeDark, monacoThemeLight } from '../services/themes'
 
@@ -33,6 +34,11 @@ export function CodeEditor({
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const currentFile = useCurrentFile()
 
+  const handleEditorWillMount = (monaco: Monaco) => {
+    // must run before the TS worker is created so customWorkerPath applies
+    setupAutoImports(monaco)
+  }
+
   const handleEditorDidMount: OnMount = async (editor, monaco) => {
     editorRef.current = editor
     monacoRef.current = monaco
@@ -44,8 +50,14 @@ export function CodeEditor({
 
     monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
 
+    // semantic validation starts suppressed — types aren't loaded yet, so
+    // every import would squiggle; useTypeLoader enables it once types settle
+    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: true,
+      noSyntaxValidation: false,
+    })
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-      noSemanticValidation: false,
+      noSemanticValidation: true,
       noSyntaxValidation: false,
     })
 
@@ -132,20 +144,8 @@ export function CodeEditor({
         },
       })
 
-      // Setup imports between project files
-      for (const [path, content] of Object.entries(files)) {
-        if (!/\.(ts|tsx|js|jsx|json)$/.test(path)) continue
-
-        const virtualPath = `file:///${path}`
-        monaco.languages.typescript.typescriptDefaults.addExtraLib(
-          content,
-          virtualPath
-        )
-        monaco.languages.typescript.javascriptDefaults.addExtraLib(
-          content,
-          virtualPath
-        )
-      }
+      // Mirror project files into models for cross-file IntelliSense
+      syncProjectModels(monaco, files, filePath)
     }
   }
 
@@ -156,6 +156,13 @@ export function CodeEditor({
       )
     }
   }, [resolvedTheme])
+
+  // keep the mirrored models in sync as files change (watcher, terminal, saves)
+  useEffect(() => {
+    if (monacoRef.current && files) {
+      syncProjectModels(monacoRef.current, files, filePath)
+    }
+  }, [files, filePath])
 
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
@@ -191,6 +198,7 @@ export function CodeEditor({
         path={filePath}
         language={language}
         onChange={handleEditorChange}
+        beforeMount={handleEditorWillMount}
         onMount={handleEditorDidMount}
         theme={
           resolvedTheme === 'dark' ? 'monaco-theme-dark' : 'monaco-theme-light'

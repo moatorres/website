@@ -31,8 +31,8 @@ const links: LinkItem[] = [
     fontMedium: true,
   },
   {
-    label: 'Codyslexia',
-    url: 'https://github.com/codyslexia',
+    label: 'EasyMate AI',
+    url: `https://easymate.ai/?utm_source=${encodeURIComponent('moatorres.co')}`,
     prefix: 'Core team member of',
     icon: 'external',
     fontMedium: true,

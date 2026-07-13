@@ -12,19 +12,15 @@ interface CurrentFileState extends CurrentFile {
   clear: () => void
 
   /**
-   * Safely synchronizes the editor’s current file content
-   * with an external source of truth (e.g. filesystem watcher or in-memory file map).
+   * Reconciles the current file with an external snapshot (filesystem
+   * watcher or in-memory file map).
    *
-   * This guard prevents race conditions where:
-   * - A previously opened file’s update event could overwrite the content
-   *   of a newly opened file if the watcher fires mid-transition.
-   * - The editor could display stale content for a file that was deleted or replaced.
-   *
-   * The method only applies updates when:
-   *  - The current file has a valid `path`.
-   *  - That path exists in the provided `files` map.
-   *
-   * Otherwise, it silently skips the sync, keeping the editor state consistent.
+   * The open editor is the source of truth for the current file: watcher
+   * snapshots lag behind in-flight edits (write debounce + FS re-read), so
+   * applying them here would reset the editor mid-typing. External content
+   * is only adopted when nothing has been loaded yet (e.g. a file created
+   * in the terminal and opened before its content was read) — navigation
+   * flows set content explicitly via `setCurrentFile`.
    */
   sync: (files: Record<string, string>) => void
 }
@@ -38,7 +34,9 @@ export const useCurrentFile = create<CurrentFileState>((set, get) => ({
   setCurrentFile: (file) => set(file),
   clear: () => set({ path: null, content: '' }),
   sync: (files) => {
-    const { path } = get()
-    if (path && files[path]) set({ content: files[path] })
+    const { path, content } = get()
+    if (path && files[path] !== undefined && content === '') {
+      set({ content: files[path] })
+    }
   },
 }))

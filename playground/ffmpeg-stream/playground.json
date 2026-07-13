@@ -1,0 +1,10 @@
+{
+  "name": "Effect Stream FFmpeg",
+  "main": "./src/main.ts",
+  "prepare": "pnpm install",
+  "run": {
+    "command": "pnpm dev",
+    "label": "tsx src/main.ts",
+    "server": false
+  }
+}

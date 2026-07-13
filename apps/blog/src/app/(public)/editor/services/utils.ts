@@ -6,6 +6,20 @@ import { FileNode } from './types'
 
 const STORAGE_PREFIX = 'webcontainer-project-'
 
+/**
+ * Truncates the start of a string if its length exceeds maxLen.
+ * @param {string} str - The original string (path).
+ * @param {number} maxLen - The maximum allowed length before truncation.
+ * @returns {string} The truncated or original string.
+ */
+export const truncateFromStart = (str: string, maxLen = 25): string => {
+  if (str.length > maxLen) {
+    // Slice from the end, keeping only maxLen characters, and prepend "..."
+    return '...' + str.slice(-maxLen)
+  }
+  return str
+}
+
 export const getLanguageFromPath = (path: string): string => {
   const ext = path.split('.').pop()?.toLowerCase()
   const languageMap: Record<string, string> = {

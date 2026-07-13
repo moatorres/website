@@ -1,0 +1,10 @@
+{
+  "name": "Node.js Express API",
+  "main": "./src/server.js",
+  "prepare": "pnpm install",
+  "run": {
+    "command": "pnpm dev",
+    "label": "express (node --watch)",
+    "server": true
+  }
+}

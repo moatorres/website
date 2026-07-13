@@ -20,6 +20,8 @@ import {
   Play,
   RotateCcw,
   Save,
+  Share2,
+  Square,
   TerminalIcon,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -38,7 +40,16 @@ interface ToolbarProps {
   onToggleFullscreen?: () => void
   isFullscreen: boolean
   onRunCommand?: () => void
+  /** short description of what Run executes, from project metadata */
+  runLabel?: string
+  onStopCommand?: () => void
+  onShare?: () => void
   isRunning: boolean
+  /** interrupt sent, waiting for the server process to actually exit */
+  isStopping?: boolean
+  /** false while no shell exists (booting / installing) — Run waits for it */
+  isShellReady?: boolean
+  isServerRunning?: boolean
   onOpenProjectSelector?: () => void
 }
 
@@ -52,7 +63,13 @@ export function Toolbar({
   isFullscreen = true,
   onToggleFullscreen,
   onRunCommand,
+  runLabel,
+  onStopCommand,
+  onShare,
   isRunning = false,
+  isStopping = false,
+  isShellReady = true,
+  isServerRunning = false,
   onOpenProjectSelector,
 }: ToolbarProps) {
   const [mounted, setMounted] = useState(false)
@@ -103,26 +120,50 @@ export function Toolbar({
       {/* Action buttons grouped */}
       <TooltipProvider>
         <div className="flex items-center gap-1">
-          {/* Run button */}
+          {/* Run / Stop button */}
           {onRunCommand && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={onRunCommand}
-                  disabled={isRunning}
-                  className="h-7 px-2 gap-2"
-                >
-                  {isRunning ? (
-                    <div className="animate-spin h-3 w-3 border-2 border-current border-t-transparent rounded-full" />
-                  ) : (
-                    <Play className="w-3 h-3" />
-                  )}
-                  <span className="hidden sm:inline">Run</span>
-                </Button>
+                {isServerRunning ? (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={onStopCommand}
+                    className="h-7 px-2 gap-2"
+                  >
+                    <Square className="w-3 h-3" />
+                    <span className="hidden sm:inline">Stop</span>
+                  </Button>
+                ) : (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={onRunCommand}
+                    disabled={
+                      isRunning || !isShellReady || isStopping || isInstalling
+                    }
+                    className="h-7 px-2 gap-2"
+                  >
+                    {isRunning ? (
+                      <div className="animate-spin h-3 w-3 border-2 border-current border-t-transparent rounded-full" />
+                    ) : (
+                      <Play className="w-3 h-3" />
+                    )}
+                    <span className="hidden sm:inline">Run</span>
+                  </Button>
+                )}
               </TooltipTrigger>
-              <TooltipContent>Run dev server (npm run dev)</TooltipContent>
+              <TooltipContent>
+                {isServerRunning
+                  ? 'Stop dev server'
+                  : isStopping
+                    ? 'Server is stopping...'
+                    : isInstalling
+                      ? 'Installing dependencies...'
+                      : isShellReady
+                        ? `Run ${runLabel ?? 'project'}`
+                        : 'Terminal is initializing...'}
+              </TooltipContent>
             </Tooltip>
           )}
 
@@ -284,6 +325,23 @@ export function Toolbar({
               </TooltipTrigger>
               <TooltipContent>Copy All Files</TooltipContent>
             </Tooltip>
+
+            {/* Copy share link */}
+            {onShare && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onShare}
+                    className="h-7 px-2 hover:bg-muted"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Copy Share Link</TooltipContent>
+              </Tooltip>
+            )}
           </div>
 
           {/* Install button if available */}

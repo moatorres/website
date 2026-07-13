@@ -3,13 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Simple REST API with Express",
-  "metadata": {
-    "preview": true,
-    "initialFile": "./src/server.js",
-    "displayName": "Node.js Express API"
-  },
   "scripts": {
-    "dev": "nodemon src/server.js"
+    "dev": "node --watch src/server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -18,7 +13,6 @@
   "devDependencies": {
     "@types/express": "^5.0.5",
     "@types/morgan": "^1.9.10",
-    "@types/node": "^24.10.0",
-    "nodemon": "^3.1.11"
+    "@types/node": "^24.13.3"
   }
 }

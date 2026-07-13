@@ -2,38 +2,52 @@
 
 import type { Monaco } from '@monaco-editor/react'
 import { Button, useMobile } from '@shadcn/ui'
-import type { FitAddon } from '@xterm/addon-fit'
-import type { Terminal as XTerm } from '@xterm/xterm'
-import { FolderDown, Loader, Loader2 } from 'lucide-react'
+import {
+  ChevronsDown,
+  ChevronsUp,
+  FolderDown,
+  Loader,
+  Loader2,
+} from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import {
+  type ImperativePanelHandle,
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+} from 'react-resizable-panels'
 import { toast } from 'sonner'
 
 import { useCurrentFile } from './atoms/current-file'
 import { useEditorTabs } from './atoms/editor-tabs'
 import { usePanelVisible } from './atoms/panels'
+import { useProjectStore } from './atoms/project-store.js'
+import { useStatusBar } from './atoms/status'
 import { CodeEditor } from './components/code-editor'
 import { EditorTabs } from './components/editor-tabs'
 import { FileTree } from './components/file-tree'
 import { MobileView } from './components/mobile-view'
 import { Preview } from './components/preview'
 import { ProjectSelector } from './components/project-selector'
+import { StatusBar } from './components/status-bar'
 import { Toolbar } from './components/toolbar'
-import { useWebContainer } from './contexts/webcontainer-context'
+import { useWebContainer } from './contexts/webcontainer'
 import { useTypeLoader } from './hooks/use-type-loader'
 import { exampleProjects } from './services/projects'
-import type { FileNode, Project } from './services/types'
+import { decodeShareCode, encodeShareCode } from './services/share'
+import { type Project, projectMeta } from './services/types'
 import {
-  buildFileTree,
   clearFromLocalStorage,
   copyProjectToClipboard,
   exportAsZip,
   getLanguageFromPath,
-  loadFromLocalStorage,
   saveToLocalStorage,
 } from './services/utils'
-import { convertFilesToFileTree } from './services/webcontainer'
+
+// a dev server that crashes on boot exits without ever firing server-ready —
+// release the "Starting server..." spinner if nothing shows up in time
+const SERVER_START_TIMEOUT_MS = 20_000
 
 const Terminal = dynamic(
   () =>
@@ -51,88 +65,64 @@ const Terminal = dynamic(
 
 export default function PlaygroundPage() {
   const {
-    webcontainer,
-    previewUrl,
-    setPreviewUrl,
-    isInstalling,
-    initializeWebContainer,
-    initializeTerminal,
-    writeFile,
     createFile,
     createFolder,
     deleteItem,
-    renameItem,
+    isInstalling,
+    isShellReady,
+    isStopping,
     moveItem,
-    readFiles,
-    setupFileWatcher,
+    prepareProject,
+    previewUrl,
+    renameItem,
     runCommand,
+    setPreviewUrl,
+    stopCommand,
+    setupFileWatcher,
+    webcontainer,
+    writeFile,
   } = useWebContainer()
 
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-  const [fileTree, setFileTree] = useState<FileNode[]>([])
+  const {
+    deselect,
+    error,
+    isLoading,
+    playgroundConfig,
+    select: setSelectedProject,
+    selectedProject,
+    syncFiles,
+    updateFile,
+  } = useProjectStore()
+
+  // run/prepare/name live in the workspace manifest, parsed once by the store
+  const runConfig = playgroundConfig?.run
+
   const currentFile = useCurrentFile()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [isRunning, setIsRunning] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(true)
+  const [isTerminalMaximized, setIsTerminalMaximized] = useState(false)
   const [showProjectSelector, setShowProjectSelector] = useState(false)
+  const terminalPanelRef = useRef<ImperativePanelHandle>(null)
+  const restoreTerminalSize = useRef(30)
+  const publishStatus = useStatusBar((s) => s.publish)
+  const clearStatus = useStatusBar((s) => s.clear)
   const { isPanelVisible, toggleEditor } = usePanelVisible()
   const { openTab, closeTab } = useEditorTabs()
 
-  const monacoRef = useRef<Monaco>(null)
-  const fileWatcherRef = useRef<(() => void) | null>(null)
+  const [monaco, setMonaco] = useState<Monaco | null>(null)
 
   const isMobile = useMobile()
 
-  useTypeLoader(monacoRef.current, webcontainer, isInstalling)
-
-  const syncFilesFromWebContainer = useCallback(async () => {
-    if (!webcontainer || !selectedProject) return
-    try {
-      const { files, directories } = await readFiles()
-      setSelectedProject((prev) => {
-        if (!prev) return prev
-        return { ...prev, files }
-      })
-
-      const tree = buildFileTree(files, directories)
-      setFileTree(tree)
-
-      if (currentFile.path && files[currentFile.path]) {
-        currentFile.setContent(files[currentFile.path])
-      }
-    } catch (error) {
-      console.error('Error syncing files:', error)
-    }
-  }, [selectedProject, currentFile, webcontainer, readFiles])
-
-  const setupFileWatching = useCallback(() => {
-    if (!webcontainer) return
-
-    fileWatcherRef.current = setupFileWatcher(
-      ({ files, directories }) => {
-        setSelectedProject((prev) => {
-          if (!prev) return prev
-          return { ...prev, files }
-        })
-
-        const tree = buildFileTree(files, directories)
-
-        setFileTree(tree)
-
-        currentFile.sync(files)
-      },
-      { ignoreIf: () => isInstalling }
-    )
-  }, [webcontainer, currentFile, setupFileWatcher, isInstalling])
+  useTypeLoader(monaco, webcontainer, isInstalling, selectedProject?.id)
 
   const handleExportZip = useCallback(async () => {
     if (!selectedProject) return
 
     try {
-      await syncFilesFromWebContainer()
-
-      await exportAsZip(selectedProject.files, selectedProject.name)
+      await exportAsZip(
+        selectedProject.files,
+        projectMeta(selectedProject).name
+      )
 
       toast('Exporting Project', {
         description: 'Exporting project as ZIP file',
@@ -148,14 +138,12 @@ export default function PlaygroundPage() {
         description: 'Failed to export project',
       })
     }
-  }, [selectedProject, syncFilesFromWebContainer])
+  }, [selectedProject])
 
   const handleSave = useCallback(async () => {
     if (!selectedProject) return
 
     try {
-      await syncFilesFromWebContainer()
-
       const success = saveToLocalStorage(
         selectedProject.id,
         selectedProject.files
@@ -174,14 +162,12 @@ export default function PlaygroundPage() {
         description: 'Failed to save project',
       })
     }
-  }, [selectedProject, syncFilesFromWebContainer])
+  }, [selectedProject])
 
   const handleCopy = useCallback(async () => {
     if (!selectedProject) return
 
     try {
-      await syncFilesFromWebContainer()
-
       const success = await copyProjectToClipboard(selectedProject.files)
 
       if (success) {
@@ -197,7 +183,36 @@ export default function PlaygroundPage() {
         description: 'Failed to copy files',
       })
     }
-  }, [selectedProject, syncFilesFromWebContainer])
+  }, [selectedProject])
+
+  const handleProjectSelect = useCallback(
+    async (project: Project) => {
+      // a running dev server would keep serving the previous project
+      if (previewUrl || isRunning) {
+        try {
+          await stopCommand()
+        } catch (error) {
+          console.error('Error stopping server on project switch:', error)
+        }
+        setIsRunning(false)
+      }
+
+      setPreviewUrl(null)
+      await setSelectedProject(project)
+
+      // install dependencies in the project's own directory; UI state
+      // (isInstalling, status bar) tracks it — no need to block here
+      void prepareProject(project)
+    },
+    [
+      previewUrl,
+      isRunning,
+      stopCommand,
+      setPreviewUrl,
+      setSelectedProject,
+      prepareProject,
+    ]
+  )
 
   const handleReset = useCallback(async () => {
     if (!selectedProject) return
@@ -229,60 +244,7 @@ export default function PlaygroundPage() {
         description: 'Failed to reset project',
       })
     }
-  }, [selectedProject])
-
-  const handleProjectSelect = async (project: Project) => {
-    setIsLoading(true)
-    setError(null)
-    setPreviewUrl(null)
-
-    if (fileWatcherRef.current) {
-      fileWatcherRef.current()
-      fileWatcherRef.current = null
-    }
-
-    try {
-      const savedFiles = loadFromLocalStorage(project.id)
-      const projectToLoad = savedFiles
-        ? { ...project, files: savedFiles }
-        : project
-
-      if (savedFiles) {
-        toast('Loaded Saved Version', {
-          description: 'Restored your previous changes',
-          dismissible: true,
-        })
-      }
-
-      setSelectedProject(projectToLoad)
-
-      const container = await initializeWebContainer()
-
-      const tree = buildFileTree(projectToLoad.files)
-      setFileTree(tree)
-
-      const fileTreeStructure = convertFilesToFileTree(projectToLoad.files)
-
-      if (!container) {
-        throw new Error('WebContainer failed to initialize')
-      }
-
-      await container.mount(fileTreeStructure)
-
-      currentFile.setCurrentFile({
-        path: projectToLoad.initialFile,
-        content: projectToLoad.files[projectToLoad.initialFile],
-      })
-      openTab(projectToLoad.initialFile)
-    } catch (error) {
-      console.error('Error loading project:', error)
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error'
-      setError(`Error loading project: ${errorMessage}`)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  }, [selectedProject, handleProjectSelect])
 
   const handleFileSelect = (path: string) => {
     openTab(path)
@@ -301,26 +263,12 @@ export default function PlaygroundPage() {
     if (currentFile.path && webcontainer) {
       try {
         await writeFile(currentFile.path, newContent)
-
-        if (selectedProject) {
-          setSelectedProject({
-            ...selectedProject,
-            files: { ...selectedProject.files, [currentFile.path]: newContent },
-          })
-        }
+        updateFile(currentFile.path, newContent)
       } catch (error) {
         console.error('Error writing file:', error)
       }
     }
   }
-
-  const handleTerminalReady = useCallback(
-    async (xterm: XTerm, fitAddon: FitAddon) => {
-      setupFileWatching()
-      await initializeTerminal(xterm, fitAddon)
-    },
-    [initializeTerminal, setupFileWatching]
-  )
 
   const handleCreateFile = useCallback(
     async (path: string) => {
@@ -379,20 +327,39 @@ export default function PlaygroundPage() {
   )
 
   const handleRunCommand = useCallback(async () => {
-    if (isRunning) return
+    const run = runConfig
+    if (!run) return
+
+    // no shell yet, dependencies installing, or still cooling down from a
+    // stop — the toolbar disables Run for all of these, this guards direct
+    // calls
+    if (!isShellReady || isInstalling || isStopping) return
+
+    // one-shot script: no server lifecycle, output just streams to terminal
+    if (run.server !== true) {
+      try {
+        await runCommand(run.command)
+        toast('Running Command', { description: run.label ?? run.command })
+      } catch (error) {
+        console.error('Error running command:', error)
+        toast.error('Run Failed', {
+          description: `Failed to run ${run.label ?? run.command}`,
+        })
+      }
+      return
+    }
+
+    // already running or starting — never queue a second dev server
+    if (isRunning || previewUrl) return
 
     setIsRunning(true)
 
     try {
-      await runCommand('npm run dev')
+      await runCommand(run.command)
 
       toast('Starting Server', {
-        description: 'Running npm run dev...',
+        description: run.label ?? run.command,
       })
-
-      setTimeout(() => {
-        setIsRunning(false)
-      }, 3000)
     } catch (error) {
       console.error('Error running command:', error)
       toast.error('Run Failed', {
@@ -400,7 +367,149 @@ export default function PlaygroundPage() {
       })
       setIsRunning(false)
     }
-  }, [isRunning, runCommand])
+  }, [
+    runConfig,
+    isShellReady,
+    isInstalling,
+    isStopping,
+    isRunning,
+    previewUrl,
+    runCommand,
+  ])
+
+  const handleStopCommand = useCallback(async () => {
+    try {
+      await stopCommand()
+      setIsRunning(false)
+
+      toast('Server Stopped', {
+        description: 'Dev server was interrupted',
+      })
+    } catch (error) {
+      console.error('Error stopping server:', error)
+      toast.error('Stop Failed', {
+        description: 'Failed to stop dev server',
+      })
+    }
+  }, [stopCommand])
+
+  // the spinner runs from click until the server announces itself
+  useEffect(() => {
+    if (previewUrl) setIsRunning(false)
+  }, [previewUrl])
+
+  // watchdog: a stuck start (run line swallowed, server crashed on boot)
+  // never fires server-ready — release the spinner instead of waiting forever
+  useEffect(() => {
+    if (!isRunning) return
+
+    const timer = setTimeout(() => {
+      setIsRunning(false)
+      toast.error('Server Not Detected', {
+        description: 'No server became ready — check the terminal output.',
+      })
+    }, SERVER_START_TIMEOUT_MS)
+
+    return () => clearTimeout(timer)
+  }, [isRunning])
+
+  // the server status only exists once a run is attempted — projects that
+  // never start a server never see server chrome
+  useEffect(() => {
+    if (isStopping) {
+      publishStatus({
+        id: 'server',
+        label: 'Stopping server...',
+        tone: 'info',
+        busy: true,
+      })
+    } else if (previewUrl) {
+      publishStatus({
+        id: 'server',
+        label: 'Server running',
+        tone: 'success',
+        kind: 'indicator',
+      })
+    } else if (isRunning) {
+      publishStatus({
+        id: 'server',
+        label: 'Starting server...',
+        tone: 'info',
+        busy: true,
+      })
+    } else {
+      clearStatus('server')
+    }
+  }, [previewUrl, isRunning, isStopping, publishStatus, clearStatus])
+
+  const toggleTerminalMaximize = useCallback(() => {
+    const panel = terminalPanelRef.current
+    if (!panel) return
+
+    if (isTerminalMaximized) {
+      setIsTerminalMaximized(false)
+      requestAnimationFrame(() => panel.resize(restoreTerminalSize.current))
+    } else {
+      restoreTerminalSize.current = panel.getSize()
+      setIsTerminalMaximized(true)
+      // the relaxed size constraints only apply after the re-render
+      requestAnimationFrame(() => panel.resize(100))
+    }
+  }, [isTerminalMaximized])
+
+  const handleShare = useCallback(async () => {
+    if (!selectedProject) return
+
+    try {
+      // selectedProject.files is kept in sync with the container by the
+      // file watcher, so this snapshot includes unsaved work — the manifest
+      // rides inside it, so run config travels with the link by construction
+      const code = await encodeShareCode(selectedProject)
+      const url = `${window.location.origin}${window.location.pathname}?code=${code}`
+
+      if (url.length > 8000) {
+        toast.error('Too Large to Share', {
+          description: 'This project exceeds what a link can carry',
+        })
+        return
+      }
+
+      await navigator.clipboard.writeText(url)
+      toast('Share Link Copied', {
+        description: 'Anyone with the link opens this exact project',
+      })
+    } catch (error) {
+      console.error('Error sharing project:', error)
+      toast.error('Share Failed', {
+        description: 'Could not create a share link',
+      })
+    }
+  }, [selectedProject])
+
+  // open a shared project from a ?code= link (once, on first load)
+  const sharedImportRef = useRef(false)
+  useEffect(() => {
+    if (sharedImportRef.current) return
+    sharedImportRef.current = true
+
+    const code = new URLSearchParams(window.location.search).get('code')
+    if (!code) return
+
+    decodeShareCode(code)
+      .then((project) => {
+        // a distinct id keeps localStorage saves of the original example
+        // from shadowing the shared content
+        const shared = { ...project, id: `shared-${project.id}` }
+        clearFromLocalStorage(shared.id)
+        return handleProjectSelect(shared)
+      })
+      .catch((error) => {
+        console.error('Share import failed:', error)
+        toast.error('Invalid Share Link', {
+          description: 'Could not decode the shared project',
+        })
+      })
+  }, [handleProjectSelect])
 
   const handleOpenProjectSelector = useCallback(() => {
     setShowProjectSelector(true)
@@ -418,18 +527,20 @@ export default function PlaygroundPage() {
   }, [showProjectSelector])
 
   useEffect(() => {
-    return () => {
-      if (fileWatcherRef.current) {
-        fileWatcherRef.current()
-      }
-    }
-  }, [])
+    const dispose = setupFileWatcher((snapshot) => {
+      void syncFiles(snapshot)
+    })
+
+    return dispose
+  }, [setupFileWatcher, syncFiles])
 
   if (isMobile) {
     return (
       <MobileView
-        projectName={selectedProject?.name}
-        onBack={selectedProject ? () => setSelectedProject(null) : undefined}
+        projectName={
+          selectedProject ? projectMeta(selectedProject).name : undefined
+        }
+        onBack={selectedProject ? () => deselect() : undefined}
       />
     )
   }
@@ -469,10 +580,7 @@ export default function PlaygroundPage() {
           <h2 className="text-xl font-semibold mb-2">Failed to Load Project</h2>
           <p className="text-muted-foreground mb-4">{error}</p>
           <Button
-            onClick={() => {
-              setError(null)
-              setSelectedProject(null)
-            }}
+            onClick={deselect}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             Back to Projects
@@ -501,8 +609,15 @@ export default function PlaygroundPage() {
           onCopy={handleCopy}
           isFullscreen={isFullscreen}
           onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
-          onRunCommand={handleRunCommand}
+          onRunCommand={runConfig ? handleRunCommand : undefined}
+          runLabel={runConfig?.label ?? runConfig?.command}
+          onStopCommand={handleStopCommand}
+          onShare={handleShare}
           isRunning={isRunning}
+          isStopping={isStopping}
+          isInstalling={isInstalling}
+          isShellReady={isShellReady}
+          isServerRunning={!!previewUrl}
           onOpenProjectSelector={handleOpenProjectSelector}
         />
 
@@ -529,10 +644,7 @@ export default function PlaygroundPage() {
               </h2>
               <p className="text-muted-foreground mb-4">{error}</p>
               <Button
-                onClick={() => {
-                  setError(null)
-                  setSelectedProject(null)
-                }}
+                onClick={deselect}
                 className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
               >
                 Back to Projects
@@ -546,7 +658,11 @@ export default function PlaygroundPage() {
           className="flex-1"
           id="main-panel-group"
         >
-          <Panel defaultSize={70} minSize={30} id="top-panel">
+          <Panel
+            defaultSize={70}
+            minSize={isTerminalMaximized ? 0 : 30}
+            id="top-panel"
+          >
             <PanelGroup direction="horizontal" id="horizontal-panel-group">
               <Panel
                 defaultSize={20}
@@ -563,7 +679,6 @@ export default function PlaygroundPage() {
                   </div>
                   <div className="flex-1 overflow-y-auto">
                     <FileTree
-                      nodes={fileTree}
                       onFileSelect={handleFileSelect}
                       selectedFile={currentFile.path}
                       onCreateFile={handleCreateFile}
@@ -592,16 +707,17 @@ export default function PlaygroundPage() {
                       {currentFile.path ? (
                         <>
                           <EditorTabs files={selectedProject?.files} />
-                          <div className="flex-1">
+                          {/* min-h-0 lets this shrink when the terminal grows —
+                              without it Monaco's own height locks the flex item
+                              and automaticLayout never sees the resize */}
+                          <div className="flex-1 min-h-0">
                             <CodeEditor
                               value={currentFile.content}
                               onChange={handleFileChange}
                               language={getLanguageFromPath(currentFile.path)}
                               filePath={currentFile.path}
                               files={selectedProject?.files}
-                              onMonacoReady={(monaco) => {
-                                monacoRef.current = monaco
-                              }}
+                              onMonacoReady={setMonaco}
                             />
                           </div>
                         </>
@@ -648,25 +764,44 @@ export default function PlaygroundPage() {
 
           <Panel
             id="terminal-panel"
+            ref={terminalPanelRef}
             defaultSize={30}
             minSize={15}
-            maxSize={50}
+            maxSize={isTerminalMaximized ? 100 : 50}
+            onResize={(size) => {
+              // dragging the handle back down exits maximized mode
+              if (isTerminalMaximized && size < 95) {
+                setIsTerminalMaximized(false)
+              }
+            }}
             className={isPanelVisible('terminal') ? '' : 'hidden'}
           >
             <div className="h-full border-t border-border/50 bg-background flex flex-col">
-              <div className="h-10 border-b border-border/50 flex items-center px-4 shrink-0">
+              <div className="h-10 border-b border-border/50 flex items-center gap-3 px-4 shrink-0">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                   Terminal
                 </span>
-                {isInstalling && (
-                  <span className="ml-3 text-xs text-primary flex items-center gap-1.5 font-medium">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    Installing dependencies...
-                  </span>
-                )}
+                <StatusBar />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleTerminalMaximize}
+                  className="h-6 px-1.5 hover:bg-muted"
+                  title={
+                    isTerminalMaximized
+                      ? 'Restore terminal'
+                      : 'Maximize terminal'
+                  }
+                >
+                  {isTerminalMaximized ? (
+                    <ChevronsDown className="w-3.5 h-3.5" />
+                  ) : (
+                    <ChevronsUp className="w-3.5 h-3.5" />
+                  )}
+                </Button>
               </div>
               <div className="flex-1 overflow-hidden">
-                <Terminal onReady={handleTerminalReady} />
+                <Terminal />
               </div>
             </div>
           </Panel>

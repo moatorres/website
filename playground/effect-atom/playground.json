@@ -1,0 +1,10 @@
+{
+  "name": "Effect Atoms React",
+  "main": "./src/App.tsx",
+  "prepare": "pnpm install",
+  "run": {
+    "command": "pnpm serve",
+    "label": "vite dev server",
+    "server": true
+  }
+}
